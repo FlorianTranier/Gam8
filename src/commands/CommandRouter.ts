@@ -4,6 +4,8 @@ import CommandInterface from './CommandInterface'
 
 export default class {
 
+    BOT_COMMAND_PREFIX = '-sp'
+
     private readonly client: Client
     private readonly commands: CommandInterface[]
 
@@ -16,22 +18,24 @@ export default class {
 
     async createEventMessage(): Promise<void> {
         this.client.on('message', async (msg) => {
-            const command = await this.findCommandByPrefix({
-                prefix: await this.getPrefix({ content: msg.content })
-            })
-            await command?.exec({
-                args: await this.getArgs({ content: msg.content }),
-                context: msg
-            })
+            if (msg.content.startsWith('-sp')) {
+                const command = await this.findCommandByPrefix({
+                    prefix: await this.getCommand({ content: msg.content })
+                })
+                await command?.exec({
+                    args: await this.getArgs({ content: msg.content }),
+                    context: msg
+                })
+            }
         })
     }
 
-    private async getPrefix(p: { content: string }): Promise<string> {
-        return p.content.split(' ')[0]
+    private async getCommand(p: { content: string }): Promise<string> {
+        return p.content.split(' ')[1]
     }
 
     private async getArgs(p: { content: string }): Promise<string[]> {
-        return p.content.split(' ').slice(1)
+        return p.content.split(' ').slice(2)
     }
 
     private async findCommandByPrefix(p: { prefix: string }): Promise<CommandInterface | undefined> {
@@ -40,23 +44,5 @@ export default class {
         )
         return this.commands[bitmap.indexOf(true)]
     }
-    /*
-    this.client.on('message', async (msg) => {
-            console.log(msg.content)
-            if (msg.content.startsWith('-sp')) {
-                const splittedMsg = msg.content.split(' ')
-                splittedMsg.shift()
-                const game = splittedMsg.join(' ')
-                await this.messageProvider.saveMessage({
-                    message: new SearchPartnerMessage({
-                        serverId: msg.guild?.id || '',
-                        authorId: msg.author.id,
-                        messageId: msg.id,
-                        game
-                    })
-                })
-                await msg.reply('coucou')
-            }
-        })
-        */
+
 }

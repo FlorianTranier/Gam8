@@ -7,7 +7,7 @@ import EmbedMessageGenerator from "./utils/EmbedSearchPartnerMessageUtils";
 
 export default class SPCommand implements CommandInterface {
 
-  COMMAND = '-sp'
+  COMMAND = 'search'
 
   private readonly messageProvider: DBMessageProvider
 
