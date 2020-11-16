@@ -47,6 +47,7 @@ export default class SPCommand implements CommandInterface {
       })
     })
 
+    p.context.delete()
   }
 
 }
