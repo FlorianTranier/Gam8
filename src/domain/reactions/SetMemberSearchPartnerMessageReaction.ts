@@ -5,13 +5,13 @@ import ReactionType from "../../models/messages/enums/ReactionType";
 import DBMessageProvider from "../../providers/database/messages/DBMessageProvider";
 import ReactionInterface from "./ReactionInterface";
 
-export default class AddMemberSearchPartnerMessageReaction implements ReactionInterface {
+export default class SetMemberSearchPartnerMessageReaction implements ReactionInterface {
 
   private readonly messageProvider: DBMessageProvider
 
-  EMOJI = '☝'
-  MESSAGE_TYPE = MessageType.RESEARCH_PARTNER
-  REACTION_TYPE = ReactionType.ADD
+  SUPPORTED_EMOJI = '☝'
+  SUPPORTED_MESSAGE_TYPE = MessageType.RESEARCH_PARTNER
+  SUPPORTED_REACTION_TYPES = [ReactionType.ADD, ReactionType.REMOVE]
 
   constructor(p: { messageProvider: DBMessageProvider }) {
     this.messageProvider = p.messageProvider
@@ -21,9 +21,9 @@ export default class AddMemberSearchPartnerMessageReaction implements ReactionIn
     const message = await this.messageProvider
       .getMessageByMessageId({ msgId: p.msgId })
 
-    return p.emoji.charCodeAt(0) === this.EMOJI.charCodeAt(0)
-      && message.type === this.MESSAGE_TYPE
-      && p.type === this.REACTION_TYPE
+    return p.emoji.charCodeAt(0) === this.SUPPORTED_EMOJI.charCodeAt(0)
+      && message.type === this.SUPPORTED_MESSAGE_TYPE
+      && this.SUPPORTED_REACTION_TYPES.includes(p.type)
   }
 
   async exec(p: { reaction: MessageReaction }): Promise<void> {

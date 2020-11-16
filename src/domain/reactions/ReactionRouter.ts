@@ -31,6 +31,18 @@ export default class ReactionRouter {
 
       this.reactions[bitmap.indexOf(true)].exec({ reaction })
     })
+
+    this.client.on('messageReactionRemove', async reaction => {
+      const bitmap = await Promise.all(
+        this.reactions.map(react => react.supportReaction({
+          emoji: reaction.emoji.name,
+          msgId: reaction.message.id,
+          type: ReactionType.REMOVE
+        }))
+      )
+
+      this.reactions[bitmap.indexOf(true)].exec({ reaction })
+    })
   }
 
 

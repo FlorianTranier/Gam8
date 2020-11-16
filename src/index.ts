@@ -8,7 +8,7 @@ import DBMessageProvider from './providers/database/messages/DBMessageProvider'
 import SPCommand from './commands/SPCommand'
 import ReactionRouter from './domain/reactions/ReactionRouter'
 import ReactionInterface from './domain/reactions/ReactionInterface'
-import AddMemberSearchPartnerMessageReaction from './domain/reactions/AddMemberSearchPartnerMessageReaction'
+import AddMemberSearchPartnerMessageReaction from './domain/reactions/SetMemberSearchPartnerMessageReaction'
 
 const params = {
   type: serviceAccount.type,

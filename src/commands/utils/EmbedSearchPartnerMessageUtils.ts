@@ -11,7 +11,7 @@ export default {
     const msg = new MessageEmbed()
 
     const membersDisplay = p.members.length > 0
-      ? p.members.map(m => m.username).join(',')
+      ? p.members.map(m => `<@${m.id}>`).join(',')
       : 'Waiting for players'
 
     return msg
