@@ -8,7 +8,8 @@ export default {
     game: string,
     membersId: string[],
     voiceChannelName?: string,
-    voiceChannelInviteUrl?: string
+    voiceChannelInviteUrl?: string,
+    img: string
   }): Promise<MessageEmbed> {
     const msg = new MessageEmbed()
 
@@ -16,9 +17,11 @@ export default {
         ? p.membersId.map(m => `<@${m}>`).join(',')
         : 'Waiting for players'
 
-    msg.setAuthor(p.authorUsername, p.authorPicture || undefined)
-        .setTitle(`${msg.author?.name} wants to play at ${p.game}`)
-        .addField('Answering the call', membersDisplay)
+    msg
+      .setAuthor(p.authorUsername, p.authorPicture || undefined)
+      .setTitle(`${msg.author?.name} wants to play at ${p.game}`)
+      .addField('Answering the call', membersDisplay)
+      .setImage(p.img)
 
     if (p.voiceChannelName && p.voiceChannelInviteUrl) {
         msg.addField('Join Channel:', `[${p.voiceChannelName}](${p.voiceChannelInviteUrl})`)

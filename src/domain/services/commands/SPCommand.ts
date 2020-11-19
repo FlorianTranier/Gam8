@@ -4,6 +4,7 @@ import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage';
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
 import CommandInterface from './CommandInterface';
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
+import axios from 'axios'
 
 export default class SPCommand implements CommandInterface {
 
@@ -23,13 +24,20 @@ export default class SPCommand implements CommandInterface {
 
     const game = p.args.join(' ')
 
+    const imgUrl = (await axios.get('https://api.thecatapi.com/v1/images/search')).data[0].url
+
+    const author = (await p.context.guild?.members.fetch(p.context.author.id))
+
     const message = await p.context.channel.send('@here',
       await EmbedMessageGenerator.createOrUpdate(
         {
           authorUsername: p.context.author.username,
           authorPicture: p.context.author.avatarURL() || '',
           game,
-          membersId: []
+          membersId: [],
+          img: imgUrl,
+          voiceChannelName: author?.voice.channel?.name,
+          voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
         }
       )
     )
@@ -43,7 +51,8 @@ export default class SPCommand implements CommandInterface {
         messageId: message.id,
         game,
         type: MessageType.RESEARCH_PARTNER,
-        membersId: []
+        membersId: [],
+        catUrl: imgUrl
       })
     })
 
