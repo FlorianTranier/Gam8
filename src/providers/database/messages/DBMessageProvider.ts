@@ -28,7 +28,33 @@ export default class {
       .docs
 
     return docs.map(doc => <SearchPartnerMessage>doc.data())
+  }
 
+  async addMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
+        .docs[0].ref
+
+    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+
+    msgToUpdate.membersId.push(p.memberId)
+
+    await msgRef.update(msgToUpdate)
+
+    return await this.getMessageByMessageId({ msgId: p.msgId })
+  }
+
+  async removeMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
+      .docs[0].ref
+
+    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+
+    const indexToRemove = msgToUpdate.membersId.indexOf(p.memberId)
+    if (indexToRemove > -1) msgToUpdate.membersId.splice(indexToRemove, 1)
+
+    await msgRef.update(msgToUpdate)
+
+    return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
 }

@@ -40,18 +40,21 @@ export default class VoiceStateListener {
 
       if (botChannel && botChannel instanceof TextChannel) {
         for (const message of messages) {
-          const discordMessage = await botChannel.messages.fetch(message.messageId)
 
-          const previousEmbedMessage = discordMessage.embeds[0]
+          const author = (await newVoiceState.guild?.members.fetch(message.authorId))
 
           const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate(
             {
-              embedToUpdate: previousEmbedMessage,
-              voiceChannelInviteUrl: (await newVoiceState.channel?.createInvite())?.url,
-              voiceChannelName: newVoiceState.channel?.name
+              authorUsername: author?.user.username,
+              authorPicture: author?.user.avatarURL() || undefined,
+              membersId: message.membersId,
+              game: message.game,
+              voiceChannelName: author?.voice.channel?.name,
+              voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url
             }
           )
 
+          const discordMessage = await botChannel.messages.fetch(message.messageId)
           await discordMessage.edit('@here', embedMessage)
         }
       }

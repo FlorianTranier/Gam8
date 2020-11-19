@@ -28,12 +28,13 @@ export default class SPCommand implements CommandInterface {
         {
           authorUsername: p.context.author.username,
           authorPicture: p.context.author.avatarURL() || '',
-          game
+          game,
+          membersId: []
         }
       )
     )
 
-    message.react('☝')
+    await message.react('☝')
 
     await this.messageProvider.saveMessage({
       message: new SearchPartnerMessage({
@@ -46,7 +47,7 @@ export default class SPCommand implements CommandInterface {
       })
     })
 
-    p.context.delete()
+    await p.context.delete()
   }
 
 }

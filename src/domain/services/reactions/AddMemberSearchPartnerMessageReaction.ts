@@ -1,17 +1,17 @@
-import { MessageReaction } from 'discord.js';
+import {MessageReaction, PartialUser, User} from 'discord.js';
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
 import MessageType from '../../models/messages/enums/MessageType';
 import ReactionType from '../../models/messages/enums/ReactionType';
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
 import ReactionInterface from './ReactionInterface';
 
-export default class SetMemberSearchPartnerMessageReaction implements ReactionInterface {
+export default class AddMemberSearchPartnerMessageReaction implements ReactionInterface {
 
   private readonly messageProvider: DBMessageProvider
 
   SUPPORTED_EMOJI = '☝'
   SUPPORTED_MESSAGE_TYPE = MessageType.RESEARCH_PARTNER
-  SUPPORTED_REACTION_TYPES = [ReactionType.ADD, ReactionType.REMOVE]
+  SUPPORTED_REACTION_TYPES = [ReactionType.ADD]
 
   constructor(p: { messageProvider: DBMessageProvider }) {
     this.messageProvider = p.messageProvider
@@ -26,15 +26,22 @@ export default class SetMemberSearchPartnerMessageReaction implements ReactionIn
       && this.SUPPORTED_REACTION_TYPES.includes(p.type)
   }
 
-  async exec(p: { reaction: MessageReaction }): Promise<void> {
-    const previousEmbedMessage = p.reaction.message.embeds[0]
-    const members = (await p.reaction.users.fetch()).array()
-      .filter(user => user.id !== p.reaction.message.author.id)
+  async exec(p: { reaction: MessageReaction; author: User | PartialUser }): Promise<void> {
+    const message = await this.messageProvider.addMemberToMessageByMessageId({
+        msgId: p.reaction.message.id,
+        memberId: p.author.id
+    })
+
+    const author = (await p.reaction.message.guild?.members.fetch(message.authorId))
 
     const embedMessage = await EmbedMessageGenerator.createOrUpdate(
       {
-        embedToUpdate: previousEmbedMessage,
-        members
+        authorUsername: author?.user.username,
+        authorPicture: author?.user.avatarURL() || undefined,
+        membersId: message.membersId,
+        game: message.game,
+        voiceChannelName: author?.voice.channel?.name,
+        voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url
       }
     )
 

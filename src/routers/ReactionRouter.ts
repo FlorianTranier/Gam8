@@ -22,19 +22,20 @@ export default class ReactionRouter {
   }
 
   private async createEventReaction(): Promise<void> {
-    this.client.on('messageReactionAdd', async reaction => {
-      const bitmap = await Promise.all(
-        this.reactions.map(react => react.supportReaction({
-          emoji: reaction.emoji.name,
-          msgId: reaction.message.id,
-          type: ReactionType.ADD
-        }))
-      )
-
-      await this.reactions[bitmap.indexOf(true)].exec({reaction})
+    this.client.on('messageReactionAdd', async (reaction, author) => {
+      if (author.id !== reaction.message.author.id) {
+        const bitmap = await Promise.all(
+            this.reactions.map(react => react.supportReaction({
+                emoji: reaction.emoji.name,
+                msgId: reaction.message.id,
+                type: ReactionType.ADD
+            }))
+        )
+        await this.reactions[bitmap.indexOf(true)].exec({reaction, author})
+      }
     })
 
-    this.client.on('messageReactionRemove', async reaction => {
+    this.client.on('messageReactionRemove', async (reaction, author) => {
       const bitmap = await Promise.all(
         this.reactions.map(react => react.supportReaction({
           emoji: reaction.emoji.name,
@@ -43,7 +44,7 @@ export default class ReactionRouter {
         }))
       )
 
-      await this.reactions[bitmap.indexOf(true)].exec({reaction})
+      await this.reactions[bitmap.indexOf(true)].exec({reaction, author})
     })
   }
 

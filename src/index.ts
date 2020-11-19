@@ -8,7 +8,8 @@ import DBMessageProvider from './providers/database/messages/DBMessageProvider'
 import SPCommand from './domain/services/commands/SPCommand'
 import ReactionRouter from './routers/ReactionRouter'
 import ReactionInterface from './domain/services/reactions/ReactionInterface'
-import AddMemberSearchPartnerMessageReaction from './domain/services/reactions/SetMemberSearchPartnerMessageReaction'
+import AddMemberSearchPartnerMessageReaction from './domain/services/reactions/AddMemberSearchPartnerMessageReaction'
+import RemoveMemberSearchPartnerMessageReaction from './domain/services/reactions/RemoveMemberSearchPartnerMessageReaction'
 import DBChannelProvider from './providers/database/channels/DBChannelProvider'
 import GuildChannelAssociation from './domain/models/channels/GuildChannelAssociation'
 import VoiceStateListener from './domain/services/listeners/VoiceStateListener'
@@ -47,7 +48,8 @@ const commands = [
 
 // Reactions
 const reactions: ReactionInterface[] = [
-  new AddMemberSearchPartnerMessageReaction({ messageProvider })
+  new AddMemberSearchPartnerMessageReaction({ messageProvider }),
+  new RemoveMemberSearchPartnerMessageReaction({ messageProvider })
 ]
 
 

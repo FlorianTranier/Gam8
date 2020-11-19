@@ -20,8 +20,7 @@ export default class CommandRouter {
 
     async createEventMessage(): Promise<void> {
         this.client.on('message', async (msg) => {
-
-            if (msg.content.startsWith(this.BOT_COMMAND_PREFIX)
+            if (msg.content.startsWith(`${this.BOT_COMMAND_PREFIX}`)
                 && msg.channel instanceof TextChannel
                 && msg.channel.name === process.env.BOT_CHANNEL) {
                 const command = await this.findCommandByPrefix({
