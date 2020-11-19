@@ -1,9 +1,9 @@
-import { Message } from "discord.js";
-import MessageType from "../models/messages/enums/MessageType";
-import SearchPartnerMessage from "../models/messages/SearchPartnerMessage";
-import DBMessageProvider from "../providers/database/messages/DBMessageProvider";
-import CommandInterface from "./CommandInterface";
-import EmbedMessageGenerator from "./utils/EmbedSearchPartnerMessageUtils";
+import { Message } from 'discord.js';
+import MessageType from '../../models/messages/enums/MessageType';
+import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage';
+import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
+import CommandInterface from './CommandInterface';
+import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
 
 export default class SPCommand implements CommandInterface {
 
@@ -24,12 +24,11 @@ export default class SPCommand implements CommandInterface {
     const game = p.args.join(' ')
 
     const message = await p.context.channel.send('@here',
-      await EmbedMessageGenerator.create(
+      await EmbedMessageGenerator.createOrUpdate(
         {
           authorUsername: p.context.author.username,
           authorPicture: p.context.author.avatarURL() || '',
-          game,
-          members: []
+          game
         }
       )
     )

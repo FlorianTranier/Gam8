@@ -1,8 +1,8 @@
-import { Client } from 'discord.js'
+import { Client, TextChannel } from 'discord.js'
 import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
-import CommandInterface from './CommandInterface'
+import CommandInterface from '../domain/services/commands/CommandInterface'
 
-export default class {
+export default class CommandRouter {
 
     BOT_COMMAND_PREFIX = '-sp'
 
@@ -14,27 +14,32 @@ export default class {
         this.commands = p.commands
 
         this.createEventMessage()
+            .then(() => console.log(`${CommandRouter.name} OK`))
+            .catch(() => console.error(`${CommandRouter.name} NOK`))
     }
 
     async createEventMessage(): Promise<void> {
         this.client.on('message', async (msg) => {
-            if (msg.content.startsWith('-sp')) {
+
+            if (msg.content.startsWith(this.BOT_COMMAND_PREFIX)
+                && msg.channel instanceof TextChannel
+                && msg.channel.name === process.env.BOT_CHANNEL) {
                 const command = await this.findCommandByPrefix({
-                    prefix: await this.getCommand({ content: msg.content })
+                    prefix: await CommandRouter.getCommand({ content: msg.content })
                 })
                 await command?.exec({
-                    args: await this.getArgs({ content: msg.content }),
+                    args: await CommandRouter.getArgs({ content: msg.content }),
                     context: msg
                 })
             }
         })
     }
 
-    private async getCommand(p: { content: string }): Promise<string> {
+    private static async getCommand(p: { content: string }): Promise<string> {
         return p.content.split(' ')[1]
     }
 
-    private async getArgs(p: { content: string }): Promise<string[]> {
+    private static async getArgs(p: { content: string }): Promise<string[]> {
         return p.content.split(' ').slice(2)
     }
 

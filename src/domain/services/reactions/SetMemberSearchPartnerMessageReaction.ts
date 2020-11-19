@@ -1,9 +1,9 @@
-import { MessageReaction } from "discord.js";
-import EmbedMessageGenerator from "../../commands/utils/EmbedSearchPartnerMessageUtils";
-import MessageType from "../../models/messages/enums/MessageType";
-import ReactionType from "../../models/messages/enums/ReactionType";
-import DBMessageProvider from "../../providers/database/messages/DBMessageProvider";
-import ReactionInterface from "./ReactionInterface";
+import { MessageReaction } from 'discord.js';
+import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
+import MessageType from '../../models/messages/enums/MessageType';
+import ReactionType from '../../models/messages/enums/ReactionType';
+import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
+import ReactionInterface from './ReactionInterface';
 
 export default class SetMemberSearchPartnerMessageReaction implements ReactionInterface {
 
@@ -27,23 +27,18 @@ export default class SetMemberSearchPartnerMessageReaction implements ReactionIn
   }
 
   async exec(p: { reaction: MessageReaction }): Promise<void> {
-    const message = await this.messageProvider
-      .getMessageByMessageId({ msgId: p.reaction.message.id })
-
     const previousEmbedMessage = p.reaction.message.embeds[0]
     const members = (await p.reaction.users.fetch()).array()
       .filter(user => user.id !== p.reaction.message.author.id)
 
-    const embedMessage = await EmbedMessageGenerator.create(
+    const embedMessage = await EmbedMessageGenerator.createOrUpdate(
       {
-        authorUsername: previousEmbedMessage.author?.name || '',
-        authorPicture: previousEmbedMessage.author?.iconURL || '',
-        game: message.game,
+        embedToUpdate: previousEmbedMessage,
         members
       }
     )
 
-    p.reaction.message.edit('@here', embedMessage)
+    await p.reaction.message.edit('@here', embedMessage)
   }
 
 

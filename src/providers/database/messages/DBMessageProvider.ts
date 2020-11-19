@@ -1,5 +1,5 @@
 import { firestore } from 'firebase-admin'
-import SearchPartnerMessage from '../../../models/messages/SearchPartnerMessage'
+import SearchPartnerMessage from '../../../domain/models/messages/SearchPartnerMessage'
 
 export default class {
 
@@ -20,6 +20,15 @@ export default class {
     return <SearchPartnerMessage>
       (await this.dbRef.where('messageId', '==', p.msgId).get())
         .docs[0].data()
+  }
+
+  async getMessagesByAuthorId(p: { authorId: string }): Promise<SearchPartnerMessage[]> {
+
+    const docs = (await this.dbRef.where('authorId', '==', p.authorId).get())
+      .docs
+
+    return docs.map(doc => <SearchPartnerMessage>doc.data())
+
   }
 
 }

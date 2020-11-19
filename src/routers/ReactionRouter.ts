@@ -1,7 +1,7 @@
-import { Client } from "discord.js";
-import ReactionType from "../../models/messages/enums/ReactionType";
-import DBMessageProvider from "../../providers/database/messages/DBMessageProvider";
-import ReactionInterface from "./ReactionInterface";
+import { Client } from 'discord.js';
+import ReactionType from '../domain/models/messages/enums/ReactionType';
+import DBMessageProvider from '../providers/database/messages/DBMessageProvider';
+import ReactionInterface from '../domain/services/reactions/ReactionInterface';
 
 export default class ReactionRouter {
 
@@ -17,9 +17,11 @@ export default class ReactionRouter {
     this.reactions = p.reactions
 
     this.createEventReaction()
+        .then(() => console.log(`${ReactionRouter.name} OK`))
+        .catch(() => console.error(`${ReactionRouter.name} NOK`))
   }
 
-  async createEventReaction(): Promise<void> {
+  private async createEventReaction(): Promise<void> {
     this.client.on('messageReactionAdd', async reaction => {
       const bitmap = await Promise.all(
         this.reactions.map(react => react.supportReaction({
@@ -29,7 +31,7 @@ export default class ReactionRouter {
         }))
       )
 
-      this.reactions[bitmap.indexOf(true)].exec({ reaction })
+      await this.reactions[bitmap.indexOf(true)].exec({reaction})
     })
 
     this.client.on('messageReactionRemove', async reaction => {
@@ -41,7 +43,7 @@ export default class ReactionRouter {
         }))
       )
 
-      this.reactions[bitmap.indexOf(true)].exec({ reaction })
+      await this.reactions[bitmap.indexOf(true)].exec({reaction})
     })
   }
 

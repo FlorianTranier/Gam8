@@ -1,4 +1,4 @@
-import { Message, ReactionEmoji } from "discord.js";
+import { Message } from 'discord.js';
 
 export default interface CommandInterface {
 
