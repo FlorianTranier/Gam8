@@ -9,6 +9,7 @@ export default class SearchPartnerMessage {
   game: string
   type: MessageType
   membersId: string[]
+  lateMembersId: string[]
   channelId: string
   catUrl: string
 
@@ -19,6 +20,7 @@ export default class SearchPartnerMessage {
     game: string,
     type: MessageType,
     membersId: string[],
+    lateMembersId: string[],
     channelId: string,
     catUrl: string
   }) {
@@ -28,6 +30,7 @@ export default class SearchPartnerMessage {
     this.game = p.game
     this.type = p.type
     this.membersId = p.membersId
+    this.lateMembersId = p.lateMembersId
     this.channelId = p.channelId
     this.catUrl = p.catUrl
   }

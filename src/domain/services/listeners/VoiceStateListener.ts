@@ -48,6 +48,7 @@ export default class VoiceStateListener {
               authorUsername: author?.user.username,
               authorPicture: author?.user.avatarURL() || undefined,
               membersId: message.membersId,
+              lateMembersId: message.lateMembersId,
               game: message.game,
               voiceChannelName: author?.voice.channel?.name,
               voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,

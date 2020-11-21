@@ -14,6 +14,10 @@ import DBChannelProvider from './providers/database/channels/DBChannelProvider'
 import GuildChannelAssociation from './domain/models/channels/GuildChannelAssociation'
 import VoiceStateListener from './domain/services/listeners/VoiceStateListener'
 import ClearCommand from './domain/services/commands/ClearCommand';
+import AddPlayLaterSearchPartnerMessageReaction
+  from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction';
+import RemovePlayLaterSearchPartnerMessageReaction
+  from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction';
 
 const params = {
   type: serviceAccount.type,
@@ -51,7 +55,9 @@ const commands = [
 // Reactions
 const reactions: ReactionInterface[] = [
   new AddMemberSearchPartnerMessageReaction({ messageProvider }),
-  new RemoveMemberSearchPartnerMessageReaction({ messageProvider })
+  new RemoveMemberSearchPartnerMessageReaction({ messageProvider }),
+  new AddPlayLaterSearchPartnerMessageReaction({ messageProvider }),
+  new RemovePlayLaterSearchPartnerMessageReaction({ messageProvider })
 ]
 
 

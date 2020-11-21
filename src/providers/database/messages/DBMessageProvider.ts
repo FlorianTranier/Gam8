@@ -59,6 +59,19 @@ export default class {
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
+  async addLateMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
+      .docs[0].ref
+
+    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+
+    msgToUpdate.lateMembersId.push(p.memberId)
+
+    await msgRef.update(msgToUpdate)
+
+    return await this.getMessageByMessageId({ msgId: p.msgId })
+  }
+
   async removeMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
     const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
       .docs[0].ref
@@ -67,6 +80,20 @@ export default class {
 
     const indexToRemove = msgToUpdate.membersId.indexOf(p.memberId)
     if (indexToRemove > -1) msgToUpdate.membersId.splice(indexToRemove, 1)
+
+    await msgRef.update(msgToUpdate)
+
+    return await this.getMessageByMessageId({ msgId: p.msgId })
+  }
+
+  async removeLateMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
+      .docs[0].ref
+
+    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+
+    const indexToRemove = msgToUpdate.lateMembersId.indexOf(p.memberId)
+    if (indexToRemove > -1) msgToUpdate.lateMembersId.splice(indexToRemove, 1)
 
     await msgRef.update(msgToUpdate)
 

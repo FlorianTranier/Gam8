@@ -35,6 +35,7 @@ export default class SearchCommand implements CommandInterface {
           authorPicture: p.context.author.avatarURL() || '',
           game,
           membersId: [],
+          lateMembersId: [],
           img: imgUrl,
           voiceChannelName: author?.voice.channel?.name,
           voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
@@ -43,6 +44,7 @@ export default class SearchCommand implements CommandInterface {
     )
 
     await message.react('☝')
+    await message.react('⏰')
 
     await this.messageProvider.saveMessage({
       message: new SearchPartnerMessage({
@@ -52,6 +54,7 @@ export default class SearchCommand implements CommandInterface {
         game,
         type: MessageType.RESEARCH_PARTNER,
         membersId: [],
+        lateMembersId: [],
         channelId: p.context.channel.id,
         catUrl: imgUrl
       })

@@ -5,13 +5,13 @@ import ReactionType from '../../models/messages/enums/ReactionType';
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
 import ReactionInterface from './ReactionInterface';
 
-export default class RemoveMemberSearchPartnerMessageReaction implements ReactionInterface {
+export default class AddPlayLaterSearchPartnerMessageReaction implements ReactionInterface {
 
   private readonly messageProvider: DBMessageProvider
 
-  SUPPORTED_EMOJI = '☝'
+  SUPPORTED_EMOJI = '⏰'
   SUPPORTED_MESSAGE_TYPE = MessageType.RESEARCH_PARTNER
-  SUPPORTED_REACTION_TYPES = [ReactionType.REMOVE]
+  SUPPORTED_REACTION_TYPES = [ReactionType.ADD]
 
   constructor(p: { messageProvider: DBMessageProvider }) {
     this.messageProvider = p.messageProvider
@@ -27,7 +27,7 @@ export default class RemoveMemberSearchPartnerMessageReaction implements Reactio
   }
 
   async exec(p: { reaction: MessageReaction; author: User | PartialUser }): Promise<void> {
-    const message = await this.messageProvider.removeMemberToMessageByMessageId({
+    const message = await this.messageProvider.addLateMemberToMessageByMessageId({
       msgId: p.reaction.message.id,
       memberId: p.author.id
     })
