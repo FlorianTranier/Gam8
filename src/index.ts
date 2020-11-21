@@ -83,6 +83,10 @@ client.on('ready', () => {
         type: 'text'
       })
 
+      const message = await channel.send('Welcome everyone ! This is the PartnerResearch Bot discord channel !')
+      await message.pin()
+
+
       await channelProvider.saveGuildChannelAssociation({
         guildChannelAssociation: new GuildChannelAssociation({
           guildId: guild.id,
