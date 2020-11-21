@@ -39,6 +39,13 @@ export default class {
     return docs.map(doc => <SearchPartnerMessage>doc.data())
   }
 
+  async getMessagesByChannelId(p: { channelId: string }): Promise<SearchPartnerMessage[]> {
+    const docs = (await this.dbRef.where('channelId', '==', p.channelId).get())
+      .docs
+
+    return docs.map(doc => <SearchPartnerMessage>doc.data())
+  }
+
   async addMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
     const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
         .docs[0].ref

@@ -5,7 +5,7 @@ import CommandRouter from './routers/CommandRouter'
 
 import * as serviceAccount from './config/firebase_credentials.json'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
-import SPCommand from './domain/services/commands/SPCommand'
+import SearchCommand from './domain/services/commands/SearchCommand'
 import ReactionRouter from './routers/ReactionRouter'
 import ReactionInterface from './domain/services/reactions/ReactionInterface'
 import AddMemberSearchPartnerMessageReaction from './domain/services/reactions/AddMemberSearchPartnerMessageReaction'
@@ -13,6 +13,7 @@ import RemoveMemberSearchPartnerMessageReaction from './domain/services/reaction
 import DBChannelProvider from './providers/database/channels/DBChannelProvider'
 import GuildChannelAssociation from './domain/models/channels/GuildChannelAssociation'
 import VoiceStateListener from './domain/services/listeners/VoiceStateListener'
+import ClearCommand from './domain/services/commands/ClearCommand';
 
 const params = {
   type: serviceAccount.type,
@@ -43,7 +44,8 @@ const channelProvider = new DBChannelProvider({ db })
 
 // Commands
 const commands = [
-  new SPCommand({ messageProvider })
+  new SearchCommand({ messageProvider }),
+  new ClearCommand({ messageProvider })
 ]
 
 // Reactions

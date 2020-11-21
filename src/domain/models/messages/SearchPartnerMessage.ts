@@ -9,6 +9,7 @@ export default class SearchPartnerMessage {
   game: string
   type: MessageType
   membersId: string[]
+  channelId: string
   catUrl: string
 
   constructor(p: {
@@ -18,6 +19,7 @@ export default class SearchPartnerMessage {
     game: string,
     type: MessageType,
     membersId: string[],
+    channelId: string,
     catUrl: string
   }) {
     this.serverId = p.serverId
@@ -26,6 +28,7 @@ export default class SearchPartnerMessage {
     this.game = p.game
     this.type = p.type
     this.membersId = p.membersId
+    this.channelId = p.channelId
     this.catUrl = p.catUrl
   }
 }

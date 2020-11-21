@@ -6,7 +6,7 @@ import CommandInterface from './CommandInterface';
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
 import axios from 'axios'
 
-export default class SPCommand implements CommandInterface {
+export default class SearchCommand implements CommandInterface {
 
   COMMAND = 'search'
 
@@ -52,6 +52,7 @@ export default class SPCommand implements CommandInterface {
         game,
         type: MessageType.RESEARCH_PARTNER,
         membersId: [],
+        channelId: p.context.channel.id,
         catUrl: imgUrl
       })
     })
