@@ -38,6 +38,15 @@ export default class ClearCommand implements CommandInterface {
       } catch (e) {}
     }
 
+    const messagesToDelete = (await p.context.channel.messages.fetch())
+      .filter(msg => msg.author.bot && !msg.pinned)
+      
+    for (const msg of messagesToDelete.array()) {
+      try {
+        if (msg.author.bot) await msg.delete();
+      } catch (e) {}
+    }
+
     await p.context.delete()
   }
 }

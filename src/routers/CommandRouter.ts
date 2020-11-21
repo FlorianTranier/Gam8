@@ -1,6 +1,7 @@
 import { Client, TextChannel } from 'discord.js'
 import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
 import CommandInterface from '../domain/services/commands/CommandInterface'
+import DBChannelProvider from "../providers/database/channels/DBChannelProvider";
 
 export default class CommandRouter {
 
@@ -8,10 +9,12 @@ export default class CommandRouter {
 
     private readonly client: Client
     private readonly commands: CommandInterface[]
+    private readonly channelProvider: DBChannelProvider
 
-    constructor(p: { client: Client, messageProvider: DBMessageProvider, commands: CommandInterface[] }) {
+    constructor(p: { client: Client, channelProvider: DBChannelProvider, commands: CommandInterface[] }) {
         this.client = p.client
         this.commands = p.commands
+        this.channelProvider = p.channelProvider
 
         this.createEventMessage()
             .then(() => console.log(`${CommandRouter.name} OK`))
@@ -20,16 +23,27 @@ export default class CommandRouter {
 
     async createEventMessage(): Promise<void> {
         this.client.on('message', async (msg) => {
+
+            const channelAssociation = await this.channelProvider.getByGuildId({
+                guildId: msg.guild?.id || ''
+            })
+
             if (msg.content.startsWith(`${this.BOT_COMMAND_PREFIX}`)
                 && msg.channel instanceof TextChannel
-                && msg.channel.name === process.env.BOT_CHANNEL) {
+                && msg.channel.id === channelAssociation?.channelId) {
                 const command = await this.findCommandByPrefix({
                     prefix: await CommandRouter.getCommand({ content: msg.content })
                 })
-                await command?.exec({
-                    args: await CommandRouter.getArgs({ content: msg.content }),
-                    context: msg
-                })
+
+                if (!command) {
+                    await msg.delete()
+                    await msg.reply(`Invalid command : Type \`-sp help\` if you need help :)`)
+                } else {
+                    await command.exec({
+                        args: await CommandRouter.getArgs({ content: msg.content }),
+                        context: msg
+                    })
+                }
             }
         })
     }

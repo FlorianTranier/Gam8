@@ -18,6 +18,7 @@ import AddPlayLaterSearchPartnerMessageReaction
   from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction';
 import RemovePlayLaterSearchPartnerMessageReaction
   from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction';
+import HelpCommand from "./domain/services/commands/HelpCommand";
 
 const params = {
   type: serviceAccount.type,
@@ -49,7 +50,8 @@ const channelProvider = new DBChannelProvider({ db })
 // Commands
 const commands = [
   new SearchCommand({ messageProvider }),
-  new ClearCommand({ messageProvider })
+  new ClearCommand({ messageProvider }),
+  new HelpCommand()
 ]
 
 // Reactions
@@ -62,7 +64,7 @@ const reactions: ReactionInterface[] = [
 
 
 // Routers
-new CommandRouter({ client, messageProvider, commands })
+new CommandRouter({ client, channelProvider, commands })
 new ReactionRouter({ client, messageProvider, reactions })
 
 // Global Listeners
@@ -91,7 +93,15 @@ client.on('ready', () => {
         type: 'text'
       })
 
-      const message = await channel.send('Welcome everyone ! This is the PartnerResearch Bot discord channel !')
+      const message = await channel.send(
+        '@here Welcome everyone ! This is the PartnerResearch V2 discord channel !'
+        +
+        `
+\`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
+\`-sp clear\` : Remove all messages from this bot (only if you have the correct permissions to delete messages)
+\`-sp help\` : display this message
+`
+      )
       await message.pin()
 
 
