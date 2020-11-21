@@ -16,6 +16,15 @@ export default class {
         .data()
   }
 
+  async deleteMessage(p: { msgId: string }): Promise<void> {
+    const doc = (await this.dbRef.where('messageId', '==', p.msgId)
+      .get()).docs[0]
+
+    const msgRef = doc ? doc.ref : undefined
+
+    if (msgRef) await msgRef.delete()
+  }
+
   async getMessageByMessageId(p: { msgId: string }): Promise<SearchPartnerMessage> {
     return <SearchPartnerMessage>
       (await this.dbRef.where('messageId', '==', p.msgId).get())

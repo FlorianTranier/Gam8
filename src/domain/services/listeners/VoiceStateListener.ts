@@ -55,8 +55,12 @@ export default class VoiceStateListener {
             }
           )
 
-          const discordMessage = await botChannel.messages.fetch(message.messageId)
-          await discordMessage.edit('@here', embedMessage)
+          try {
+            const discordMessage = await botChannel.messages.fetch(message.messageId)
+            await discordMessage.edit('@here', embedMessage)
+          } catch (e) {
+            await this.messageProvider.deleteMessage({msgId: message.messageId})
+          }
         }
       }
     })
