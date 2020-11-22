@@ -97,6 +97,7 @@ client.on('ready', () => {
         '@here Welcome everyone ! This is the PartnerResearch V2 discord channel !'
         +
         `
+Please don't delete this channel ! Otherwise, I'm not going to work anymore. You can safely rename this channel and move it as you please into groups
 \`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
 \`-sp clear\` : Remove all messages from this bot (only if you have the correct permissions to delete messages)
 \`-sp help\` : display this message
