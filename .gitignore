@@ -68,3 +68,4 @@ node_modules/
 src/config/
 build/
 .vscode/
+.idea/
