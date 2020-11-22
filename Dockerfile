@@ -29,4 +29,4 @@ RUN npm ci --quiet --only=production
 ## We just need the build to execute the command
 COPY --from=builder /usr/src/app/build ./build
 
-CMD ["npm", "start"]
+CMD ["node", "/app/build/index.js"]
