@@ -1,14 +1,24 @@
 import dotenv from 'dotenv'
 import Discord from 'discord.js'
 import admin from 'firebase-admin'
-import CommandRouter from './commands/CommandRouter'
+import CommandRouter from './routers/CommandRouter'
 
 import * as serviceAccount from './config/firebase_credentials.json'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
-import SPCommand from './commands/SPCommand'
-import ReactionRouter from './domain/reactions/ReactionRouter'
-import ReactionInterface from './domain/reactions/ReactionInterface'
-import AddMemberSearchPartnerMessageReaction from './domain/reactions/AddMemberSearchPartnerMessageReaction'
+import SearchCommand from './domain/services/commands/SearchCommand'
+import ReactionRouter from './routers/ReactionRouter'
+import ReactionInterface from './domain/services/reactions/ReactionInterface'
+import AddMemberSearchPartnerMessageReaction from './domain/services/reactions/AddMemberSearchPartnerMessageReaction'
+import RemoveMemberSearchPartnerMessageReaction from './domain/services/reactions/RemoveMemberSearchPartnerMessageReaction'
+import DBChannelProvider from './providers/database/channels/DBChannelProvider'
+import GuildChannelAssociation from './domain/models/channels/GuildChannelAssociation'
+import VoiceStateListener from './domain/services/listeners/VoiceStateListener'
+import ClearCommand from './domain/services/commands/ClearCommand';
+import AddPlayLaterSearchPartnerMessageReaction
+  from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction';
+import RemovePlayLaterSearchPartnerMessageReaction
+  from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction';
+import HelpCommand from "./domain/services/commands/HelpCommand";
 
 const params = {
   type: serviceAccount.type,
@@ -35,20 +45,75 @@ const client = new Discord.Client()
 
 // Providers
 const messageProvider = new DBMessageProvider({ db })
+const channelProvider = new DBChannelProvider({ db })
 
 // Commands
 const commands = [
-  new SPCommand({ messageProvider })
+  new SearchCommand({ messageProvider }),
+  new ClearCommand({ messageProvider }),
+  new HelpCommand()
 ]
 
 // Reactions
 const reactions: ReactionInterface[] = [
-  new AddMemberSearchPartnerMessageReaction({ messageProvider })
+  new AddMemberSearchPartnerMessageReaction({ messageProvider }),
+  new RemoveMemberSearchPartnerMessageReaction({ messageProvider }),
+  new AddPlayLaterSearchPartnerMessageReaction({ messageProvider }),
+  new RemovePlayLaterSearchPartnerMessageReaction({ messageProvider })
 ]
 
 
 // Routers
-new CommandRouter({ client, messageProvider, commands })
+new CommandRouter({ client, channelProvider, commands })
 new ReactionRouter({ client, messageProvider, reactions })
+
+// Global Listeners
+new VoiceStateListener({ client, messageProvider, channelProvider })
+
+client.on('guildCreate', async guild => {
+  const channel = await guild.channels.create(`${process.env.BOT_CHANNEL}`, {
+    reason: 'PartnerResearch bot channel ! Welcome everyone !',
+    type: 'text'
+  })
+
+  await channelProvider.saveGuildChannelAssociation({
+    guildChannelAssociation: new GuildChannelAssociation({
+      guildId: guild.id,
+      channelId: channel.id
+    })
+  })
+})
+
+client.on('ready', () => {
+  client.guilds.cache.forEach(async guild => {
+    const association = await channelProvider.getByGuildId({ guildId: guild.id })
+    if (!association) {
+      const channel = await guild.channels.create(`${process.env.BOT_CHANNEL}`, {
+        reason: 'PartnerResearch bot channel ! Welcome everyone !',
+        type: 'text'
+      })
+
+      const message = await channel.send(
+        '@here Welcome everyone ! This is the PartnerResearch V2 discord channel !'
+        +
+        `
+Please don't delete this channel ! Otherwise, I'm not going to work anymore. You can safely rename this channel and move it as you please into groups
+\`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
+\`-sp clear\` : Remove all messages from this bot (only if you have the correct permissions to delete messages)
+\`-sp help\` : display this message
+`
+      )
+      await message.pin()
+
+
+      await channelProvider.saveGuildChannelAssociation({
+        guildChannelAssociation: new GuildChannelAssociation({
+          guildId: guild.id,
+          channelId: channel.id
+        })
+      })
+    }
+  })
+})
 
 client.login(process.env.BOT_TOKEN)
