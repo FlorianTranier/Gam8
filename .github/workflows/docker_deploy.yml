@@ -2,7 +2,7 @@ name: Docker deploy
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   multi-registries:
