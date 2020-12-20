@@ -47,7 +47,7 @@ export default class AddPlayLaterSearchPartnerMessageReaction implements Reactio
       }
     )
 
-    await p.reaction.message.edit('@here', embedMessage)
+    await p.reaction.message.edit(embedMessage)
   }
 
 
