@@ -28,7 +28,7 @@ export default class SearchCommand implements CommandInterface {
 
     const author = (await p.context.guild?.members.fetch(p.context.author.id))
 
-    const message = await p.context.channel.send('@here',
+    const message = await p.context.channel.send(
       await EmbedMessageGenerator.createOrUpdate(
         {
           authorUsername: p.context.author.username,
