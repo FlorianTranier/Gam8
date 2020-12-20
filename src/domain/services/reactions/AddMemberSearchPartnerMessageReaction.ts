@@ -47,7 +47,7 @@ export default class AddMemberSearchPartnerMessageReaction implements ReactionIn
       }
     )
 
-    await p.reaction.message.edit('@here', embedMessage)
+    await p.reaction.message.edit(embedMessage)
   }
 
 
