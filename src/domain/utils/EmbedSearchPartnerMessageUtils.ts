@@ -22,7 +22,9 @@ export default {
       .setAuthor(p.authorUsername, p.authorPicture || undefined)
       .setTitle(`${msg.author?.name} wants to play at ${p.game}`)
       .addField('Answering the call', membersDisplay)
-      .setImage(p.img)
+      .setThumbnail(p.img)
+      .setTimestamp()
+      .setColor('RANDOM')
 
     if (p.lateMembersId.length > 0) {
       const lateMembersDisplay = p.lateMembersId.map(m => `<@${m}>`).join(',')
