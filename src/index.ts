@@ -18,7 +18,8 @@ import AddPlayLaterSearchPartnerMessageReaction
   from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction';
 import RemovePlayLaterSearchPartnerMessageReaction
   from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction';
-import HelpCommand from "./domain/services/commands/HelpCommand";
+import HelpCommand from './domain/services/commands/HelpCommand';
+import TagCommand from './domain/services/commands/TagCommand';
 
 const params = {
   type: serviceAccount.type,
@@ -49,9 +50,10 @@ const channelProvider = new DBChannelProvider({ db })
 
 // Commands
 const commands = [
-  new SearchCommand({ messageProvider }),
+  new SearchCommand({ messageProvider, channelProvider }),
   new ClearCommand({ messageProvider }),
-  new HelpCommand()
+  new HelpCommand(),
+  new TagCommand({channelProvider})
 ]
 
 // Reactions
@@ -99,8 +101,9 @@ client.on('ready', () => {
         `
 Please don't delete this channel ! Otherwise, I'm not going to work anymore. You can safely rename this channel and move it as you please into groups
 \`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
-\`-sp clear\` : Remove all messages from this bot (only if you have the correct permissions to delete messages)
+\`-sp clear\` : Remove all messages from this bot (only if you have the permission to edit messages)
 \`-sp help\` : display this message
+\`-sp tag @role|reset\` : choose a role to tag when a new search message is created (only if you have the permission to edit messages)
 `
       )
       await message.pin()

@@ -15,6 +15,17 @@ export default class {
       .data()
   }
 
+  async updateTag(p: { guildId: string, tagId?: string }): Promise<void> {
+    const associationRef = (await this.dbRef.where('guildId', '==', p.guildId).get())
+      .docs[0].ref
+
+    const toUpdate = <GuildChannelAssociation>(await associationRef.get()).data()
+
+    toUpdate.tagRoleId = p.tagId ?? ''
+
+    await associationRef.update(toUpdate)
+  }
+
   async getByGuildId(p: { guildId: string }): Promise<GuildChannelAssociation | null> {
 
     const doc = (await this.dbRef.where('guildId', '==', p.guildId).get())
