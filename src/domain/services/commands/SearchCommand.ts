@@ -5,15 +5,18 @@ import DBMessageProvider from '../../../providers/database/messages/DBMessagePro
 import CommandInterface from './CommandInterface';
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
 import axios from 'axios'
+import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider';
 
 export default class SearchCommand implements CommandInterface {
 
   COMMAND = 'search'
 
   private readonly messageProvider: DBMessageProvider
+  private readonly channelProvider: DBChannelProvider
 
-  constructor(p: { messageProvider: DBMessageProvider }) {
+  constructor(p: { messageProvider: DBMessageProvider, channelProvider: DBChannelProvider }) {
     this.messageProvider = p.messageProvider
+    this.channelProvider = p.channelProvider
   }
 
   async supportCommand(p: { command: string; }): Promise<boolean> {
@@ -28,7 +31,11 @@ export default class SearchCommand implements CommandInterface {
 
     const author = (await p.context.guild?.members.fetch(p.context.author.id))
 
-    const message = await p.context.channel.send(
+    const association = await this.channelProvider.getByGuildId({guildId: p.context.guild?.id ?? ''})
+
+    const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
+
+    const message = await p.context.channel.send(tag,
       await EmbedMessageGenerator.createOrUpdate(
         {
           authorUsername: p.context.author.username,

@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="57f9edd1-ec63-4ce3-b8c9-f8afbfaa282b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/models/channels/GuildChannelAssociation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/models/channels/GuildChannelAssociation.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/services/commands/HelpCommand.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/services/commands/HelpCommand.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/services/commands/SearchCommand.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/services/commands/SearchCommand.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/providers/database/channels/DBChannelProvider.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/providers/database/channels/DBChannelProvider.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +36,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js.linters.configure.manually.selectedeslint" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/domain/services/reactions" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../snippetscollector-graphql-api" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.path.for.package.eslint" value="wsl://DEBIAN@/home/florian/.nvm/versions/node/v12.19.0/bin/node" />
@@ -56,7 +61,7 @@
       <recent name="H:\dev\perso\partner-research-v2\src\domain\models\commands" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.start">
+  <component name="RunManager" selected="npm.start:dev">
     <configuration name="start" type="js.build_tools.npm" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="start" />
@@ -96,7 +101,11 @@
       <workItem from="1605974872900" duration="189000" />
       <workItem from="1605975073321" duration="3896000" />
       <workItem from="1605979016596" duration="5248000" />
-      <workItem from="1606037023876" duration="2730000" />
+      <workItem from="1606037023876" duration="5341000" />
+      <workItem from="1607162983368" duration="221000" />
+      <workItem from="1608476548288" duration="2442000" />
+      <workItem from="1608568606900" duration="1896000" />
+      <workItem from="1611410195560" duration="4066000" />
     </task>
     <servers />
   </component>
@@ -112,30 +121,34 @@
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
     <state x="510" y="195" key="#TypeScript/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605810792252" />
-    <state x="734" y="179" width="1092" height="763" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606037148663">
+    <state x="734" y="179" width="1092" height="787" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1608569276774">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state x="734" y="179" width="1092" height="763" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1606037148663" />
-    <state x="615" y="244" key="#com.intellij.ide.util.MemberChooser" timestamp="1605981445631">
+    <state x="734" y="179" width="1092" height="787" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608569276774" />
+    <state x="615" y="244" key="#com.intellij.ide.util.MemberChooser" timestamp="1611411521470">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state x="615" y="244" key="#com.intellij.ide.util.MemberChooser/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605981445631" />
-    <state width="1597" height="277" key="GridCell.Tab.0.bottom" timestamp="1605984526017">
+    <state x="615" y="244" key="#com.intellij.ide.util.MemberChooser/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1611411521470" />
+    <state x="1060" y="279" key="FileChooserDialogImpl" timestamp="1608570522625">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state width="1597" height="277" key="GridCell.Tab.0.bottom/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605984526017" />
-    <state width="1597" height="277" key="GridCell.Tab.0.center" timestamp="1605984526017">
+    <state x="1060" y="279" key="FileChooserDialogImpl/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608570522625" />
+    <state width="2540" height="277" key="GridCell.Tab.0.bottom" timestamp="1608570523937">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state width="1597" height="277" key="GridCell.Tab.0.center/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605984526017" />
-    <state width="1597" height="277" key="GridCell.Tab.0.left" timestamp="1605984526017">
+    <state width="2540" height="277" key="GridCell.Tab.0.bottom/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608570523937" />
+    <state width="2540" height="277" key="GridCell.Tab.0.center" timestamp="1608570523937">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state width="1597" height="277" key="GridCell.Tab.0.left/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605984526017" />
-    <state width="1597" height="277" key="GridCell.Tab.0.right" timestamp="1605984526017">
+    <state width="2540" height="277" key="GridCell.Tab.0.center/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608570523937" />
+    <state width="2540" height="277" key="GridCell.Tab.0.left" timestamp="1608570523936">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state width="1597" height="277" key="GridCell.Tab.0.right/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605984526017" />
+    <state width="2540" height="277" key="GridCell.Tab.0.left/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608570523936" />
+    <state width="2540" height="277" key="GridCell.Tab.0.right" timestamp="1608570523937">
+      <screen x="0" y="0" width="2560" height="1050" />
+    </state>
+    <state width="2540" height="277" key="GridCell.Tab.0.right/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608570523937" />
     <state width="1561" height="351" key="GridCell.Tab.1.bottom" timestamp="1605815959895">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
@@ -188,10 +201,10 @@
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
     <state x="781" y="169" width="1134" height="709" key="SettingsEditor/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605979066870" />
-    <state x="500" y="128" width="585" height="801" key="find.popup" timestamp="1605811360563">
+    <state x="500" y="128" width="604" height="801" key="find.popup" timestamp="1608500838023">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
-    <state x="500" y="128" width="585" height="801" key="find.popup/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1605811360563" />
+    <state x="500" y="128" width="604" height="801" key="find.popup/0.0.2560.1050/-1920.0.1920.1050@0.0.2560.1050" timestamp="1608500838023" />
     <state x="997" y="344" key="jetbrains.nodejs.interpreters-dialog" timestamp="1605794128558">
       <screen x="0" y="0" width="2560" height="1050" />
     </state>
