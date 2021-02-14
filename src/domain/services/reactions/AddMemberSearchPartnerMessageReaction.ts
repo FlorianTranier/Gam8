@@ -1,4 +1,4 @@
-import {Message, MessageReaction, PartialUser, User} from 'discord.js';
+import { MessageReaction, PartialUser, User} from 'discord.js';
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
 import MessageType from '../../models/messages/enums/MessageType';
 import ReactionType from '../../models/messages/enums/ReactionType';
