@@ -20,6 +20,7 @@ import RemovePlayLaterSearchPartnerMessageReaction
   from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction';
 import HelpCommand from './domain/services/commands/HelpCommand';
 import TagCommand from './domain/services/commands/TagCommand';
+import DeleteMessageReaction from './domain/services/reactions/DeleteMessageReaction';
 
 const params = {
   type: serviceAccount.type,
@@ -61,7 +62,8 @@ const reactions: ReactionInterface[] = [
   new AddMemberSearchPartnerMessageReaction({ messageProvider }),
   new RemoveMemberSearchPartnerMessageReaction({ messageProvider }),
   new AddPlayLaterSearchPartnerMessageReaction({ messageProvider }),
-  new RemovePlayLaterSearchPartnerMessageReaction({ messageProvider })
+  new RemovePlayLaterSearchPartnerMessageReaction({ messageProvider }),
+  new DeleteMessageReaction({ messageProvider })
 ]
 
 
