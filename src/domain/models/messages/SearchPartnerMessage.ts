@@ -10,6 +10,7 @@ export default class SearchPartnerMessage {
   type: MessageType
   membersId: string[]
   lateMembersId: string[]
+  notifiedMembersId: string[]
   channelId: string
   catUrl: string
 
@@ -21,6 +22,7 @@ export default class SearchPartnerMessage {
     type: MessageType,
     membersId: string[],
     lateMembersId: string[],
+    notifiedMembersId?: string[],
     channelId: string,
     catUrl: string
   }) {
@@ -33,5 +35,6 @@ export default class SearchPartnerMessage {
     this.lateMembersId = p.lateMembersId
     this.channelId = p.channelId
     this.catUrl = p.catUrl
+    this.notifiedMembersId = p.notifiedMembersId ?? []
   }
 }

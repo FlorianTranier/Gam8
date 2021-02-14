@@ -4,13 +4,13 @@ import ReactionInterface from './ReactionInterface'
 import MessageType from '../../models/messages/enums/MessageType'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 
-export default class DeleteMessageReaction implements ReactionInterface {
+export default class RemoveGetNotifiedReaction implements ReactionInterface {
 
     private readonly messageProvider: DBMessageProvider
     
-    SUPPORTED_EMOJI = '🚫' 
+    SUPPORTED_EMOJI = '🔔'  
     SUPPORTED_MESSAGE_TYPE = MessageType.RESEARCH_PARTNER
-    SUPPORTED_REACTION_TYPES = [ReactionType.ADD]
+    SUPPORTED_REACTION_TYPES = [ReactionType.REMOVE]
     
     constructor(p: { messageProvider: DBMessageProvider }) {
         this.messageProvider = p.messageProvider
@@ -20,24 +20,16 @@ export default class DeleteMessageReaction implements ReactionInterface {
         const message = await this.messageProvider
             .getMessageByMessageId({ msgId: p.msgId })
 
-        console.log(this.SUPPORTED_EMOJI, p.emoji, p.emoji === this.SUPPORTED_EMOJI)
         return p.emoji === this.SUPPORTED_EMOJI
           && message.type === this.SUPPORTED_MESSAGE_TYPE
           && this.SUPPORTED_REACTION_TYPES.includes(p.type)
-
     }
 
     async exec(p: { reaction: MessageReaction; author: User | PartialUser; }): Promise<void> {
-        const message = await this.messageProvider
-            .getMessageByMessageId({ msgId: p.reaction.message.id })
-
-        if (message.authorId !== p.author.id) {
-            await p.reaction.remove()
-            return
-        }
-
-        await p.reaction.message.delete()
-        await this.messageProvider.deleteMessage({ msgId: message.messageId})
+        await this.messageProvider.removeNotifiedMemberByMessageId({
+            msgId: p.reaction.message.id,
+            memberId: p.author.id
+        })
     }
 
 }

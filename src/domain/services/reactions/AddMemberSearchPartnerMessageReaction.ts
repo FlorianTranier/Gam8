@@ -1,4 +1,4 @@
-import {MessageReaction, PartialUser, User} from 'discord.js';
+import {Message, MessageReaction, PartialUser, User} from 'discord.js';
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils';
 import MessageType from '../../models/messages/enums/MessageType';
 import ReactionType from '../../models/messages/enums/ReactionType';
@@ -48,8 +48,12 @@ export default class AddMemberSearchPartnerMessageReaction implements ReactionIn
     )
 
     await p.reaction.message.edit(embedMessage)
+    
+    message.notifiedMembersId.forEach(async memberId => {
+      const member = await p.reaction.message.guild?.members.fetch(memberId)
+      member?.send(`<@${p.author.id}> wants to play with you now at ${message.game}`)
+    })
   }
-
 
 
 }
