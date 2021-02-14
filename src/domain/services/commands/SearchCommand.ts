@@ -52,6 +52,7 @@ export default class SearchCommand implements CommandInterface {
 
     await message.react('☝')
     await message.react('⏰')
+    await message.react('🚫')
 
     await this.messageProvider.saveMessage({
       message: new SearchPartnerMessage({
