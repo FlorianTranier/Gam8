@@ -20,17 +20,17 @@ export default class DeleteMessageReaction implements ReactionInterface {
         const message = await this.messageProvider
             .getMessageByMessageId({ msgId: p.msgId })
 
-        console.log(this.SUPPORTED_EMOJI, p.emoji, p.emoji === this.SUPPORTED_EMOJI)
         return p.emoji === this.SUPPORTED_EMOJI
           && message.type === this.SUPPORTED_MESSAGE_TYPE
           && this.SUPPORTED_REACTION_TYPES.includes(p.type)
-
     }
 
     async exec(p: { reaction: MessageReaction; author: User | PartialUser; }): Promise<void> {
+        if (p.reaction.message.author.id === p.author.id) return
+
         const message = await this.messageProvider
             .getMessageByMessageId({ msgId: p.reaction.message.id })
-
+        
         if (message.authorId !== p.author.id) {
             await p.reaction.remove()
             return
