@@ -48,6 +48,11 @@ export default class AddPlayLaterSearchPartnerMessageReaction implements Reactio
     )
 
     await p.reaction.message.edit(embedMessage)
+
+    message.notifiedMembersId.forEach(async memberId => {
+      const member = await p.reaction.message.guild?.members.fetch(memberId)
+      member?.send(`<@${p.author.id}> wants to play with you maybe later at ${message.game}`)
+    })
   }
 
 
