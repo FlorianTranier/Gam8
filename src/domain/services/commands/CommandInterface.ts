@@ -1,9 +1,9 @@
-import { Message } from 'discord.js';
+import { ChatInputCommandInteraction, RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js'
 
 export default interface CommandInterface {
+  getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody
 
   supportCommand(p: { command: string }): Promise<boolean>
 
-  exec(p: { args: string[], context: Message | undefined }): Promise<void>
-
+  exec(p: { context: ChatInputCommandInteraction | undefined }): Promise<void>
 }
