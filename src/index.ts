@@ -13,16 +13,14 @@ import RemoveMemberSearchPartnerMessageReaction from './domain/services/reaction
 import DBChannelProvider from './providers/database/channels/DBChannelProvider'
 import GuildChannelAssociation from './domain/models/channels/GuildChannelAssociation'
 import VoiceStateListener from './domain/services/listeners/VoiceStateListener'
-import ClearCommand from './domain/services/commands/ClearCommand';
-import AddPlayLaterSearchPartnerMessageReaction
-  from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction';
-import RemovePlayLaterSearchPartnerMessageReaction
-  from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction';
-import HelpCommand from './domain/services/commands/HelpCommand';
-import TagCommand from './domain/services/commands/TagCommand';
-import DeleteMessageReaction from './domain/services/reactions/DeleteMessageReaction';
-import GetNotifiedReaction from './domain/services/reactions/GetNotifiedReaction';
-import RemoveGetNotifiedReaction from './domain/services/reactions/RemoveGetNotifiedReaction';
+import ClearCommand from './domain/services/commands/ClearCommand'
+import AddPlayLaterSearchPartnerMessageReaction from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction'
+import RemovePlayLaterSearchPartnerMessageReaction from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction'
+import HelpCommand from './domain/services/commands/HelpCommand'
+import TagCommand from './domain/services/commands/TagCommand'
+import DeleteMessageReaction from './domain/services/reactions/DeleteMessageReaction'
+import GetNotifiedReaction from './domain/services/reactions/GetNotifiedReaction'
+import RemoveGetNotifiedReaction from './domain/services/reactions/RemoveGetNotifiedReaction'
 
 const params = {
   type: serviceAccount.type,
@@ -34,18 +32,18 @@ const params = {
   authUri: serviceAccount.auth_uri,
   tokenUri: serviceAccount.token_uri,
   authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url
+  clientC509CertUrl: serviceAccount.client_x509_cert_url,
 }
 
 dotenv.config()
 
 admin.initializeApp({
-  credential: admin.credential.cert(params)
+  credential: admin.credential.cert(params),
 })
 
 const db = admin.firestore()
 
-const client = new Discord.Client()
+const client = new Discord.Client({ intents: 3276799 })
 
 // Providers
 const messageProvider = new DBMessageProvider({ db })
@@ -56,7 +54,7 @@ const commands = [
   new SearchCommand({ messageProvider, channelProvider }),
   new ClearCommand({ messageProvider }),
   new HelpCommand(),
-  new TagCommand({channelProvider})
+  new TagCommand({ channelProvider }),
 ]
 
 // Reactions
@@ -67,9 +65,8 @@ const reactions: ReactionInterface[] = [
   new RemovePlayLaterSearchPartnerMessageReaction({ messageProvider }),
   new DeleteMessageReaction({ messageProvider }),
   new GetNotifiedReaction({ messageProvider }),
-  new RemoveGetNotifiedReaction({ messageProvider })
+  new RemoveGetNotifiedReaction({ messageProvider }),
 ]
-
 
 // Routers
 new CommandRouter({ client, channelProvider, commands })
@@ -79,32 +76,35 @@ new ReactionRouter({ client, messageProvider, reactions })
 new VoiceStateListener({ client, messageProvider, channelProvider })
 
 client.on('guildCreate', async guild => {
-  const channel = await guild.channels.create(`${process.env.BOT_CHANNEL}`, {
+  const channel = await guild.channels.create({
+    name: `${process.env.BOT_CHANNEL}`,
     reason: 'PartnerResearch bot channel ! Welcome everyone !',
-    type: 'text'
+    type: Discord.ChannelType.GuildText,
   })
 
   await channelProvider.saveGuildChannelAssociation({
     guildChannelAssociation: new GuildChannelAssociation({
       guildId: guild.id,
-      channelId: channel.id
-    })
+      channelId: channel.id,
+    }),
   })
 })
 
 client.on('ready', () => {
   client.guilds.cache.forEach(async guild => {
-    const association = await channelProvider.getByGuildId({ guildId: guild.id })
+    const association = await channelProvider.getByGuildId({
+      guildId: guild.id,
+    })
     if (!association) {
-      const channel = await guild.channels.create(`${process.env.BOT_CHANNEL}`, {
+      const channel = await guild.channels.create({
+        name: `${process.env.BOT_CHANNEL}`,
         reason: 'PartnerResearch bot channel ! Welcome everyone !',
-        type: 'text'
+        type: Discord.ChannelType.GuildText,
       })
 
       const message = await channel.send(
-        '@here Welcome everyone ! This is the PartnerResearch V2 discord channel !'
-        +
-        `
+        '@here Welcome everyone ! This is the PartnerResearch V2 discord channel !' +
+          `
 Please don't delete this channel ! Otherwise, I'm not going to work anymore. You can safely rename this channel and move it as you please into groups
 \`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
 \`-sp clear\` : Remove all messages from this bot (only if you have the permission to edit messages)
@@ -114,12 +114,11 @@ Please don't delete this channel ! Otherwise, I'm not going to work anymore. You
       )
       await message.pin()
 
-
       await channelProvider.saveGuildChannelAssociation({
         guildChannelAssociation: new GuildChannelAssociation({
           guildId: guild.id,
-          channelId: channel.id
-        })
+          channelId: channel.id,
+        }),
       })
     }
   })
