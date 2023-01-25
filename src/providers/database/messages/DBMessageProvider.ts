@@ -2,7 +2,6 @@ import { firestore } from 'firebase-admin'
 import SearchPartnerMessage from '../../../domain/models/messages/SearchPartnerMessage'
 
 export default class {
-
   private readonly dbRef: firestore.CollectionReference
 
   constructor(p: { db: firestore.Firestore }) {
@@ -10,15 +9,11 @@ export default class {
   }
 
   async saveMessage(p: { message: SearchPartnerMessage }): Promise<SearchPartnerMessage> {
-    return <SearchPartnerMessage>
-      (await
-        (await this.dbRef.add(JSON.parse(JSON.stringify(p.message)))).get())
-        .data()
+    return <SearchPartnerMessage>(await (await this.dbRef.add(JSON.parse(JSON.stringify(p.message)))).get()).data()
   }
 
   async deleteMessage(p: { msgId: string }): Promise<void> {
-    const doc = (await this.dbRef.where('messageId', '==', p.msgId)
-      .get()).docs[0]
+    const doc = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0]
 
     const msgRef = doc ? doc.ref : undefined
 
@@ -26,29 +21,23 @@ export default class {
   }
 
   async getMessageByMessageId(p: { msgId: string }): Promise<SearchPartnerMessage> {
-    return <SearchPartnerMessage>
-      (await this.dbRef.where('messageId', '==', p.msgId).get())
-        .docs[0].data()
+    return <SearchPartnerMessage>(await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].data()
   }
 
   async getMessagesByAuthorId(p: { authorId: string }): Promise<SearchPartnerMessage[]> {
-
-    const docs = (await this.dbRef.where('authorId', '==', p.authorId).get())
-      .docs
+    const docs = (await this.dbRef.where('authorId', '==', p.authorId).get()).docs
 
     return docs.map(doc => <SearchPartnerMessage>doc.data())
   }
 
   async getMessagesByChannelId(p: { channelId: string }): Promise<SearchPartnerMessage[]> {
-    const docs = (await this.dbRef.where('channelId', '==', p.channelId).get())
-      .docs
+    const docs = (await this.dbRef.where('channelId', '==', p.channelId).get()).docs
 
     return docs.map(doc => <SearchPartnerMessage>doc.data())
   }
 
-  async addMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-        .docs[0].ref
+  async addMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
 
     const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
@@ -59,9 +48,8 @@ export default class {
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
-  async addLateMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+  async addLateMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
 
     const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
@@ -72,9 +60,8 @@ export default class {
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
-  async removeMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+  async removeMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
 
     const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
@@ -86,9 +73,8 @@ export default class {
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
-  async removeLateMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+  async removeLateMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
 
     const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
@@ -100,9 +86,8 @@ export default class {
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
-  async addNotifiedMemberByMessageId(p: { msgId: string, memberId: string }): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+  async addNotifiedMemberByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
 
     const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
@@ -113,9 +98,8 @@ export default class {
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
 
-  async removeNotifiedMemberByMessageId(p: { msgId: string, memberId: string }): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+  async removeNotifiedMemberByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
 
     const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
@@ -126,5 +110,4 @@ export default class {
 
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
-
 }
