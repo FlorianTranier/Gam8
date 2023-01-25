@@ -1,10 +1,8 @@
-import { Client, TextChannel } from 'discord.js'
+import { Client, REST, Routes } from 'discord.js'
 import CommandInterface from '../domain/services/commands/CommandInterface'
 import DBChannelProvider from '../providers/database/channels/DBChannelProvider'
 
 export default class CommandRouter {
-  BOT_COMMAND_PREFIX = '-sp'
-
   private readonly client: Client
   private readonly commands: CommandInterface[]
   private readonly channelProvider: DBChannelProvider
@@ -14,45 +12,35 @@ export default class CommandRouter {
     this.commands = p.commands
     this.channelProvider = p.channelProvider
 
+    const commands = this.commands.map(command => command.getSlashCommand())
+
+    const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN ?? '')
+    rest
+      .put(Routes.applicationCommands(process.env.BOT_CLIENT_ID ?? ''), { body: commands })
+      .then(() => console.log(`UpdateCommands OK`))
+      .catch(() => console.error(`UpdateCommands NOK`))
+
     this.createEventMessage()
       .then(() => console.log(`${CommandRouter.name} OK`))
       .catch(() => console.error(`${CommandRouter.name} NOK`))
   }
 
   async createEventMessage(): Promise<void> {
-    this.client.on('messageCreate', async msg => {
-      const channelAssociation = await this.channelProvider.getByGuildId({
-        guildId: msg.guild?.id || '',
+    this.client.on('interactionCreate', async interaction => {
+      if (!interaction.isChatInputCommand()) return
+
+      const command = await this.findCommandByPrefix({
+        prefix: interaction.commandName,
       })
 
-      if (
-        msg.content.startsWith(`${this.BOT_COMMAND_PREFIX}`) &&
-        msg.channel instanceof TextChannel &&
-        msg.channel.id === channelAssociation?.channelId
-      ) {
-        const command = await this.findCommandByPrefix({
-          prefix: await CommandRouter.getCommand({ content: msg.content }),
+      if (!command) {
+        await interaction.reply(`Invalid command : Type \`-sp help\` if you need help :)`)
+      } else {
+        await command.exec({
+          context: interaction,
         })
-
-        if (!command) {
-          await msg.delete()
-          await msg.reply(`Invalid command : Type \`-sp help\` if you need help :)`)
-        } else {
-          await command.exec({
-            args: await CommandRouter.getArgs({ content: msg.content }),
-            context: msg,
-          })
-        }
       }
     })
-  }
-
-  private static async getCommand(p: { content: string }): Promise<string> {
-    return p.content.split(' ')[1]
-  }
-
-  private static async getArgs(p: { content: string }): Promise<string[]> {
-    return p.content.split(' ').slice(2)
   }
 
   private async findCommandByPrefix(p: { prefix: string }): Promise<CommandInterface | undefined> {

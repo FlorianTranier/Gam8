@@ -1,4 +1,8 @@
-import { Message } from 'discord.js'
+import {
+  ChatInputCommandInteraction,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  SlashCommandBuilder,
+} from 'discord.js'
 import MessageType from '../../models/messages/enums/MessageType'
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
@@ -18,27 +22,37 @@ export default class SearchCommand implements CommandInterface {
     this.channelProvider = p.channelProvider
   }
 
+  getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
+    return new SlashCommandBuilder()
+      .setDescription('Say that you want to play at <game>, and wait for other players answers :)')
+      .setName(this.COMMAND)
+      .addStringOption(option => option.setName('game').setDescription('What do you want to play ?').setRequired(true))
+      .setDMPermission(false)
+      .toJSON()
+  }
+
   async supportCommand(p: { command: string }): Promise<boolean> {
     return p.command == this.COMMAND
   }
 
-  async exec(p: { args: string[]; context: Message }): Promise<void> {
-    const game = p.args.join(' ')
+  async exec(p: { context: ChatInputCommandInteraction }): Promise<void> {
+    const game = p.context.options.getString('game') ?? ''
 
     const imgUrl = (await axios.get('https://api.thecatapi.com/v1/images/search')).data[0].url
 
-    const author = await p.context.guild?.members.fetch(p.context.author.id)
+    const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
     const association = await this.channelProvider.getByGuildId({ guildId: p.context.guild?.id ?? '' })
 
     const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
 
-    const message = await p.context.channel.send({
-      content: tag,
+    await p.context.reply(tag)
+
+    const message = await p.context.channel?.send({
       embeds: [
         await EmbedMessageGenerator.createOrUpdate({
-          authorUsername: p.context.author.username,
-          authorPicture: p.context.author.avatarURL() || '',
+          authorUsername: p.context.member?.user.username,
+          authorPicture: author?.user.avatarURL() || '',
           game,
           membersId: [],
           lateMembersId: [],
@@ -49,25 +63,23 @@ export default class SearchCommand implements CommandInterface {
       ],
     })
 
-    await message.react('☝')
-    await message.react('⏰')
-    await message.react('🔔')
-    await message.react('🚫')
+    await message?.react('☝')
+    await message?.react('⏰')
+    await message?.react('🔔')
+    await message?.react('🚫')
 
     await this.messageProvider.saveMessage({
       message: new SearchPartnerMessage({
         serverId: p.context.guild?.id || '',
-        authorId: p.context.author.id,
-        messageId: message.id,
+        authorId: p.context.member?.user.id || '',
+        messageId: message?.id || '',
         game,
         type: MessageType.RESEARCH_PARTNER,
         membersId: [],
         lateMembersId: [],
-        channelId: p.context.channel.id,
+        channelId: p.context.channel?.id || '',
         catUrl: imgUrl,
       }),
     })
-
-    await p.context.delete()
   }
 }
