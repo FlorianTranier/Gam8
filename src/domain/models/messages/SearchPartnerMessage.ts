@@ -1,8 +1,6 @@
 import MessageType from './enums/MessageType'
 
-
 export default class SearchPartnerMessage {
-
   serverId: string
   messageId: string
   authorId: string
@@ -12,19 +10,19 @@ export default class SearchPartnerMessage {
   lateMembersId: string[]
   notifiedMembersId: string[]
   channelId: string
-  catUrl: string
+  bgImg: string
 
   constructor(p: {
-    serverId: string,
-    messageId: string,
-    authorId: string,
-    game: string,
-    type: MessageType,
-    membersId: string[],
-    lateMembersId: string[],
-    notifiedMembersId?: string[],
-    channelId: string,
-    catUrl: string
+    serverId: string
+    messageId: string
+    authorId: string
+    game: string
+    type: MessageType
+    membersId: string[]
+    lateMembersId: string[]
+    notifiedMembersId?: string[]
+    channelId: string
+    bgImg: string
   }) {
     this.serverId = p.serverId
     this.messageId = p.messageId
@@ -34,7 +32,7 @@ export default class SearchPartnerMessage {
     this.membersId = p.membersId
     this.lateMembersId = p.lateMembersId
     this.channelId = p.channelId
-    this.catUrl = p.catUrl
     this.notifiedMembersId = p.notifiedMembersId ?? []
+    this.bgImg = p.bgImg
   }
 }

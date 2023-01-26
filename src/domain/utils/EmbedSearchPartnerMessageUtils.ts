@@ -9,7 +9,7 @@ export default {
     lateMembersId: string[]
     voiceChannelName?: string
     voiceChannelInviteUrl?: string
-    img: string
+    bgImg: string
   }): Promise<EmbedBuilder> {
     const msg = new EmbedBuilder()
 
@@ -22,7 +22,7 @@ export default {
       })
       .setTitle(`${p.authorUsername} wants to play at ${p.game}`)
       .addFields([{ name: 'Answering the call', value: membersDisplay }])
-      .setThumbnail(p.img)
+      .setImage(p.bgImg)
       .setTimestamp()
       .setColor(resolveColor('Random'))
 

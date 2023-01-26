@@ -50,7 +50,7 @@ export default class VoiceStateListener {
             game: message.game,
             voiceChannelName: author?.voice.channel?.name,
             voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
-            img: message.catUrl,
+            bgImg: message.bgImg,
           })
 
           try {

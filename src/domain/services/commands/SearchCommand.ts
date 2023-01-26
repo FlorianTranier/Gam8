@@ -13,18 +13,24 @@ import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import CommandInterface from './CommandInterface'
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
-import axios from 'axios'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
+import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
 
 export default class SearchCommand implements CommandInterface {
   COMMAND = 'search'
 
   private readonly messageProvider: DBMessageProvider
   private readonly channelProvider: DBChannelProvider
+  private readonly videoGameProvider: VideoGameProvider
 
-  constructor(p: { messageProvider: DBMessageProvider; channelProvider: DBChannelProvider }) {
+  constructor(p: {
+    messageProvider: DBMessageProvider
+    channelProvider: DBChannelProvider
+    videoGameProvider: VideoGameProvider
+  }) {
     this.messageProvider = p.messageProvider
     this.channelProvider = p.channelProvider
+    this.videoGameProvider = p.videoGameProvider
   }
 
   getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
@@ -32,7 +38,12 @@ export default class SearchCommand implements CommandInterface {
       .setDescription('Say that you want to play at <game>, and wait for other players answers :)')
       .setName(this.COMMAND)
       .addStringOption(option =>
-        option.setName('game').setDescription('What do you want to play ?').setRequired(true).setMaxLength(255)
+        option
+          .setName('game')
+          .setDescription('What do you want to play ?')
+          .setRequired(true)
+          .setMaxLength(255)
+          .setAutocomplete(true)
       )
       .setDMPermission(false)
       .toJSON()
@@ -45,7 +56,7 @@ export default class SearchCommand implements CommandInterface {
   async exec(p: { context: ChatInputCommandInteraction }): Promise<void> {
     const game = p.context.options.getString('game') ?? ''
 
-    const imgUrl = (await axios.get('https://api.thecatapi.com/v1/images/search')).data[0].url
+    const gameInfos = (await this.videoGameProvider.searchGames({ searchInput: game }))[0]
 
     const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
@@ -85,9 +96,9 @@ export default class SearchCommand implements CommandInterface {
           game,
           membersId: [],
           lateMembersId: [],
-          img: imgUrl,
           voiceChannelName: author?.voice.channel?.name,
           voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
+          bgImg: gameInfos.background_image,
         }),
       ],
       components: [buttonRow, selectRow],
@@ -103,7 +114,7 @@ export default class SearchCommand implements CommandInterface {
         membersId: [],
         lateMembersId: [],
         channelId: p.context.channel?.id || '',
-        catUrl: imgUrl,
+        bgImg: gameInfos.background_image,
       }),
     })
   }
