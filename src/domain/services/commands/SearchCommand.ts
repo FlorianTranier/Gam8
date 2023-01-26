@@ -15,6 +15,7 @@ import CommandInterface from './CommandInterface'
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
 import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
+import i18next from 'i18next'
 
 export default class SearchCommand implements CommandInterface {
   COMMAND = 'search'
@@ -67,25 +68,34 @@ export default class SearchCommand implements CommandInterface {
     await p.context.reply(tag)
 
     const selectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-      new StringSelectMenuBuilder().setCustomId('select').setPlaceholder('Are you coming ?').addOptions(
-        {
-          label: `🚀 Let's go`,
-          value: 'im_here',
-        },
-        {
-          label: `⏰ Maybe I'll join later`,
-          value: 'join_later',
-        },
-        {
-          label: `😶‍🌫️ No.`,
-          value: 'no',
-        }
-      )
+      new StringSelectMenuBuilder()
+        .setCustomId('select')
+        .setPlaceholder(i18next.t('actions.placeholder', { lng: p.context.guildLocale ?? 'en' }))
+        .addOptions(
+          {
+            label: i18next.t('actions.lets_go', { lng: p.context.guildLocale ?? 'en' }),
+            value: 'im_here',
+          },
+          {
+            label: i18next.t('actions.join_later', { lng: p.context.guildLocale ?? 'en' }),
+            value: 'join_later',
+          },
+          {
+            label: i18next.t('actions.no', { lng: p.context.guildLocale ?? 'en' }),
+            value: 'no',
+          }
+        )
     )
 
     const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setCustomId('notify').setLabel('Notify me !').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('dont_notify').setLabel('Disable notifications').setStyle(ButtonStyle.Secondary)
+      new ButtonBuilder()
+        .setCustomId('notify')
+        .setLabel(i18next.t('actions.notify_me', { lng: p.context.guildLocale ?? 'en' }))
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('dont_notify')
+        .setLabel(i18next.t('actions.disable_notification', { lng: p.context.guildLocale ?? 'en' }))
+        .setStyle(ButtonStyle.Secondary)
     )
 
     const message = await p.context.channel?.send({
@@ -99,6 +109,7 @@ export default class SearchCommand implements CommandInterface {
           voiceChannelName: author?.voice.channel?.name,
           voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
           bgImg: gameInfos.background_image,
+          locale: p.context.guildLocale ?? 'en',
         }),
       ],
       components: [buttonRow, selectRow],

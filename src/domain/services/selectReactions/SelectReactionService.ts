@@ -2,6 +2,7 @@ import { ButtonInteraction, StringSelectMenuInteraction } from 'discord.js'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
+import i18next from 'i18next'
 
 export default class SelectReactionService {
   private readonly messageProvider: DBMessageProvider
@@ -24,8 +25,15 @@ export default class SelectReactionService {
       updatedMessage = await this.removeGetNotified({ interaction: p.interaction })
     }
 
-    if (updatedMessage.notifiedMembersId.includes(p.interaction.user.id)) p.interaction.editReply(`You'll be notified`)
-    else p.interaction.editReply(`You won't be notified`)
+    if (updatedMessage.notifiedMembersId.includes(p.interaction.user.id)) {
+      p.interaction.editReply({
+        content: i18next.t('response.notification_validation', { lng: p.interaction.guildLocale ?? 'en' }),
+      })
+    } else {
+      p.interaction.editReply({
+        content: i18next.t('response.notification_disabled', { lng: p.interaction.guildLocale ?? 'en' }),
+      })
+    }
   }
 
   async handleSelectedValues(p: { interaction: StringSelectMenuInteraction }): Promise<void> {
@@ -40,7 +48,14 @@ export default class SelectReactionService {
       updatedMessage = await this.addMember({ interaction: p.interaction })
       message.notifiedMembersId.forEach(async memberId => {
         const member = await p.interaction.message.guild?.members.fetch(memberId)
-        member?.send(`<@${p.interaction.user.id}> wants to play with you now at ${message.game}`)
+        member?.send({
+          content:
+            i18next.t('dm.wants_to_play', {
+              lng: p.interaction.guildLocale ?? 'en',
+              userId: p.interaction.user.id,
+              game: message.game,
+            }) ?? '',
+        })
       })
     }
 
@@ -51,7 +66,14 @@ export default class SelectReactionService {
       updatedMessage = await this.addPlayLaterMember({ interaction: p.interaction })
       message.notifiedMembersId.forEach(async memberId => {
         const member = await p.interaction.message.guild?.members.fetch(memberId)
-        member?.send(`<@${p.interaction.user.id}> wants to play with you maybe later at ${message.game}`)
+        member?.send({
+          content:
+            i18next.t('dm.maybe_later', {
+              lng: p.interaction.guildLocale ?? 'en',
+              userId: p.interaction.user.id,
+              game: message.game,
+            }) ?? '',
+        })
       })
     }
 
@@ -76,6 +98,7 @@ export default class SelectReactionService {
       voiceChannelName: author?.voice.channel?.name,
       voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
       bgImg: updatedMessage.bgImg,
+      locale: p.interaction.guildLocale ?? 'en',
     })
 
     await p.interaction.message.edit({

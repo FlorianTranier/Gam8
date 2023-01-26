@@ -1,4 +1,5 @@
 import { EmbedBuilder, resolveColor } from 'discord.js'
+import i18next from 'i18next'
 
 export default {
   async createOrUpdate(p: {
@@ -10,29 +11,43 @@ export default {
     voiceChannelName?: string
     voiceChannelInviteUrl?: string
     bgImg: string
+    locale: string
   }): Promise<EmbedBuilder> {
     const msg = new EmbedBuilder()
 
-    const membersDisplay = p.membersId.length > 0 ? p.membersId.map(m => `<@${m}>`).join(', ') : 'Waiting for players'
+    const membersDisplay =
+      p.membersId.length > 0
+        ? p.membersId.map(m => `<@${m}>`).join(', ')
+        : i18next.t('embed.waiting_for_players', { lng: p.locale })
 
     msg
       .setAuthor({
         name: p.authorUsername ?? '',
         iconURL: p.authorPicture || undefined,
       })
-      .setTitle(`${p.authorUsername} wants to play at ${p.game}`)
-      .addFields([{ name: 'Answering the call', value: membersDisplay }])
+      .setTitle(i18next.t('embed.title', { lng: p.locale, author: p.authorUsername, game: p.game }))
+      .addFields([{ name: i18next.t('embed.answer_title', { lng: p.locale }), value: membersDisplay }])
       .setImage(p.bgImg)
       .setTimestamp()
       .setColor(resolveColor('Random'))
 
     if (p.lateMembersId.length > 0) {
       const lateMembersDisplay = p.lateMembersId.map(m => `<@${m}>`).join(',')
-      msg.addFields([{ name: 'Maybe joining later', value: lateMembersDisplay || 'Waiting for players' }])
+      msg.addFields([
+        {
+          name: i18next.t('embed.maybe_joining_later', { lng: p.locale }),
+          value: lateMembersDisplay || i18next.t('embed.waiting_for_players', { lng: p.locale }),
+        },
+      ])
     }
 
     if (p.voiceChannelName && p.voiceChannelInviteUrl) {
-      msg.addFields([{ name: 'Join Channel:', value: `[${p.voiceChannelName}](${p.voiceChannelInviteUrl})` }])
+      msg.addFields([
+        {
+          name: i18next.t('embed.join_channel', { lng: p.locale }),
+          value: `[${p.voiceChannelName}](${p.voiceChannelInviteUrl})`,
+        },
+      ])
     }
 
     return msg
