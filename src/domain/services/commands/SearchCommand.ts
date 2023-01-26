@@ -1,7 +1,12 @@
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ChatInputCommandInteraction,
+  MessageActionRowComponentBuilder,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandBuilder,
+  StringSelectMenuBuilder,
 } from 'discord.js'
 import MessageType from '../../models/messages/enums/MessageType'
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
@@ -26,7 +31,9 @@ export default class SearchCommand implements CommandInterface {
     return new SlashCommandBuilder()
       .setDescription('Say that you want to play at <game>, and wait for other players answers :)')
       .setName(this.COMMAND)
-      .addStringOption(option => option.setName('game').setDescription('What do you want to play ?').setRequired(true))
+      .addStringOption(option =>
+        option.setName('game').setDescription('What do you want to play ?').setRequired(true).setMaxLength(255)
+      )
       .setDMPermission(false)
       .toJSON()
   }
@@ -48,6 +55,28 @@ export default class SearchCommand implements CommandInterface {
 
     await p.context.reply(tag)
 
+    const selectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+      new StringSelectMenuBuilder().setCustomId('select').setPlaceholder('Are you coming ?').addOptions(
+        {
+          label: `🚀 Let's go`,
+          value: 'im_here',
+        },
+        {
+          label: `⏰ Maybe I'll join later`,
+          value: 'join_later',
+        },
+        {
+          label: `😶‍🌫️ No.`,
+          value: 'no',
+        }
+      )
+    )
+
+    const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder().setCustomId('notify').setLabel('Notify me !').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('dont_notify').setLabel('Disable notifications').setStyle(ButtonStyle.Secondary)
+    )
+
     const message = await p.context.channel?.send({
       embeds: [
         await EmbedMessageGenerator.createOrUpdate({
@@ -61,12 +90,8 @@ export default class SearchCommand implements CommandInterface {
           voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
         }),
       ],
+      components: [buttonRow, selectRow],
     })
-
-    await message?.react('☝')
-    await message?.react('⏰')
-    await message?.react('🔔')
-    await message?.react('🚫')
 
     await this.messageProvider.saveMessage({
       message: new SearchPartnerMessage({
