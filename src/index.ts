@@ -1,3 +1,4 @@
+import { loadi18n } from './i18n/i18n'
 import dotenv from 'dotenv'
 import Discord from 'discord.js'
 import admin from 'firebase-admin'
@@ -36,6 +37,10 @@ admin.initializeApp({
 })
 
 const db = admin.firestore()
+
+loadi18n()
+  .then(() => console.log(`i18n OK`))
+  .catch(() => console.error(`i18n NOK`))
 
 const client = new Discord.Client({ intents: 3276799 })
 
