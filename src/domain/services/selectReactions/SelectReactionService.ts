@@ -75,7 +75,7 @@ export default class SelectReactionService {
       game: updatedMessage.game,
       voiceChannelName: author?.voice.channel?.name,
       voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
-      img: updatedMessage.catUrl,
+      bgImg: updatedMessage.bgImg,
     })
 
     await p.interaction.message.edit({

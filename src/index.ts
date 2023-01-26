@@ -14,6 +14,7 @@ import ClearCommand from './domain/services/commands/ClearCommand'
 import HelpCommand from './domain/services/commands/HelpCommand'
 import TagCommand from './domain/services/commands/TagCommand'
 import SelectReactionService from './domain/services/selectReactions/SelectReactionService'
+import { VideoGameProvider } from './providers/rawg/games/VideoGameProvider'
 
 const params = {
   type: serviceAccount.type,
@@ -41,10 +42,11 @@ const client = new Discord.Client({ intents: 3276799 })
 // Providers
 const messageProvider = new DBMessageProvider({ db })
 const channelProvider = new DBChannelProvider({ db })
+const videoGameProvider = new VideoGameProvider()
 
 // Commands
 const commands = [
-  new SearchCommand({ messageProvider, channelProvider }),
+  new SearchCommand({ messageProvider, channelProvider, videoGameProvider }),
   new ClearCommand({ messageProvider }),
   new HelpCommand(),
   new TagCommand({ channelProvider }),
@@ -54,7 +56,7 @@ const commands = [
 const selectReactionService = new SelectReactionService({ messageProvider })
 
 // Routers
-new CommandRouter({ client, channelProvider, commands })
+new CommandRouter({ client, channelProvider, videoGameProvider, commands })
 new ReactionRouter({ client, selectReactionService })
 
 // Global Listeners

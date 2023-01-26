@@ -1,3 +1,4 @@
+import { VideoGameProvider } from './../providers/rawg/games/VideoGameProvider'
 import { Client, REST, Routes } from 'discord.js'
 import CommandInterface from '../domain/services/commands/CommandInterface'
 import DBChannelProvider from '../providers/database/channels/DBChannelProvider'
@@ -6,11 +7,18 @@ export default class CommandRouter {
   private readonly client: Client
   private readonly commands: CommandInterface[]
   private readonly channelProvider: DBChannelProvider
+  private readonly videoGameProvider: VideoGameProvider
 
-  constructor(p: { client: Client; channelProvider: DBChannelProvider; commands: CommandInterface[] }) {
+  constructor(p: {
+    client: Client
+    channelProvider: DBChannelProvider
+    videoGameProvider: VideoGameProvider
+    commands: CommandInterface[]
+  }) {
     this.client = p.client
     this.commands = p.commands
     this.channelProvider = p.channelProvider
+    this.videoGameProvider = p.videoGameProvider
 
     const commands = this.commands.map(command => command.getSlashCommand())
 
@@ -40,6 +48,19 @@ export default class CommandRouter {
           context: interaction,
         })
       }
+    })
+
+    this.client.on('interactionCreate', async interaction => {
+      if (!interaction.isAutocomplete()) return
+      const input = interaction.options.getFocused()
+
+      await interaction.respond(
+        (
+          await this.videoGameProvider.searchGames({ searchInput: input })
+        ).map(game => {
+          return { name: game.name, value: game.name }
+        })
+      )
     })
   }
 
