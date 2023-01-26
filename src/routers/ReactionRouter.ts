@@ -1,19 +1,14 @@
-import { Client, MessageReaction } from 'discord.js'
-import ReactionType from '../domain/models/messages/enums/ReactionType'
-import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
-import ReactionInterface from '../domain/services/reactions/ReactionInterface'
+import { Client, Events } from 'discord.js'
+import SelectReactionService from '../domain/services/selectReactions/SelectReactionService'
 
 export default class ReactionRouter {
-  private readonly messageProvider: DBMessageProvider
-
   private readonly client: Client
 
-  private readonly reactions: ReactionInterface[]
+  private readonly selectReactionService: SelectReactionService
 
-  constructor(p: { messageProvider: DBMessageProvider; client: Client; reactions: ReactionInterface[] }) {
-    this.messageProvider = p.messageProvider
+  constructor(p: { client: Client; selectReactionService: SelectReactionService }) {
     this.client = p.client
-    this.reactions = p.reactions
+    this.selectReactionService = p.selectReactionService
 
     this.createEventReaction()
       .then(() => console.log(`${ReactionRouter.name} OK`))
@@ -21,33 +16,18 @@ export default class ReactionRouter {
   }
 
   private async createEventReaction(): Promise<void> {
-    this.client.on('messageReactionAdd', async (reaction, author) => {
-      if (author.id !== reaction?.message?.author?.id) {
-        const bitmap = await Promise.all(
-          this.reactions.map(react =>
-            react.supportReaction({
-              emoji: reaction.emoji.name ?? '',
-              msgId: reaction.message.id,
-              type: ReactionType.ADD,
-            })
-          )
-        )
-        await this.reactions[bitmap.indexOf(true)].exec({ reaction: reaction as MessageReaction, author })
+    this.client.on(Events.InteractionCreate, async interaction => {
+      if (!interaction.isStringSelectMenu()) return
+
+      if (interaction.member?.user.id !== interaction?.message?.author?.id) {
+        await this.selectReactionService.handleSelectedValues({ interaction: interaction })
       }
     })
 
-    this.client.on('messageReactionRemove', async (reaction, author) => {
-      const bitmap = await Promise.all(
-        this.reactions.map(react =>
-          react.supportReaction({
-            emoji: reaction.emoji.name ?? '',
-            msgId: reaction.message.id,
-            type: ReactionType.REMOVE,
-          })
-        )
-      )
+    this.client.on(Events.InteractionCreate, async interaction => {
+      if (!interaction.isButton()) return
 
-      await this.reactions[bitmap.indexOf(true)].exec({ reaction: reaction as MessageReaction, author })
+      await this.selectReactionService.handleButtons({ interaction: interaction })
     })
   }
 }

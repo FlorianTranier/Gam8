@@ -7,20 +7,13 @@ import * as serviceAccount from './config/firebase_credentials.json'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
 import SearchCommand from './domain/services/commands/SearchCommand'
 import ReactionRouter from './routers/ReactionRouter'
-import ReactionInterface from './domain/services/reactions/ReactionInterface'
-import AddMemberSearchPartnerMessageReaction from './domain/services/reactions/AddMemberSearchPartnerMessageReaction'
-import RemoveMemberSearchPartnerMessageReaction from './domain/services/reactions/RemoveMemberSearchPartnerMessageReaction'
 import DBChannelProvider from './providers/database/channels/DBChannelProvider'
 import GuildChannelAssociation from './domain/models/channels/GuildChannelAssociation'
 import VoiceStateListener from './domain/services/listeners/VoiceStateListener'
 import ClearCommand from './domain/services/commands/ClearCommand'
-import AddPlayLaterSearchPartnerMessageReaction from './domain/services/reactions/AddPlayLaterSearchPartnerMessageReaction'
-import RemovePlayLaterSearchPartnerMessageReaction from './domain/services/reactions/RemovePlayLaterSearchPartnerMessageReaction'
 import HelpCommand from './domain/services/commands/HelpCommand'
 import TagCommand from './domain/services/commands/TagCommand'
-import DeleteMessageReaction from './domain/services/reactions/DeleteMessageReaction'
-import GetNotifiedReaction from './domain/services/reactions/GetNotifiedReaction'
-import RemoveGetNotifiedReaction from './domain/services/reactions/RemoveGetNotifiedReaction'
+import SelectReactionService from './domain/services/selectReactions/SelectReactionService'
 
 const params = {
   type: serviceAccount.type,
@@ -58,19 +51,11 @@ const commands = [
 ]
 
 // Reactions
-const reactions: ReactionInterface[] = [
-  new AddMemberSearchPartnerMessageReaction({ messageProvider }),
-  new RemoveMemberSearchPartnerMessageReaction({ messageProvider }),
-  new AddPlayLaterSearchPartnerMessageReaction({ messageProvider }),
-  new RemovePlayLaterSearchPartnerMessageReaction({ messageProvider }),
-  new DeleteMessageReaction({ messageProvider }),
-  new GetNotifiedReaction({ messageProvider }),
-  new RemoveGetNotifiedReaction({ messageProvider }),
-]
+const selectReactionService = new SelectReactionService({ messageProvider })
 
 // Routers
 new CommandRouter({ client, channelProvider, commands })
-new ReactionRouter({ client, messageProvider, reactions })
+new ReactionRouter({ client, selectReactionService })
 
 // Global Listeners
 new VoiceStateListener({ client, messageProvider, channelProvider })
