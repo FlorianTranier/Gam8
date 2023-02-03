@@ -1,23 +1,23 @@
 import { VideoGameProvider } from './../providers/rawg/games/VideoGameProvider'
 import { Client, REST, Routes } from 'discord.js'
 import CommandInterface from '../domain/services/commands/CommandInterface'
-import DBChannelProvider from '../providers/database/channels/DBChannelProvider'
+import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
 
 export default class CommandRouter {
   private readonly client: Client
   private readonly commands: CommandInterface[]
-  private readonly channelProvider: DBChannelProvider
+  private readonly messageProvider: DBMessageProvider
   private readonly videoGameProvider: VideoGameProvider
 
   constructor(p: {
     client: Client
-    channelProvider: DBChannelProvider
+    messageProvider: DBMessageProvider
     videoGameProvider: VideoGameProvider
     commands: CommandInterface[]
   }) {
     this.client = p.client
     this.commands = p.commands
-    this.channelProvider = p.channelProvider
+    this.messageProvider = p.messageProvider
     this.videoGameProvider = p.videoGameProvider
 
     const commands = this.commands.map(command => command.getSlashCommand())
@@ -53,7 +53,15 @@ export default class CommandRouter {
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isAutocomplete()) return
       const input = interaction.options.getFocused()
-      const games = await this.videoGameProvider.searchGames({ searchInput: input })
+
+      const games =
+        input.length === 0
+          ? (await this.messageProvider.getLast5Messages()).map(msg => {
+              return {
+                name: msg.game,
+              }
+            })
+          : await this.videoGameProvider.searchGames({ searchInput: input })
 
       try {
         await interaction.respond(

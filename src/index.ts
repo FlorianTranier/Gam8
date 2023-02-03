@@ -61,7 +61,7 @@ const commands = [
 const selectReactionService = new SelectReactionService({ messageProvider })
 
 // Routers
-new CommandRouter({ client, channelProvider, videoGameProvider, commands })
+new CommandRouter({ client, messageProvider, videoGameProvider, commands })
 new ReactionRouter({ client, selectReactionService })
 
 // Global Listeners
