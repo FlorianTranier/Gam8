@@ -110,4 +110,10 @@ export default class {
 
     return await this.getMessageByMessageId({ msgId: p.msgId })
   }
+
+  async getLast5Messages(): Promise<SearchPartnerMessage[]> {
+    const docs = (await this.dbRef.limitToLast(5).orderBy('timestamp').get()).docs
+
+    return docs.map(doc => <SearchPartnerMessage>doc.data())
+  }
 }

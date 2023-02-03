@@ -11,6 +11,7 @@ export default class SearchPartnerMessage {
   notifiedMembersId: string[]
   channelId: string
   bgImg: string
+  timestamp: number
 
   constructor(p: {
     serverId: string
@@ -23,6 +24,7 @@ export default class SearchPartnerMessage {
     notifiedMembersId?: string[]
     channelId: string
     bgImg: string
+    timestamp?: number
   }) {
     this.serverId = p.serverId
     this.messageId = p.messageId
@@ -34,5 +36,6 @@ export default class SearchPartnerMessage {
     this.channelId = p.channelId
     this.notifiedMembersId = p.notifiedMembersId ?? []
     this.bgImg = p.bgImg
+    this.timestamp = p.timestamp ?? new Date().getTime()
   }
 }
