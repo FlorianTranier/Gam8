@@ -53,14 +53,15 @@ export default class CommandRouter {
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isAutocomplete()) return
       const input = interaction.options.getFocused()
+      const games = await this.videoGameProvider.searchGames({ searchInput: input })
 
-      await interaction.respond(
-        (
-          await this.videoGameProvider.searchGames({ searchInput: input })
-        ).map(game => {
-          return { name: game.name, value: game.name }
-        })
-      )
+      try {
+        await interaction.respond(
+          games.map(game => {
+            return { name: game.name, value: game.name }
+          })
+        )
+      } catch (e) {} // NON BLOCKING ERROR
     })
   }
 

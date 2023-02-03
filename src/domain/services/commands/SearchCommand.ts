@@ -57,7 +57,10 @@ export default class SearchCommand implements CommandInterface {
   async exec(p: { context: ChatInputCommandInteraction }): Promise<void> {
     const game = p.context.options.getString('game') ?? ''
 
-    const gameInfos = (await this.videoGameProvider.searchGames({ searchInput: game }))[0]
+    const gameInfos = (await this.videoGameProvider.searchGames({ searchInput: game }))[0] ?? {
+      background_image:
+        'https://unsplash.com/photos/sxiSod0tyYQ/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8MXx8bm90JTIwZm91bmR8ZnJ8MHx8fHwxNjc1NDI0OTMz&force=true&w=1920',
+    }
 
     const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
