@@ -35,7 +35,7 @@ export const loadi18n = async (): Promise<void> => {
       fr: {
         translation: {
           embed: {
-            title: '{{author}} veux jouer à {{game}}',
+            title: '{{author}} veut jouer à {{game}}',
             answer_title: `Réponses à l'appel`,
             waiting_for_players: 'En attente de joueurs',
             maybe_joining_later: 'Peut-être plus tard',
@@ -46,15 +46,15 @@ export const loadi18n = async (): Promise<void> => {
             lets_go: `🚀 J'arrive !`,
             join_later: `⏰ Peut-être plus tard`,
             no: '😶‍🌫️ Non.',
-            notify_me: 'Avertissez moi !',
-            disable_notification: 'Désactiver les notifications',
+            notify_me: `🔔 M'avertir des réponses`,
+            disable_notification: `Ne pas m'avertir`,
           },
           response: {
-            notification_validation: `Tu seras averti lorsque quelqu'un répond à ton appel !`,
+            notification_validation: `Tu seras averti par MP lorsque quelqu'un répondra à ton message !`,
             notification_disabled: `Tu ne seras plus averti, fais attention à regarder régulièrement si tu reçois une réponse :)`,
           },
           dm: {
-            wants_to_play: `<@{{userId}}> veux jouer avec toi à {{game}}`,
+            wants_to_play: `<@{{userId}}> veut jouer avec toi à {{game}}`,
             maybe_later: `<@{{userId}}> te rejoindra peut-être plus tard pour jouer à {{game}}`,
           },
         },
