@@ -13,6 +13,7 @@ export const loadi18n = async (): Promise<void> => {
             waiting_for_players: 'Waiting for players',
             maybe_joining_later: 'Maybe joining later',
             join_channel: 'Join vocal channel',
+            additional_informations_title: 'Additional notes',
           },
           actions: {
             placeholder: 'Are you coming ?',
@@ -40,6 +41,7 @@ export const loadi18n = async (): Promise<void> => {
             waiting_for_players: 'En attente de joueurs',
             maybe_joining_later: 'Peut-être plus tard',
             join_channel: 'Rejoindre le channel vocal',
+            additional_informations_title: 'Détails',
           },
           actions: {
             placeholder: 'Est-ce que tu viens ?',

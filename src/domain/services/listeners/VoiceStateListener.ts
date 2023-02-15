@@ -52,6 +52,7 @@ export default class VoiceStateListener {
             voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
             bgImg: message.bgImg,
             locale: newVoiceState.guild.preferredLocale ?? 'en',
+            additionalInformations: message.additionalInformations,
           })
 
           try {

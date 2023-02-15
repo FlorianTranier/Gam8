@@ -46,6 +46,13 @@ export default class SearchCommand implements CommandInterface {
           .setMaxLength(255)
           .setAutocomplete(true)
       )
+      .addStringOption(option =>
+        option
+          .setName('additional_informations')
+          .setDescription('Add some additional informations')
+          .setRequired(false)
+          .setMaxLength(255)
+      )
       .setDMPermission(false)
       .toJSON()
   }
@@ -56,6 +63,7 @@ export default class SearchCommand implements CommandInterface {
 
   async exec(p: { context: ChatInputCommandInteraction }): Promise<void> {
     const game = p.context.options.getString('game') ?? ''
+    const additionalInformations = p.context.options.getString('additional_informations')
 
     const gameInfos = (await this.videoGameProvider.searchGames({ searchInput: game }))[0] ?? {
       background_image:
@@ -114,6 +122,7 @@ export default class SearchCommand implements CommandInterface {
           voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
           bgImg: gameInfos.background_image,
           locale: p.context.guildLocale ?? 'en',
+          additionalInformations: additionalInformations ?? undefined,
         }),
       ],
       components: [buttonRow, selectRow],
@@ -130,6 +139,7 @@ export default class SearchCommand implements CommandInterface {
         lateMembersId: [],
         channelId: p.context.channel?.id || '',
         bgImg: gameInfos.background_image,
+        additionalInformations: additionalInformations ?? undefined,
       }),
     })
   }
