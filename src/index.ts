@@ -42,7 +42,7 @@ loadi18n()
   .then(() => console.log(`i18n OK`))
   .catch(() => console.error(`i18n NOK`))
 
-const client = new Discord.Client({ intents: 3276799 })
+const client = new Discord.Client({ intents: 3276799, allowedMentions: { parse: ['users', 'roles'] } })
 
 // Providers
 const messageProvider = new DBMessageProvider({ db })

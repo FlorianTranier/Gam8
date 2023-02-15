@@ -37,8 +37,6 @@ export default class TagCommand implements CommandInterface {
       return
     }*/
 
-    console.log(p.context.options.getRole('tag'))
-
     /*if (p.args[0] === 'reset') {
       const association = await this.channelProvider.getByGuildId({ guildId: p.context.guild?.id || '' })
       if (association) {
