@@ -99,6 +99,7 @@ export default class SelectReactionService {
       voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
       bgImg: updatedMessage.bgImg,
       locale: p.interaction.guildLocale ?? 'en',
+      additionalInformations: updatedMessage.additionalInformations,
     })
 
     await p.interaction.message.edit({

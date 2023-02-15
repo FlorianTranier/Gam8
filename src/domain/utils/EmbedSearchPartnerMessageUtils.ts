@@ -12,6 +12,7 @@ export default {
     voiceChannelInviteUrl?: string
     bgImg: string
     locale: string
+    additionalInformations?: string
   }): Promise<EmbedBuilder> {
     const msg = new EmbedBuilder()
 
@@ -26,6 +27,14 @@ export default {
         iconURL: p.authorPicture || undefined,
       })
       .setTitle(i18next.t('embed.title', { lng: p.locale, author: p.authorUsername, game: p.game }))
+
+    if (p.additionalInformations) {
+      msg.addFields([
+        { name: i18next.t('embed.additional_informations_title', { lng: p.locale }), value: p.additionalInformations },
+      ])
+    }
+
+    msg
       .addFields([{ name: i18next.t('embed.answer_title', { lng: p.locale }), value: membersDisplay }])
       .setImage(p.bgImg)
       .setTimestamp()
