@@ -68,7 +68,7 @@ export default class SearchCommand implements CommandInterface {
 
     const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
 
-    await p.context.reply(tag)
+    await p.context.deferReply()
 
     const selectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new StringSelectMenuBuilder()
@@ -101,7 +101,8 @@ export default class SearchCommand implements CommandInterface {
         .setStyle(ButtonStyle.Secondary)
     )
 
-    const message = await p.context.channel?.send({
+    const message = await p.context.editReply({
+      content: tag,
       embeds: [
         await EmbedMessageGenerator.createOrUpdate({
           authorUsername: p.context.member?.user.username,
