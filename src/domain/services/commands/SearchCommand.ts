@@ -126,6 +126,7 @@ export default class SearchCommand implements CommandInterface {
         }),
       ],
       components: [buttonRow, selectRow],
+      allowedMentions: { roles: [association?.tagRoleId ?? ''] },
     })
 
     await this.messageProvider.saveMessage({
