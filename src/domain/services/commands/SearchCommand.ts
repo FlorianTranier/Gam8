@@ -76,7 +76,10 @@ export default class SearchCommand implements CommandInterface {
 
     const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
 
-    await p.context.deferReply()
+    await p.context.reply({
+      content: tag,
+      allowedMentions: { roles: [association?.tagRoleId ?? ''] },
+    })
 
     const selectRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new StringSelectMenuBuilder()
