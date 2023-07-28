@@ -14,6 +14,7 @@ export const loadi18n = async (): Promise<void> => {
             maybe_joining_later: 'Maybe joining later',
             join_channel: 'Join vocal channel',
             additional_informations_title: 'Additional notes',
+            expired: 'EXPIRED',
           },
           actions: {
             placeholder: 'Are you coming ?',
@@ -42,6 +43,7 @@ export const loadi18n = async (): Promise<void> => {
             maybe_joining_later: 'Peut-être plus tard',
             join_channel: 'Rejoindre le channel vocal',
             additional_informations_title: 'Détails',
+            expired: 'EXPIRÉ',
           },
           actions: {
             placeholder: 'Est-ce que tu viens ?',

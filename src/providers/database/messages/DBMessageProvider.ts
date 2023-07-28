@@ -25,7 +25,7 @@ export default class {
   }
 
   async getMessagesByAuthorId(p: { authorId: string }): Promise<SearchPartnerMessage[]> {
-    const docs = (await this.dbRef.where('authorId', '==', p.authorId).get()).docs
+    const docs = (await this.dbRef.where('authorId', '==', p.authorId).limitToLast(5).orderBy('timestamp').get()).docs
 
     return docs.map(doc => <SearchPartnerMessage>doc.data())
   }
@@ -113,6 +113,18 @@ export default class {
 
   async getLast5Messages(): Promise<SearchPartnerMessage[]> {
     const docs = (await this.dbRef.limitToLast(5).orderBy('timestamp').get()).docs
+
+    return docs.map(doc => <SearchPartnerMessage>doc.data())
+  }
+
+  async getMessagesBetweenDate(p: { start: Date; end: Date }): Promise<SearchPartnerMessage[]> {
+    const docs = (
+      await this.dbRef
+        .where('timestamp', '<', p.end.getTime())
+        .where('timestamp', '>', p.start.getTime())
+        .where('channelId', '==', '1067598628853661806')
+        .get()
+    ).docs
 
     return docs.map(doc => <SearchPartnerMessage>doc.data())
   }
