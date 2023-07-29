@@ -19,8 +19,7 @@ export class ExpirationJob extends Job {
   }
 
   private async handler() {
-    console.log('Handler', this.messageProvider)
-    const messages = await this.messageProvider.getMessagesBetweenDate({
+    const messages = await this.messageProvider.getUnexpiredMessagesBetweenDate({
       start: DateTime.now().minus({ days: 1 }).toJSDate(),
       end: DateTime.now().minus({ hours: 3 }).toJSDate(),
     })
@@ -48,10 +47,13 @@ export class ExpirationJob extends Job {
           expired: true,
         })
 
-        return discordMessage.edit({
-          embeds: [embedMessage],
-          components: [],
-        })
+        return Promise.all([
+          this.messageProvider.setMessageExpired({ msgId: message.messageId, expired: true }),
+          discordMessage.edit({
+            embeds: [embedMessage],
+            components: [],
+          }),
+        ])
       })
     )
   }

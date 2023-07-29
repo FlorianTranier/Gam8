@@ -13,6 +13,7 @@ export default class SearchPartnerMessage {
   bgImg: string
   additionalInformations?: string
   timestamp: number
+  expired: boolean
 
   constructor(p: {
     serverId: string
@@ -27,6 +28,7 @@ export default class SearchPartnerMessage {
     bgImg: string
     additionalInformations?: string
     timestamp?: number
+    expired?: boolean
   }) {
     this.serverId = p.serverId
     this.messageId = p.messageId
@@ -40,5 +42,6 @@ export default class SearchPartnerMessage {
     this.bgImg = p.bgImg
     this.timestamp = p.timestamp ?? new Date().getTime()
     this.additionalInformations = p.additionalInformations
+    this.expired = p.expired ?? false
   }
 }
