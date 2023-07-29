@@ -1,6 +1,6 @@
 enum ReactionType {
-  ADD,
-  REMOVE
+	ADD,
+	REMOVE,
 }
 
 export default ReactionType

@@ -1,4 +1,4 @@
 export interface Game {
-  name: string
-  background_image: string
+	name: string
+	background_image: string
 }
