@@ -56,7 +56,7 @@ export default class CommandRouter {
 
 			const games =
 				input.length === 0
-					? (await this.messageProvider.getLast5Messages()).map((msg) => {
+					? (await this.messageProvider.getLast5MessagesForChannel({ channelId: interaction.channelId })).map((msg) => {
 							return {
 								name: msg.game,
 							}
