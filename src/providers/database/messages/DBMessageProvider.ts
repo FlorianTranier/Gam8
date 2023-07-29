@@ -28,6 +28,7 @@ export default class {
 		const docs = (
 			await this.dbRef
 				.where('expired', '!=', true)
+				.orderBy('expired')
 				.where('authorId', '==', p.authorId)
 				.limitToLast(5)
 				.orderBy('timestamp')
