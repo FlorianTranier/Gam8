@@ -130,7 +130,6 @@ export default class {
 				.where('timestamp', '<', p.end.getTime())
 				.where('timestamp', '>', p.start.getTime())
 				.where('expired', '!=', true)
-				.where('channelId', '==', '1067598628853661806')
 				.get()
 		).docs
 
