@@ -1,5 +1,5 @@
 enum MessageType {
-  RESEARCH_PARTNER
+	RESEARCH_PARTNER,
 }
 
 export default MessageType

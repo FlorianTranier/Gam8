@@ -1,35 +1,48 @@
-import CommandInterface from './CommandInterface';
-import {Message, Permissions} from 'discord.js';
-import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
+import CommandInterface from './CommandInterface'
+import {
+	PermissionFlagsBits,
+	RESTPostAPIChatInputApplicationCommandsJSONBody,
+	SlashCommandBuilder,
+	ChatInputCommandInteraction,
+} from 'discord.js'
+import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 
 export default class ClearCommand implements CommandInterface {
-  
-  COMMAND='clear'
+	COMMAND = 'clear'
 
-  private readonly messageProvider: DBMessageProvider
+	private readonly messageProvider: DBMessageProvider
 
-  constructor(p: { messageProvider: DBMessageProvider }) {
-    this.messageProvider = p.messageProvider
-  }
-  
-  async supportCommand(p: { command: string }): Promise<boolean> {
-    return p.command === this.COMMAND
-  }
+	constructor(p: { messageProvider: DBMessageProvider }) {
+		this.messageProvider = p.messageProvider
+	}
 
-  async exec(p: { args: string[]; context: Message }): Promise<void> {
+	getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
+		return new SlashCommandBuilder()
+			.setDescription('Clear all bot messages')
+			.setName(this.COMMAND)
+			.setDMPermission(false)
+			.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+			.toJSON()
+	}
 
-    if (!p.context.member?.permissions.has('MANAGE_MESSAGES')) {
+	async supportCommand(p: { command: string }): Promise<boolean> {
+		return p.command === this.COMMAND
+	}
+
+	async exec(p: { args: string[]; context: ChatInputCommandInteraction }): Promise<void> {
+		p.context.reply('Not implemented right now, WIP')
+		/*if (!p.context.member?.permissions.has(PermissionFlagsBits.ManageMessages)) {
       await p.context.delete()
       return
     }
 
     const messages = await this.messageProvider.getMessagesByChannelId({
-      channelId: p.context.channel.id
+      channelId: p.context.channel.id,
     })
 
     for (const message of messages) {
       await this.messageProvider.deleteMessage({
-        msgId: message.messageId
+        msgId: message.messageId,
       })
 
       try {
@@ -38,15 +51,15 @@ export default class ClearCommand implements CommandInterface {
       } catch (e) {}
     }
 
-    const messagesToDelete = (await p.context.channel.messages.fetch())
+    const _ = ((await p.context.channel.messages.fetch()) as Collection<string, Message>)
       .filter(msg => msg.author.bot && !msg.pinned)
-      
-    for (const msg of messagesToDelete.array()) {
-      try {
-        if (msg.author.bot) await msg.delete();
-      } catch (e) {}
-    }
+      .forEach(async msg => {
+        try {
+          if (msg.author.bot) await msg.delete()
+        } catch (e) {}
+      })
 
     await p.context.delete()
-  }
+    */
+	}
 }

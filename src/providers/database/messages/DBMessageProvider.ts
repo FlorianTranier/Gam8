@@ -2,129 +2,149 @@ import { firestore } from 'firebase-admin'
 import SearchPartnerMessage from '../../../domain/models/messages/SearchPartnerMessage'
 
 export default class {
+	private readonly dbRef: firestore.CollectionReference
 
-  private readonly dbRef: firestore.CollectionReference
+	constructor(p: { db: firestore.Firestore }) {
+		this.dbRef = p.db.collection('messages')
+	}
 
-  constructor(p: { db: firestore.Firestore }) {
-    this.dbRef = p.db.collection('messages')
-  }
+	async saveMessage(p: { message: SearchPartnerMessage }): Promise<SearchPartnerMessage> {
+		return <SearchPartnerMessage>(await (await this.dbRef.add(JSON.parse(JSON.stringify(p.message)))).get()).data()
+	}
 
-  async saveMessage(p: { message: SearchPartnerMessage }): Promise<SearchPartnerMessage> {
-    return <SearchPartnerMessage>
-      (await
-        (await this.dbRef.add(JSON.parse(JSON.stringify(p.message)))).get())
-        .data()
-  }
+	async deleteMessage(p: { msgId: string }): Promise<void> {
+		const doc = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0]
 
-  async deleteMessage(p: { msgId: string }): Promise<void> {
-    const doc = (await this.dbRef.where('messageId', '==', p.msgId)
-      .get()).docs[0]
+		const msgRef = doc ? doc.ref : undefined
 
-    const msgRef = doc ? doc.ref : undefined
+		if (msgRef) await msgRef.delete()
+	}
 
-    if (msgRef) await msgRef.delete()
-  }
+	async getMessageByMessageId(p: { msgId: string }): Promise<SearchPartnerMessage> {
+		return <SearchPartnerMessage>(await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].data()
+	}
 
-  async getMessageByMessageId(p: { msgId: string }): Promise<SearchPartnerMessage> {
-    return <SearchPartnerMessage>
-      (await this.dbRef.where('messageId', '==', p.msgId).get())
-        .docs[0].data()
-  }
+	async getMessagesByAuthorId(p: { authorId: string }): Promise<SearchPartnerMessage[]> {
+		const docs = (
+			await this.dbRef
+				.where('expired', '!=', true)
+				.where('authorId', '==', p.authorId)
+				.limitToLast(5)
+				.orderBy('timestamp')
+				.get()
+		).docs
 
-  async getMessagesByAuthorId(p: { authorId: string }): Promise<SearchPartnerMessage[]> {
+		return docs.map((doc) => <SearchPartnerMessage>doc.data())
+	}
 
-    const docs = (await this.dbRef.where('authorId', '==', p.authorId).get())
-      .docs
+	async getMessagesByChannelId(p: { channelId: string }): Promise<SearchPartnerMessage[]> {
+		const docs = (await this.dbRef.where('expired', '!=', true).where('channelId', '==', p.channelId).get()).docs
 
-    return docs.map(doc => <SearchPartnerMessage>doc.data())
-  }
+		return docs.map((doc) => <SearchPartnerMessage>doc.data())
+	}
 
-  async getMessagesByChannelId(p: { channelId: string }): Promise<SearchPartnerMessage[]> {
-    const docs = (await this.dbRef.where('channelId', '==', p.channelId).get())
-      .docs
+	async addMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('expired', '!=', true).where('messageId', '==', p.msgId).get()).docs[0].ref
 
-    return docs.map(doc => <SearchPartnerMessage>doc.data())
-  }
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
-  async addMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-        .docs[0].ref
+		msgToUpdate.membersId.push(p.memberId)
 
-    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+		await msgRef.update(msgToUpdate)
 
-    msgToUpdate.membersId.push(p.memberId)
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 
-    await msgRef.update(msgToUpdate)
+	async addLateMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('expired', '!=', true).where('messageId', '==', p.msgId).get()).docs[0].ref
 
-    return await this.getMessageByMessageId({ msgId: p.msgId })
-  }
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
-  async addLateMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+		msgToUpdate.lateMembersId.push(p.memberId)
 
-    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+		await msgRef.update(msgToUpdate)
 
-    msgToUpdate.lateMembersId.push(p.memberId)
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 
-    await msgRef.update(msgToUpdate)
+	async removeMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('expired', '!=', true).where('messageId', '==', p.msgId).get()).docs[0].ref
 
-    return await this.getMessageByMessageId({ msgId: p.msgId })
-  }
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
-  async removeMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+		const indexToRemove = msgToUpdate.membersId.indexOf(p.memberId)
+		if (indexToRemove > -1) msgToUpdate.membersId.splice(indexToRemove, 1)
 
-    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+		await msgRef.update(msgToUpdate)
 
-    const indexToRemove = msgToUpdate.membersId.indexOf(p.memberId)
-    if (indexToRemove > -1) msgToUpdate.membersId.splice(indexToRemove, 1)
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 
-    await msgRef.update(msgToUpdate)
+	async removeLateMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('expired', '!=', true).where('messageId', '==', p.msgId).get()).docs[0].ref
 
-    return await this.getMessageByMessageId({ msgId: p.msgId })
-  }
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
-  async removeLateMemberToMessageByMessageId(p: {msgId: string, memberId: string}): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+		const indexToRemove = msgToUpdate.lateMembersId.indexOf(p.memberId)
+		if (indexToRemove > -1) msgToUpdate.lateMembersId.splice(indexToRemove, 1)
 
-    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+		await msgRef.update(msgToUpdate)
 
-    const indexToRemove = msgToUpdate.lateMembersId.indexOf(p.memberId)
-    if (indexToRemove > -1) msgToUpdate.lateMembersId.splice(indexToRemove, 1)
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 
-    await msgRef.update(msgToUpdate)
+	async addNotifiedMemberByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('expired', '!=', true).where('messageId', '==', p.msgId).get()).docs[0].ref
 
-    return await this.getMessageByMessageId({ msgId: p.msgId })
-  }
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
-  async addNotifiedMemberByMessageId(p: { msgId: string, memberId: string }): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+		msgToUpdate.notifiedMembersId.push(p.memberId)
 
-    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+		await msgRef.update(msgToUpdate)
 
-    msgToUpdate.notifiedMembersId.push(p.memberId)
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 
-    await msgRef.update(msgToUpdate)
+	async removeNotifiedMemberByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('expired', '!=', true).where('messageId', '==', p.msgId).get()).docs[0].ref
 
-    return await this.getMessageByMessageId({ msgId: p.msgId })
-  }
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
 
-  async removeNotifiedMemberByMessageId(p: { msgId: string, memberId: string }): Promise<SearchPartnerMessage> {
-    const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get())
-      .docs[0].ref
+		const indexToRemove = msgToUpdate.notifiedMembersId.indexOf(p.memberId)
+		if (indexToRemove > -1) msgToUpdate.notifiedMembersId.splice(indexToRemove, 1)
 
-    const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+		await msgRef.update(msgToUpdate)
 
-    const indexToRemove = msgToUpdate.notifiedMembersId.indexOf(p.memberId)
-    if (indexToRemove > -1) msgToUpdate.notifiedMembersId.splice(indexToRemove, 1)
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 
-    await msgRef.update(msgToUpdate)
+	async getLast5MessagesForChannel(p: { channelId: string }): Promise<SearchPartnerMessage[]> {
+		const docs = (await this.dbRef.where('channelId', '==', p.channelId).limitToLast(5).orderBy('timestamp').get()).docs
 
-    return await this.getMessageByMessageId({ msgId: p.msgId })
-  }
+		return docs.map((doc) => <SearchPartnerMessage>doc.data())
+	}
 
+	async getUnexpiredMessagesBetweenDate(p: { start: Date; end: Date }): Promise<SearchPartnerMessage[]> {
+		const docs = (
+			await this.dbRef
+				.where('timestamp', '<', p.end.getTime())
+				.where('timestamp', '>', p.start.getTime())
+				.where('expired', '!=', true)
+				.get()
+		).docs
+
+		return docs.map((doc) => <SearchPartnerMessage>doc.data())
+	}
+
+	async setMessageExpired(p: { msgId: string; expired: boolean }): Promise<SearchPartnerMessage> {
+		const msgRef = (await this.dbRef.where('messageId', '==', p.msgId).get()).docs[0].ref
+
+		const msgToUpdate = <SearchPartnerMessage>(await msgRef.get()).data()
+
+		msgToUpdate.expired = p.expired
+
+		await msgRef.update(msgToUpdate)
+
+		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
 }

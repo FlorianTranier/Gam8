@@ -1,70 +1,70 @@
-import { Client, TextChannel } from 'discord.js';
-import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils';
-import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider';
-import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider';
+import { Client, TextChannel } from 'discord.js'
+import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils'
+import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
+import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 
 export default class VoiceStateListener {
+	private readonly client: Client
 
-  private readonly client: Client
+	private readonly messageProvider: DBMessageProvider
 
-  private readonly messageProvider: DBMessageProvider
+	private readonly channelProvider: DBChannelProvider
 
-  private readonly channelProvider: DBChannelProvider
+	constructor(p: { client: Client; messageProvider: DBMessageProvider; channelProvider: DBChannelProvider }) {
+		this.client = p.client
+		this.messageProvider = p.messageProvider
+		this.channelProvider = p.channelProvider
 
-  constructor(p: { client: Client, messageProvider: DBMessageProvider, channelProvider: DBChannelProvider }) {
-    this.client = p.client
-    this.messageProvider = p.messageProvider
-    this.channelProvider = p.channelProvider
+		this.createVoiceStateListener()
+			.then(() => console.log(`${VoiceStateListener.name} OK`))
+			.catch(() => console.error(`${VoiceStateListener.name} NOK`))
+	}
 
-    this.createVoiceStateListener()
-        .then(() => console.log(`${VoiceStateListener.name} OK`))
-        .catch(() => console.error(`${VoiceStateListener.name} NOK`))
-  }
+	private async createVoiceStateListener() {
+		this.client.on('voiceStateUpdate', async (oldVoiceState, newVoiceState) => {
+			const userId = newVoiceState.member?.user.id || ''
 
-  private async createVoiceStateListener() {
-    this.client.on('voiceStateUpdate', async (oldVoiceState, newVoiceState) => {
+			const messages = await this.messageProvider.getMessagesByAuthorId({
+				authorId: userId,
+			})
 
-      const userId = newVoiceState.member?.user.id || ''
+			const botChannelId = (
+				await this.channelProvider.getByGuildId({
+					guildId: newVoiceState.guild.id,
+				})
+			)?.channelId
 
-      const messages = await this.messageProvider.getMessagesByAuthorId({
-        authorId: userId
-      })
+			const botChannel = botChannelId
+				? newVoiceState.guild.channels.cache.find((channel) => channel.id === botChannelId)
+				: undefined
 
-      const botChannelId = (await this.channelProvider.getByGuildId({
-        guildId: newVoiceState.guild.id
-      }))?.channelId
+			if (botChannel && botChannel instanceof TextChannel) {
+				for (const message of messages) {
+					const author = await newVoiceState.guild?.members.fetch(message.authorId)
 
-      const botChannel = botChannelId ? newVoiceState.guild.channels.cache.find(
-        channel => channel.id === botChannelId
-      ) : undefined
+					const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
+						authorUsername: author?.user.username,
+						authorPicture: author?.user.avatarURL() || undefined,
+						membersId: message.membersId,
+						lateMembersId: message.lateMembersId,
+						game: message.game,
+						voiceChannelName: author?.voice.channel?.name,
+						voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
+						bgImg: message.bgImg,
+						locale: newVoiceState.guild.preferredLocale ?? 'en',
+						additionalInformations: message.additionalInformations,
+					})
 
-      if (botChannel && botChannel instanceof TextChannel) {
-        for (const message of messages) {
-
-          const author = (await newVoiceState.guild?.members.fetch(message.authorId))
-
-          const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate(
-            {
-              authorUsername: author?.user.username,
-              authorPicture: author?.user.avatarURL() || undefined,
-              membersId: message.membersId,
-              lateMembersId: message.lateMembersId,
-              game: message.game,
-              voiceChannelName: author?.voice.channel?.name,
-              voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
-              img: message.catUrl
-            }
-          )
-
-          try {
-            const discordMessage = await botChannel.messages.fetch(message.messageId)
-            await discordMessage.edit(embedMessage)
-          } catch (e) {
-            await this.messageProvider.deleteMessage({msgId: message.messageId})
-          }
-        }
-      }
-    })
-  }
-
+					try {
+						const discordMessage = await botChannel.messages.fetch(message.messageId)
+						await discordMessage.edit({
+							embeds: [embedMessage],
+						})
+					} catch (e) {
+						await this.messageProvider.deleteMessage({ msgId: message.messageId })
+					}
+				}
+			}
+		})
+	}
 }
