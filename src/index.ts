@@ -3,8 +3,6 @@ import dotenv from 'dotenv'
 import Discord from 'discord.js'
 import admin from 'firebase-admin'
 import CommandRouter from './routers/CommandRouter'
-
-import * as serviceAccount from './config/firebase_credentials.json'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
 import SearchCommand from './domain/services/commands/SearchCommand'
 import ReactionRouter from './routers/ReactionRouter'
@@ -17,6 +15,10 @@ import TagCommand from './domain/services/commands/TagCommand'
 import SelectReactionService from './domain/services/selectReactions/SelectReactionService'
 import { VideoGameProvider } from './providers/rawg/games/VideoGameProvider'
 import { ExpirationJob } from './domain/services/jobs/ExpirationJob'
+
+dotenv.config()
+
+const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_CREDENTIALS_BASE64 ?? '', 'base64').toString())
 
 const params = {
   type: serviceAccount.type,
@@ -31,7 +33,7 @@ const params = {
   clientC509CertUrl: serviceAccount.client_x509_cert_url,
 }
 
-dotenv.config()
+console.log(params)
 
 admin.initializeApp({
   credential: admin.credential.cert(params),
