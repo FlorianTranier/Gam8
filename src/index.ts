@@ -1,6 +1,6 @@
 import { loadi18n } from './i18n/i18n'
 import dotenv from 'dotenv'
-import Discord from 'discord.js'
+import Discord, { roleMention } from 'discord.js'
 import admin from 'firebase-admin'
 import CommandRouter from './routers/CommandRouter'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
@@ -89,10 +89,26 @@ client.on('guildCreate', async (guild) => {
 })
 
 client.on('ready', async () => {
+	const announceStateRef = (await db.collection('announcement').doc('announceState').get()).ref
+	console.log((await announceStateRef.get()).data())
+	const announceState = <{ shouldAnnounce: boolean }>(await announceStateRef.get()).data()
+
 	client.guilds.cache.forEach(async (guild) => {
 		const association = await channelProvider.getByGuildId({
 			guildId: guild.id,
 		})
+
+		if (announceState.shouldAnnounce) {
+			const { markdownNote } = <{ markdownNote: string }>await import(`./patchnotes/${process.env.npm_package_version}`)
+			const channel = await client.channels.fetch(association?.channelId ?? '')
+			if (channel != null && channel.isTextBased())
+				channel.send({
+					content: `${roleMention(association?.tagRoleId ?? '')}\n${markdownNote}`,
+				})
+			announceState.shouldAnnounce = false
+			await announceStateRef.update(announceState)
+		}
+
 		if (!association) {
 			const channel = await guild.channels.create({
 				name: `${process.env.BOT_CHANNEL}`,
