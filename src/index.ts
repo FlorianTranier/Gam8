@@ -99,7 +99,7 @@ client.on('ready', async () => {
 		})
 
 		if (announceState.shouldAnnounce) {
-			const { markdownNote } = <{ markdownNote: string }>await import(`./patchnotes/${process.env.npm_package_version}`)
+			const { markdownNote } = <{ markdownNote: string }>await import(`./patchnotes/${process.env.VERSION}`)
 			const channel = await client.channels.fetch(association?.channelId ?? '')
 			if (channel != null && channel.isTextBased())
 				channel.send({
