@@ -136,11 +136,6 @@ Please don't delete this channel ! Otherwise, I'm not going to work anymore. You
 	})
 
 	await Promise.all(jobs.map((job) => job.start()))
-
-	if (announceState.shouldAnnounce) {
-		announceState.shouldAnnounce = false
-		await announceStateRef.update(announceState)
-	}
 })
 
 client.login(process.env.BOT_TOKEN)
