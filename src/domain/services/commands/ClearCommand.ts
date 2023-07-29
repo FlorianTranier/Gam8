@@ -1,37 +1,37 @@
 import CommandInterface from './CommandInterface'
 import {
-  PermissionFlagsBits,
-  RESTPostAPIChatInputApplicationCommandsJSONBody,
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
+	PermissionFlagsBits,
+	RESTPostAPIChatInputApplicationCommandsJSONBody,
+	SlashCommandBuilder,
+	ChatInputCommandInteraction,
 } from 'discord.js'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 
 export default class ClearCommand implements CommandInterface {
-  COMMAND = 'clear'
+	COMMAND = 'clear'
 
-  private readonly messageProvider: DBMessageProvider
+	private readonly messageProvider: DBMessageProvider
 
-  constructor(p: { messageProvider: DBMessageProvider }) {
-    this.messageProvider = p.messageProvider
-  }
+	constructor(p: { messageProvider: DBMessageProvider }) {
+		this.messageProvider = p.messageProvider
+	}
 
-  getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
-    return new SlashCommandBuilder()
-      .setDescription('Clear all bot messages')
-      .setName(this.COMMAND)
-      .setDMPermission(false)
-      .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
-      .toJSON()
-  }
+	getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
+		return new SlashCommandBuilder()
+			.setDescription('Clear all bot messages')
+			.setName(this.COMMAND)
+			.setDMPermission(false)
+			.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+			.toJSON()
+	}
 
-  async supportCommand(p: { command: string }): Promise<boolean> {
-    return p.command === this.COMMAND
-  }
+	async supportCommand(p: { command: string }): Promise<boolean> {
+		return p.command === this.COMMAND
+	}
 
-  async exec(p: { args: string[]; context: ChatInputCommandInteraction }): Promise<void> {
-    p.context.reply('Not implemented right now, WIP')
-    /*if (!p.context.member?.permissions.has(PermissionFlagsBits.ManageMessages)) {
+	async exec(p: { args: string[]; context: ChatInputCommandInteraction }): Promise<void> {
+		p.context.reply('Not implemented right now, WIP')
+		/*if (!p.context.member?.permissions.has(PermissionFlagsBits.ManageMessages)) {
       await p.context.delete()
       return
     }
@@ -61,5 +61,5 @@ export default class ClearCommand implements CommandInterface {
 
     await p.context.delete()
     */
-  }
+	}
 }

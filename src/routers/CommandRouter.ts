@@ -4,77 +4,77 @@ import CommandInterface from '../domain/services/commands/CommandInterface'
 import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
 
 export default class CommandRouter {
-  private readonly client: Client
-  private readonly commands: CommandInterface[]
-  private readonly messageProvider: DBMessageProvider
-  private readonly videoGameProvider: VideoGameProvider
+	private readonly client: Client
+	private readonly commands: CommandInterface[]
+	private readonly messageProvider: DBMessageProvider
+	private readonly videoGameProvider: VideoGameProvider
 
-  constructor(p: {
-    client: Client
-    messageProvider: DBMessageProvider
-    videoGameProvider: VideoGameProvider
-    commands: CommandInterface[]
-  }) {
-    this.client = p.client
-    this.commands = p.commands
-    this.messageProvider = p.messageProvider
-    this.videoGameProvider = p.videoGameProvider
+	constructor(p: {
+		client: Client
+		messageProvider: DBMessageProvider
+		videoGameProvider: VideoGameProvider
+		commands: CommandInterface[]
+	}) {
+		this.client = p.client
+		this.commands = p.commands
+		this.messageProvider = p.messageProvider
+		this.videoGameProvider = p.videoGameProvider
 
-    const commands = this.commands.map(command => command.getSlashCommand())
+		const commands = this.commands.map((command) => command.getSlashCommand())
 
-    const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN ?? '')
-    rest
-      .put(Routes.applicationCommands(process.env.BOT_CLIENT_ID ?? ''), { body: commands })
-      .then(() => console.log(`UpdateCommands OK`))
-      .catch(() => console.error(`UpdateCommands NOK`))
+		const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN ?? '')
+		rest
+			.put(Routes.applicationCommands(process.env.BOT_CLIENT_ID ?? ''), { body: commands })
+			.then(() => console.log(`UpdateCommands OK`))
+			.catch(() => console.error(`UpdateCommands NOK`))
 
-    this.createEventMessage()
-      .then(() => console.log(`${CommandRouter.name} OK`))
-      .catch(() => console.error(`${CommandRouter.name} NOK`))
-  }
+		this.createEventMessage()
+			.then(() => console.log(`${CommandRouter.name} OK`))
+			.catch(() => console.error(`${CommandRouter.name} NOK`))
+	}
 
-  async createEventMessage(): Promise<void> {
-    this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isChatInputCommand()) return
+	async createEventMessage(): Promise<void> {
+		this.client.on('interactionCreate', async (interaction) => {
+			if (!interaction.isChatInputCommand()) return
 
-      const command = await this.findCommandByPrefix({
-        prefix: interaction.commandName,
-      })
+			const command = await this.findCommandByPrefix({
+				prefix: interaction.commandName,
+			})
 
-      if (!command) {
-        await interaction.reply(`Invalid command : Type \`-sp help\` if you need help :)`)
-      } else {
-        await command.exec({
-          context: interaction,
-        })
-      }
-    })
+			if (!command) {
+				await interaction.reply(`Invalid command : Type \`-sp help\` if you need help :)`)
+			} else {
+				await command.exec({
+					context: interaction,
+				})
+			}
+		})
 
-    this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isAutocomplete()) return
-      const input = interaction.options.getFocused()
+		this.client.on('interactionCreate', async (interaction) => {
+			if (!interaction.isAutocomplete()) return
+			const input = interaction.options.getFocused()
 
-      const games =
-        input.length === 0
-          ? (await this.messageProvider.getLast5Messages()).map(msg => {
-              return {
-                name: msg.game,
-              }
-            })
-          : await this.videoGameProvider.searchGames({ searchInput: input })
+			const games =
+				input.length === 0
+					? (await this.messageProvider.getLast5Messages()).map((msg) => {
+							return {
+								name: msg.game,
+							}
+					  })
+					: await this.videoGameProvider.searchGames({ searchInput: input })
 
-      try {
-        await interaction.respond(
-          games.map(game => {
-            return { name: game.name, value: game.name }
-          })
-        )
-      } catch (e) {} // NON BLOCKING ERROR
-    })
-  }
+			try {
+				await interaction.respond(
+					games.map((game) => {
+						return { name: game.name, value: game.name }
+					})
+				)
+			} catch (e) {} // NON BLOCKING ERROR
+		})
+	}
 
-  private async findCommandByPrefix(p: { prefix: string }): Promise<CommandInterface | undefined> {
-    const bitmap = await Promise.all(this.commands.map(cmd => cmd.supportCommand({ command: p.prefix })))
-    return this.commands[bitmap.indexOf(true)]
-  }
+	private async findCommandByPrefix(p: { prefix: string }): Promise<CommandInterface | undefined> {
+		const bitmap = await Promise.all(this.commands.map((cmd) => cmd.supportCommand({ command: p.prefix })))
+		return this.commands[bitmap.indexOf(true)]
+	}
 }
