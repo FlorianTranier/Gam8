@@ -1,4 +1,6 @@
 [![Docker deploy](https://github.com/FlorianTranier/partner-research-v2/actions/workflows/docker_deploy.yml/badge.svg?branch=main)](https://github.com/FlorianTranier/partner-research-v2/actions/workflows/docker_deploy.yml)
+![License](https://badgen.net/github/license/FlorianTranier/partner-research-v2)
+![Release](https://badgen.net/github/release/FlorianTranier/partner-research-v2/stable)
 
 # Partner Research
 
