@@ -25,7 +25,7 @@ export class ExpirationJob extends Job {
 		})
 
 		await Promise.all(
-			messages.map(async (message) => {
+			messages.filter(message => !message.expired).map(async (message) => {
 				const discordChannel = <TextBasedChannel>await this.client.channels.fetch(message.channelId, { cache: false })
 
 				const discordMessage = await discordChannel?.messages.fetch({

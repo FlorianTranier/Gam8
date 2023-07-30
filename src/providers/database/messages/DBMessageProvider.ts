@@ -130,7 +130,7 @@ export default class {
 			await this.dbRef
 				.where('timestamp', '<', p.end.getTime())
 				.where('timestamp', '>', p.start.getTime())
-				.where('expired', '!=', true)
+				.where('expired', '==', false)
 				.get()
 		).docs
 
