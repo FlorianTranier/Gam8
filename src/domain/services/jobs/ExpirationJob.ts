@@ -25,36 +25,37 @@ export class ExpirationJob extends Job {
 		})
 
 		await Promise.all(
-			messages.filter(message => !message.expired).map(async (message) => {
-				const discordChannel = <TextBasedChannel>await this.client.channels.fetch(message.channelId, { cache: false })
+			messages
+				.filter((message) => !message.expired)
+				.map(async (message) => {
+					const discordChannel = <TextBasedChannel>await this.client.channels.fetch(message.channelId, { cache: false })
 
-				const discordMessage = await discordChannel?.messages.fetch({
-					message: message.messageId,
-					cache: false,
+					const discordMessage = await discordChannel?.messages.fetch({
+						message: message.messageId,
+						cache: false,
+					})
+
+					const author = await discordMessage.guild?.members.fetch(message.authorId)
+
+					const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
+						authorUsername: author?.user.username,
+						authorPicture: author?.user.avatarURL() || undefined,
+						membersId: message.membersId,
+						lateMembersId: message.lateMembersId,
+						game: message.game,
+						locale: discordMessage.guild?.preferredLocale ?? 'en',
+						additionalInformations: message.additionalInformations,
+						expired: true,
+					})
+
+					return Promise.all([
+						this.messageProvider.setMessageExpired({ msgId: message.messageId, expired: true }),
+						discordMessage.edit({
+							embeds: [embedMessage],
+							components: [],
+						}),
+					])
 				})
-
-				const author = await discordMessage.guild?.members.fetch(message.authorId)
-
-				const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
-					authorUsername: author?.user.username,
-					authorPicture: author?.user.avatarURL() || undefined,
-					membersId: message.membersId,
-					lateMembersId: message.lateMembersId,
-					game: message.game,
-					bgImg: `https://unsplash.com/photos/zcKEj-Jq02g/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MzB8fGdvbmV8ZnJ8MHx8fHwxNjkwNTc5NTQxfDA&force=true&w=1920`,
-					locale: discordMessage.guild?.preferredLocale ?? 'en',
-					additionalInformations: message.additionalInformations,
-					expired: true,
-				})
-
-				return Promise.all([
-					this.messageProvider.setMessageExpired({ msgId: message.messageId, expired: true }),
-					discordMessage.edit({
-						embeds: [embedMessage],
-						components: [],
-					}),
-				])
-			})
 		)
 	}
 }

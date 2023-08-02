@@ -10,7 +10,7 @@ export default {
 		lateMembersId: string[]
 		voiceChannelName?: string
 		voiceChannelInviteUrl?: string
-		bgImg: string
+		bgImg?: string
 		locale: string
 		additionalInformations?: string
 		expired?: boolean
@@ -39,9 +39,12 @@ export default {
 			])
 		}
 
+		if (p.bgImg) {
+			msg.setImage(p.bgImg)
+		}
+
 		msg
 			.addFields([{ name: i18next.t('embed.answer_title', { lng: p.locale }), value: membersDisplay }])
-			.setImage(p.bgImg)
 			.setTimestamp()
 			.setColor(resolveColor(p.expired ? Colors.LightGrey : 'Random'))
 
