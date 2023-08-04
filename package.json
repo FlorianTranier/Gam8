@@ -15,28 +15,28 @@
 	"author": "Florian Tranier",
 	"license": "GPL-3.0-only",
 	"devDependencies": {
+		"@tsconfig/node20": "^20.1.0",
 		"@types/luxon": "^3.3.1",
 		"@types/mapbox-gl": "^1.12.5",
-		"@tsconfig/node20": "^20.1.0",
 		"@typescript-eslint/eslint-plugin": "^6.2.0",
 		"@typescript-eslint/parser": "^6.2.0",
 		"eslint": "^8.45.0",
 		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-prettier": "^5.0.0",
-		"prettier": "^3.0.0",
 		"nodemon": "^2.0.6",
+		"prettier": "^3.0.0",
 		"rimraf": "^3.0.2",
-		"ts-node": "^9.0.0",
+		"ts-node": "^9.1.1",
 		"typescript": "^5.1.6"
 	},
 	"dependencies": {
 		"@types/node": "^14.14.6",
 		"axios": "^0.21.0",
 		"cron": "^2.4.0",
-		"discord.js": "^14.8.0",
+		"discord.js": "^14.12.1",
 		"dotenv": "^8.2.0",
-		"firebase-admin": "^9.4.0",
 		"i18next": "^22.4.9",
-		"luxon": "^3.3.0"
+		"luxon": "^3.3.0",
+		"mongodb": "^5.7.0"
 	}
 }

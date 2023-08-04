@@ -1,7 +1,6 @@
 import { loadi18n } from './i18n/i18n'
 import dotenv from 'dotenv'
 import Discord, { roleMention } from 'discord.js'
-import admin from 'firebase-admin'
 import CommandRouter from './routers/CommandRouter'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
 import SearchCommand from './domain/services/commands/SearchCommand'
@@ -15,31 +14,15 @@ import TagCommand from './domain/services/commands/TagCommand'
 import SelectReactionService from './domain/services/selectReactions/SelectReactionService'
 import { VideoGameProvider } from './providers/rawg/games/VideoGameProvider'
 import { ExpirationJob } from './domain/services/jobs/ExpirationJob'
+import { MongoClient } from 'mongodb'
 
 dotenv.config()
 
-const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_CREDENTIALS_BASE64 ?? '', 'base64').toString())
+const dbClient = new MongoClient(process.env.DB_CONN_STRING ?? '')
 
-const params = {
-	type: serviceAccount.type,
-	projectId: serviceAccount.project_id,
-	privateKeyId: serviceAccount.private_key_id,
-	privateKey: serviceAccount.private_key,
-	clientEmail: serviceAccount.client_email,
-	clientId: serviceAccount.client_id,
-	authUri: serviceAccount.auth_uri,
-	tokenUri: serviceAccount.token_uri,
-	authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-	clientC509CertUrl: serviceAccount.client_x509_cert_url,
-}
+dbClient.connect()
 
-console.log(params)
-
-admin.initializeApp({
-	credential: admin.credential.cert(params),
-})
-
-const db = admin.firestore()
+const db = dbClient.db('partner-research')
 
 loadi18n()
 	.then(() => console.log(`i18n OK`))
@@ -89,16 +72,14 @@ client.on('guildCreate', async (guild) => {
 })
 
 client.on('ready', async () => {
-	const announceStateRef = (await db.collection('announcement').doc('announceState').get()).ref
-	console.log((await announceStateRef.get()).data())
-	const announceState = <{ shouldAnnounce: boolean }>(await announceStateRef.get()).data()
+	const announceState = await db.collection('announcement').findOne<{ shouldAnnounce: boolean }>()
 
 	client.guilds.cache.forEach(async (guild) => {
 		const association = await channelProvider.getByGuildId({
 			guildId: guild.id,
 		})
 
-		if (announceState.shouldAnnounce) {
+		if (announceState?.shouldAnnounce) {
 			const { markdownNote } = <{ markdownNote: string }>await import(`./patchnotes/${process.env.VERSION}`)
 			const channel = await client.channels.fetch(association?.channelId ?? '')
 			if (channel != null && channel.isTextBased())

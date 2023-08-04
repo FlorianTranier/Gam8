@@ -1,34 +1,23 @@
-import { firestore } from 'firebase-admin'
+import { Collection, Db } from 'mongodb'
 import GuildChannelAssociation from '../../../domain/models/channels/GuildChannelAssociation'
 
 export default class {
-	private readonly dbRef: firestore.CollectionReference
+	private dbRef: Collection
 
-	constructor(p: { db: firestore.Firestore }) {
+	constructor(p: { db: Db }) {
 		this.dbRef = p.db.collection('channels')
 	}
 
-	async saveGuildChannelAssociation(p: {
-		guildChannelAssociation: GuildChannelAssociation
-	}): Promise<GuildChannelAssociation> {
-		return <GuildChannelAssociation>(
-			(await (await this.dbRef.add(JSON.parse(JSON.stringify(p.guildChannelAssociation)))).get()).data()
-		)
+	async saveGuildChannelAssociation(p: { guildChannelAssociation: GuildChannelAssociation }): Promise<void> {
+		await this.dbRef.insertOne(p.guildChannelAssociation)
 	}
 
 	async updateTag(p: { guildId: string; tagId?: string }): Promise<void> {
-		const associationRef = (await this.dbRef.where('guildId', '==', p.guildId).get()).docs[0].ref
-
-		const toUpdate = <GuildChannelAssociation>(await associationRef.get()).data()
-
-		toUpdate.tagRoleId = p.tagId ?? ''
-
-		await associationRef.update(toUpdate)
+		await this.dbRef.updateOne({ guildId: p.guildId }, { $set: { tagRoleId: p.tagId ?? '' } })
 	}
 
 	async getByGuildId(p: { guildId: string }): Promise<GuildChannelAssociation | null> {
-		const doc = (await this.dbRef.where('guildId', '==', p.guildId).get()).docs[0]
-
-		return doc ? <GuildChannelAssociation>doc.data() : null
+		const doc = await this.dbRef.find<GuildChannelAssociation>({ guildId: p.guildId }).toArray()
+		return doc[0] ? doc[0] : null
 	}
 }
