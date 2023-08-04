@@ -16,6 +16,7 @@ import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
 import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
 import i18next from 'i18next'
+import { gameAbbreviation } from '../../../providers/rawg/games/GameAbbreviation'
 
 export default class SearchCommand implements CommandInterface {
 	COMMAND = 'search'
@@ -62,7 +63,8 @@ export default class SearchCommand implements CommandInterface {
 	}
 
 	async exec(p: { context: ChatInputCommandInteraction }): Promise<void> {
-		const game = p.context.options.getString('game') ?? ''
+		const game =
+			gameAbbreviation.get(p.context.options.getString('game') ?? '') ?? p.context.options.getString('game') ?? ''
 		const additionalInformations = p.context.options.getString('additional_informations')
 
 		const gameInfos = (await this.videoGameProvider.searchGames({ searchInput: game }))[0] ?? {
@@ -105,11 +107,12 @@ export default class SearchCommand implements CommandInterface {
 			new ButtonBuilder()
 				.setCustomId('notify')
 				.setLabel(i18next.t('actions.notify_me', { lng: p.context.guildLocale ?? 'en' }))
-				.setStyle(ButtonStyle.Primary),
+				.setStyle(ButtonStyle.Success),
 			new ButtonBuilder()
 				.setCustomId('dont_notify')
 				.setLabel(i18next.t('actions.disable_notification', { lng: p.context.guildLocale ?? 'en' }))
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setLabel('?').setStyle(ButtonStyle.Link).setURL(`https://rawg.io/games/${gameInfos.slug}`)
 		)
 
 		const message = await p.context.editReply({
