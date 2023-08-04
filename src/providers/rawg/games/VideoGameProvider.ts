@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { Game } from '../../../domain/models/games/Game'
+import { gameAbbreviation } from './GameAbbreviation'
 
 export class VideoGameProvider {
 	client: AxiosInstance
@@ -10,10 +11,12 @@ export class VideoGameProvider {
 	}
 
 	async searchGames(p: { searchInput: string }): Promise<Game[]> {
+		const searchInput = gameAbbreviation.get(p.searchInput.toLowerCase()) ?? p.searchInput
+
 		return (
 			await this.client.get('games', {
 				params: {
-					search: p.searchInput,
+					search: searchInput,
 					platforms: 4,
 					page_size: 5,
 					key: process.env.RAWG_API_KEY,
