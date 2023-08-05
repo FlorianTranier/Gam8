@@ -1,6 +1,6 @@
 {
 	"name": "partner-research-v2",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -37,6 +37,7 @@
 		"dotenv": "^8.2.0",
 		"i18next": "^22.4.9",
 		"luxon": "^3.3.0",
-		"mongodb": "^5.7.0"
+		"mongodb": "^5.7.0",
+		"pino": "^8.15.0"
 	}
 }

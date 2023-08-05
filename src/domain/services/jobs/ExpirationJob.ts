@@ -4,11 +4,13 @@ import { DateTime } from 'luxon'
 import { Job } from './Job'
 import { Client, TextBasedChannel } from 'discord.js'
 import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils'
+import pino from 'pino'
 
 export class ExpirationJob extends Job {
 	protected job: CronJob
 	private readonly messageProvider: DBMessageProvider
 	private readonly client: Client
+	private readonly logger = pino({ level: 'info', name: 'ExpirationJob' })
 
 	constructor(p: { messageProvider: DBMessageProvider; discordClient: Client }) {
 		super()
@@ -54,6 +56,7 @@ export class ExpirationJob extends Job {
 							embeds: [embedMessage],
 							components: [],
 						}),
+						this.logger.info(discordMessage, 'Set as expired'),
 					])
 				})
 		)

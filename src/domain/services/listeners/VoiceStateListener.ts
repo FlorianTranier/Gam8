@@ -2,6 +2,7 @@ import { Client, TextChannel } from 'discord.js'
 import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
+import pino from 'pino'
 
 export default class VoiceStateListener {
 	private readonly client: Client
@@ -10,14 +11,16 @@ export default class VoiceStateListener {
 
 	private readonly channelProvider: DBChannelProvider
 
+	private readonly logger = pino({ level: 'info', name: 'VoiceStateListener' })
+
 	constructor(p: { client: Client; messageProvider: DBMessageProvider; channelProvider: DBChannelProvider }) {
 		this.client = p.client
 		this.messageProvider = p.messageProvider
 		this.channelProvider = p.channelProvider
 
 		this.createVoiceStateListener()
-			.then(() => console.log(`${VoiceStateListener.name} OK`))
-			.catch(() => console.error(`${VoiceStateListener.name} NOK`))
+			.then(() => this.logger.info(`${VoiceStateListener.name} OK`))
+			.catch(() => this.logger.error(`${VoiceStateListener.name} NOK`))
 	}
 
 	private async createVoiceStateListener() {

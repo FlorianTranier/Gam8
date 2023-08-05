@@ -17,6 +17,7 @@ import DBChannelProvider from '../../../providers/database/channels/DBChannelPro
 import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
 import i18next from 'i18next'
 import { gameAbbreviation } from '../../../providers/rawg/games/GameAbbreviation'
+import pino from 'pino'
 
 export default class SearchCommand implements CommandInterface {
 	COMMAND = 'search'
@@ -24,6 +25,7 @@ export default class SearchCommand implements CommandInterface {
 	private readonly messageProvider: DBMessageProvider
 	private readonly channelProvider: DBChannelProvider
 	private readonly videoGameProvider: VideoGameProvider
+	private readonly logger = pino({ level: 'info', name: 'SearchCommand' })
 
 	constructor(p: {
 		messageProvider: DBMessageProvider
@@ -135,19 +137,23 @@ export default class SearchCommand implements CommandInterface {
 			allowedMentions: { roles: [association?.tagRoleId ?? ''] },
 		})
 
-		await this.messageProvider.saveMessage({
-			message: new SearchPartnerMessage({
-				serverId: p.context.guild?.id || '',
-				authorId: p.context.member?.user.id || '',
-				messageId: message?.id || '',
-				game,
-				type: MessageType.RESEARCH_PARTNER,
-				membersId: [],
-				lateMembersId: [],
-				channelId: p.context.channel?.id || '',
-				bgImg: gameInfos.background_image,
-				additionalInformations: additionalInformations ?? undefined,
-			}),
+		const newMessage = new SearchPartnerMessage({
+			serverId: p.context.guild?.id || '',
+			authorId: p.context.member?.user.id || '',
+			messageId: message?.id || '',
+			game,
+			type: MessageType.RESEARCH_PARTNER,
+			membersId: [],
+			lateMembersId: [],
+			channelId: p.context.channel?.id || '',
+			bgImg: gameInfos.background_image,
+			additionalInformations: additionalInformations ?? undefined,
 		})
+
+		await this.messageProvider.saveMessage({
+			message: newMessage,
+		})
+
+		this.logger.info(newMessage, 'New Game8 message !')
 	}
 }

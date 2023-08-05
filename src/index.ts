@@ -15,8 +15,11 @@ import SelectReactionService from './domain/services/selectReactions/SelectReact
 import { VideoGameProvider } from './providers/rawg/games/VideoGameProvider'
 import { ExpirationJob } from './domain/services/jobs/ExpirationJob'
 import { MongoClient } from 'mongodb'
+import { pino } from 'pino'
 
 dotenv.config()
+
+const logger = pino({ level: 'info' })
 
 const dbClient = new MongoClient(process.env.DB_CONN_STRING ?? '')
 
@@ -25,8 +28,8 @@ dbClient.connect()
 const db = dbClient.db('partner-research')
 
 loadi18n()
-	.then(() => console.log(`i18n OK`))
-	.catch(() => console.error(`i18n NOK`))
+	.then(() => logger.info(`i18n loaded`))
+	.catch(() => logger.error(`i18n NOK`))
 
 const client = new Discord.Client({ intents: 3276799, allowedMentions: { parse: ['users', 'roles'] } })
 
@@ -113,10 +116,20 @@ Please don't delete this channel ! Otherwise, I'm not going to work anymore. You
 					channelId: channel.id,
 				}),
 			})
+			logger.info(
+				{
+					guildId: guild.id,
+					guildName: guild.name,
+					channelId: channel.id,
+				},
+				'Bot installed in a new guild !'
+			)
 		}
 	})
 
 	await Promise.all(jobs.map((job) => job.start()))
+
+	logger.info('Gam8 started !')
 })
 
 client.login(process.env.BOT_TOKEN)

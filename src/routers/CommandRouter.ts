@@ -2,12 +2,14 @@ import { VideoGameProvider } from './../providers/rawg/games/VideoGameProvider'
 import { Client, REST, Routes } from 'discord.js'
 import CommandInterface from '../domain/services/commands/CommandInterface'
 import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
+import pino from 'pino'
 
 export default class CommandRouter {
 	private readonly client: Client
 	private readonly commands: CommandInterface[]
 	private readonly messageProvider: DBMessageProvider
 	private readonly videoGameProvider: VideoGameProvider
+	private readonly logger = pino({ level: 'info', name: 'CommandRouter' })
 
 	constructor(p: {
 		client: Client
@@ -25,12 +27,12 @@ export default class CommandRouter {
 		const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN ?? '')
 		rest
 			.put(Routes.applicationCommands(process.env.BOT_CLIENT_ID ?? ''), { body: commands })
-			.then(() => console.log(`UpdateCommands OK`))
-			.catch(() => console.error(`UpdateCommands NOK`))
+			.then(() => this.logger.info(`UpdateCommands OK`))
+			.catch(() => this.logger.error(`UpdateCommands NOK`))
 
 		this.createEventMessage()
-			.then(() => console.log(`${CommandRouter.name} OK`))
-			.catch(() => console.error(`${CommandRouter.name} NOK`))
+			.then(() => this.logger.info(`${CommandRouter.name} OK`))
+			.catch(() => this.logger.error(`${CommandRouter.name} NOK`))
 	}
 
 	async createEventMessage(): Promise<void> {
@@ -69,7 +71,9 @@ export default class CommandRouter {
 						return { name: game.name, value: game.name }
 					})
 				)
-			} catch (e) {} // NON BLOCKING ERROR
+			} catch (e) {
+				/* empty */
+			} // NON BLOCKING ERROR
 		})
 	}
 

@@ -1,18 +1,20 @@
 import { Client, Events } from 'discord.js'
 import SelectReactionService from '../domain/services/selectReactions/SelectReactionService'
+import pino from 'pino'
 
 export default class ReactionRouter {
 	private readonly client: Client
 
 	private readonly selectReactionService: SelectReactionService
+	private readonly logger = pino({ level: 'info', name: 'VoiceStateListener' })
 
 	constructor(p: { client: Client; selectReactionService: SelectReactionService }) {
 		this.client = p.client
 		this.selectReactionService = p.selectReactionService
 
 		this.createEventReaction()
-			.then(() => console.log(`${ReactionRouter.name} OK`))
-			.catch(() => console.error(`${ReactionRouter.name} NOK`))
+			.then(() => this.logger.info(`${ReactionRouter.name} OK`))
+			.catch(() => this.logger.error(`${ReactionRouter.name} NOK`))
 	}
 
 	private async createEventReaction(): Promise<void> {
