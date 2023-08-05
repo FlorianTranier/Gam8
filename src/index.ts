@@ -133,3 +133,11 @@ Please don't delete this channel ! Otherwise, I'm not going to work anymore. You
 })
 
 client.login(process.env.BOT_TOKEN)
+
+process.on('uncaughtException', (err) => {
+	logger.fatal(err, 'Uncaught exception detected')
+})
+
+process.on('unhandledRejection', (err) => {
+	logger.fatal(err, 'Unhandled rejection detected')
+})
