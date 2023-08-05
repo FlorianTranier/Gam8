@@ -78,7 +78,7 @@ export default class {
 
 	async getUnexpiredMessagesBetweenDate(p: { start: Date; end: Date }): Promise<SearchPartnerMessage[]> {
 		return await this.dbRef
-			.find<SearchPartnerMessage>({ timestamp: { $gt: p.start, $lt: p.end }, expired: false })
+			.find<SearchPartnerMessage>({ timestamp: { $gt: p.start.getTime(), $lt: p.end.getTime() }, expired: false })
 			.toArray()
 	}
 
