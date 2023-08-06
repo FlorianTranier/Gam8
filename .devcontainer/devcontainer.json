@@ -15,6 +15,20 @@
 		"ghcr.io/devcontainers-contrib/features/firebase-cli:2": {
 			"version": "latest"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"dbaeumer.vscode-eslint",
+				"github.vscode-github-actions",
+				"eamodio.gitlens",
+				"mongodb.mongodb-vscode",
+				"DominicVonk.parameter-hints",
+				"phind.phind",
+				"esbenp.prettier-vscode"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
