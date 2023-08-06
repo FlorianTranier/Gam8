@@ -56,7 +56,7 @@ export class ExpirationJob extends Job {
 							embeds: [embedMessage],
 							components: [],
 						}),
-						this.logger.info(discordMessage, 'Set as expired'),
+						(async (): Promise<void> => this.logger.info(discordMessage, 'Set as expired'))(),
 					])
 				})
 		)
