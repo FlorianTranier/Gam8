@@ -3,6 +3,7 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	ChatInputCommandInteraction,
+	GuildMember,
 	MessageActionRowComponentBuilder,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 	SlashCommandBuilder,
@@ -18,6 +19,7 @@ import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvid
 import i18next from 'i18next'
 import { gameAbbreviation } from '../../../providers/rawg/games/GameAbbreviation'
 import pino from 'pino'
+import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 
 export default class SearchCommand implements CommandInterface {
 	COMMAND = 'search'
@@ -121,7 +123,7 @@ export default class SearchCommand implements CommandInterface {
 			content: tag,
 			embeds: [
 				await EmbedMessageGenerator.createOrUpdate({
-					authorUsername: p.context.member?.user.username,
+					authorUsername: getDiscordUsername(p.context.member as GuildMember),
 					authorPicture: author?.user.avatarURL() || '',
 					game,
 					membersId: [],

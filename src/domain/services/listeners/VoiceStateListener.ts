@@ -3,6 +3,7 @@ import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessag
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import pino from 'pino'
+import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 
 export default class VoiceStateListener {
 	private readonly client: Client
@@ -46,7 +47,7 @@ export default class VoiceStateListener {
 					const author = await newVoiceState.guild?.members.fetch(message.authorId)
 
 					const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
-						authorUsername: author?.user.username,
+						authorUsername: getDiscordUsername(author),
 						authorPicture: author?.user.avatarURL() || undefined,
 						membersId: message.membersId,
 						lateMembersId: message.lateMembersId,

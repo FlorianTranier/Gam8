@@ -3,7 +3,7 @@ import i18next from 'i18next'
 
 export default {
 	async createOrUpdate(p: {
-		authorUsername?: string
+		authorUsername: string
 		authorPicture?: string
 		game: string
 		membersId: string[]
@@ -24,7 +24,7 @@ export default {
 
 		msg
 			.setAuthor({
-				name: p.authorUsername ?? '',
+				name: p.authorUsername,
 				iconURL: p.authorPicture || undefined,
 			})
 			.setTitle(

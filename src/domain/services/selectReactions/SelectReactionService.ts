@@ -3,6 +3,7 @@ import DBMessageProvider from '../../../providers/database/messages/DBMessagePro
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
 import i18next from 'i18next'
+import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 
 export default class SelectReactionService {
 	private readonly messageProvider: DBMessageProvider
@@ -90,7 +91,7 @@ export default class SelectReactionService {
 		const author = await p.interaction.message.guild?.members.fetch(message.authorId)
 
 		const embedMessage = await EmbedMessageGenerator.createOrUpdate({
-			authorUsername: author?.user.username,
+			authorUsername: getDiscordUsername(author),
 			authorPicture: author?.user.avatarURL() || undefined,
 			membersId: updatedMessage.membersId,
 			lateMembersId: updatedMessage.lateMembersId,

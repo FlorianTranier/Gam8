@@ -5,6 +5,7 @@ import { Job } from './Job'
 import { Client, TextBasedChannel } from 'discord.js'
 import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils'
 import pino from 'pino'
+import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 
 export class ExpirationJob extends Job {
 	protected job: CronJob
@@ -40,7 +41,7 @@ export class ExpirationJob extends Job {
 					const author = await discordMessage.guild?.members.fetch(message.authorId)
 
 					const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
-						authorUsername: author?.user.username,
+						authorUsername: getDiscordUsername(author),
 						authorPicture: author?.user.avatarURL() || undefined,
 						membersId: message.membersId,
 						lateMembersId: message.lateMembersId,
