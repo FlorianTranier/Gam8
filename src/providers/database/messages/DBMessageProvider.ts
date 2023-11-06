@@ -20,6 +20,10 @@ export default class {
 		return (await this.dbRef.findOne<SearchPartnerMessage>({ messageId: p.msgId })) as SearchPartnerMessage
 	}
 
+	async findMessagesByMessageId(p: { msgIds: string[] }): Promise<SearchPartnerMessage[]> {
+		return this.dbRef.find<SearchPartnerMessage>({ messageId: { $in: p.msgIds } }).toArray()
+	}
+
 	async getMessagesByAuthorId(p: { authorId: string }): Promise<SearchPartnerMessage[]> {
 		return await this.dbRef
 			.find<SearchPartnerMessage>({ authorId: p.authorId, expired: { $ne: true } })
@@ -85,5 +89,15 @@ export default class {
 	async setMessageExpired(p: { msgId: string; expired: boolean }): Promise<SearchPartnerMessage> {
 		await this.dbRef.updateOne({ messageId: p.msgId }, { $set: { expired: p.expired } })
 		return await this.getMessageByMessageId({ msgId: p.msgId })
+	}
+
+	async setMessagesExpired(p: { msgIds: string[]; expired: boolean }): Promise<SearchPartnerMessage[]> {
+		await this.dbRef.updateMany(
+			{
+				messageId: { $in: p.msgIds },
+			},
+			{ $set: { expired: p.expired } }
+		)
+		return await this.findMessagesByMessageId({ msgIds: p.msgIds })
 	}
 }

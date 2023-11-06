@@ -16,6 +16,7 @@ import { VideoGameProvider } from './providers/rawg/games/VideoGameProvider'
 import { ExpirationJob } from './domain/services/jobs/ExpirationJob'
 import { MongoClient } from 'mongodb'
 import { pino } from 'pino'
+import CancelCommand from './domain/services/commands/CancelCommand'
 
 dotenv.config()
 
@@ -44,6 +45,7 @@ const commands = [
 	new ClearCommand({ messageProvider }),
 	new HelpCommand(),
 	new TagCommand({ channelProvider }),
+	new CancelCommand({ messageProvider }),
 ]
 
 // Reactions
