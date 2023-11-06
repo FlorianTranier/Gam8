@@ -34,7 +34,9 @@ export default class CancelCommand implements CommandInterface {
 	}
 
 	async exec(p: { context: ChatInputCommandInteraction<CacheType> | undefined }): Promise<void> {
-		await p.context?.deferReply()
+		await p.context?.deferReply({
+			ephemeral: true,
+		})
 		await p.context?.deleteReply()
 
 		const messages = await this.messageProvider.getMessagesByAuthorId({ authorId: p.context?.user.id ?? '' })
