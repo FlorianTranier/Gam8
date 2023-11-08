@@ -61,7 +61,7 @@ export default class CancelCommand implements CommandInterface {
 					authorPicture: author?.user.avatarURL() || undefined,
 					membersId: message.membersId,
 					lateMembersId: message.lateMembersId,
-					game: message.game,
+					games: [message.game],
 					locale: discordMessage.guild?.preferredLocale ?? 'en',
 					additionalInformations: message.additionalInformations,
 					expired: true,

@@ -17,6 +17,7 @@ import { ExpirationJob } from './domain/services/jobs/ExpirationJob'
 import { MongoClient } from 'mongodb'
 import { pino } from 'pino'
 import CancelCommand from './domain/services/commands/CancelCommand'
+import { ImageProvider } from './providers/s3/ImageProvider'
 
 dotenv.config()
 
@@ -38,10 +39,11 @@ const client = new Discord.Client({ intents: 3276799, allowedMentions: { parse: 
 const messageProvider = new DBMessageProvider({ db })
 const channelProvider = new DBChannelProvider({ db })
 const videoGameProvider = new VideoGameProvider()
+const imageProvider = new ImageProvider()
 
 // Commands
 const commands = [
-	new SearchCommand({ messageProvider, channelProvider, videoGameProvider }),
+	new SearchCommand({ messageProvider, channelProvider, videoGameProvider, imageProvider }),
 	new ClearCommand({ messageProvider }),
 	new HelpCommand(),
 	new TagCommand({ channelProvider }),
