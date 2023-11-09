@@ -23,7 +23,6 @@ import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import { Game } from '../../models/games/Game'
 import { ImageProvider } from '../../../providers/s3/ImageProvider'
 import { mergeImages } from '../../utils/ImageUtils'
-import { randomUUID } from 'crypto'
 
 export default class SearchCommand implements CommandInterface {
 	COMMAND = 'search'
@@ -121,14 +120,20 @@ export default class SearchCommand implements CommandInterface {
 		let backgroundImage
 
 		if (gameInfos.length > 1) {
-			const image = await mergeImages(
-				gameInfos[0].background_image,
-				gameInfos[1].background_image,
-				gameInfos[2]?.background_image,
-				gameInfos[3]?.background_image
-			)
+			const backgroundImageFileName = gameInfos.map((gameInfo) => gameInfo.slug).join('_') + '.png'
 
-			backgroundImage = await this.imageProvider.uploadFile(image, `${randomUUID()}.jpg`)
+			if (await this.imageProvider.fileExists(backgroundImageFileName)) {
+				backgroundImage = await this.imageProvider.getPresignedUrl(backgroundImageFileName)
+			} else {
+				const image = await mergeImages(
+					gameInfos[0].background_image,
+					gameInfos[1].background_image,
+					gameInfos[2]?.background_image,
+					gameInfos[3]?.background_image
+				)
+
+				backgroundImage = await this.imageProvider.uploadFile(image, backgroundImageFileName)
+			}
 		}
 
 		const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
@@ -162,6 +167,7 @@ export default class SearchCommand implements CommandInterface {
 			authorId: p.context.member?.user.id || '',
 			messageId: message?.id || '',
 			game: games[0],
+			games: games,
 			type: MessageType.RESEARCH_PARTNER,
 			membersId: [],
 			lateMembersId: [],

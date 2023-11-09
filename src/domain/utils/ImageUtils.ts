@@ -6,7 +6,7 @@ async function mergeImagesHorizontal(imgSource1: string | Buffer, imgSource2: st
 }
 
 async function mergeImagesVertical(imgSource1: string | Buffer, imgSource2: string | Buffer): Promise<Buffer> {
-	return (await joinImages([imgSource1, imgSource2], { direction: 'vertical' })).png().toBuffer()
+	return (await joinImages([imgSource1, imgSource2], { direction: 'vertical', align: 'center' })).png().toBuffer()
 }
 
 export async function mergeImages(
@@ -21,34 +21,24 @@ export async function mergeImages(
 	const img2 = await sharp(Buffer.from(await (await fetch(imgSource2)).arrayBuffer()))
 		.resize(640, 360, { fit: 'fill' })
 		.toBuffer()
-	const img3 = await sharp(Buffer.from(await (await fetch(imgSource3 ?? '')).arrayBuffer()))
-		.resize(640, 360, { fit: 'fill' })
-		.toBuffer()
-	const img4 = await sharp(Buffer.from(await (await fetch(imgSource4 ?? '')).arrayBuffer()))
-		.resize(640, 360, { fit: 'fill' })
-		.toBuffer()
-
-	console.debug(1)
 
 	const firstImagePromise = mergeImagesHorizontal(img1, img2)
 
-	console.debug(2)
-
 	if (imgSource3 === undefined) return firstImagePromise
 
-	console.debug(3)
+	const img3 = await sharp(Buffer.from(await (await fetch(imgSource3)).arrayBuffer()))
+		.resize(640, 360, { fit: 'fill' })
+		.toBuffer()
 
 	if (imgSource4 === undefined) return mergeImagesVertical(await firstImagePromise, img3)
 
-	console.debug(4)
+	const img4 = await sharp(Buffer.from(await (await fetch(imgSource4)).arrayBuffer()))
+		.resize(640, 360, { fit: 'fill' })
+		.toBuffer()
 
 	const secondImagePromise = mergeImagesHorizontal(img3, img4)
 
-	console.debug(5)
-
 	const [firstImage, secondImage] = await Promise.all([firstImagePromise, secondImagePromise])
-
-	console.debug(6)
 
 	return mergeImagesVertical(firstImage, secondImage)
 }
