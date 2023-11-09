@@ -5,7 +5,7 @@ export default {
 	async createOrUpdate(p: {
 		authorUsername: string
 		authorPicture?: string
-		game: string
+		games: string[]
 		membersId: string[]
 		lateMembersId: string[]
 		voiceChannelName?: string
@@ -29,9 +29,19 @@ export default {
 			})
 			.setTitle(
 				p.expired
-					? `[${i18next.t('embed.expired', { lng: p.locale })}] - ${p.game}`
-					: i18next.t('embed.title', { lng: p.locale, author: p.authorUsername, game: p.game })
+					? `[${i18next.t('embed.expired', { lng: p.locale })}] - ${p.games[0]}`
+					: i18next.t('embed.title', { lng: p.locale, author: p.authorUsername, game: p.games[0] })
 			)
+
+		msg.addFields(
+			p.games.slice(1).map((game, index) => {
+				return {
+					name: index === 0 ? i18next.t('embed.other', { lng: p.locale }) : '-',
+					value: game,
+					inline: true,
+				}
+			})
+		)
 
 		if (p.additionalInformations) {
 			msg.addFields([

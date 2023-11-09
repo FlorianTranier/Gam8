@@ -5,6 +5,7 @@ export default class SearchPartnerMessage {
 	messageId: string
 	authorId: string
 	game: string
+	games: string[]
 	type: MessageType
 	membersId: string[]
 	lateMembersId: string[]
@@ -20,6 +21,7 @@ export default class SearchPartnerMessage {
 		messageId: string
 		authorId: string
 		game: string
+		games: string[]
 		type: MessageType
 		membersId: string[]
 		lateMembersId: string[]
@@ -34,6 +36,7 @@ export default class SearchPartnerMessage {
 		this.messageId = p.messageId
 		this.authorId = p.authorId
 		this.game = p.game
+		this.games = p.games
 		this.type = p.type
 		this.membersId = p.membersId
 		this.lateMembersId = p.lateMembersId

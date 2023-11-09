@@ -45,7 +45,7 @@ export class ExpirationJob extends Job {
 						authorPicture: author?.user.avatarURL() || undefined,
 						membersId: message.membersId,
 						lateMembersId: message.lateMembersId,
-						game: message.game,
+						games: message.games,
 						locale: discordMessage.guild?.preferredLocale ?? 'en',
 						additionalInformations: message.additionalInformations,
 						expired: true,

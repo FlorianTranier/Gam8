@@ -95,7 +95,7 @@ export default class SelectReactionService {
 			authorPicture: author?.user.avatarURL() || undefined,
 			membersId: updatedMessage.membersId,
 			lateMembersId: updatedMessage.lateMembersId,
-			game: updatedMessage.game,
+			games: updatedMessage.games,
 			voiceChannelName: author?.voice.channel?.name,
 			voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
 			bgImg: updatedMessage.bgImg,
