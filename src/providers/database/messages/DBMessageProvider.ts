@@ -72,12 +72,23 @@ export default class {
 		return await this.getMessageByMessageId({ msgId: p.msgId })
 	}
 
-	async getLast5MessagesForChannel(p: { channelId: string }): Promise<SearchPartnerMessage[]> {
-		return await this.dbRef
-			.find<SearchPartnerMessage>({ channelId: p.channelId })
-			.sort({ timestamp: -1 })
-			.limit(5)
-			.toArray()
+	async getLast10Games(p: { channelId: string }): Promise<string[]> {
+		return (
+			await this.dbRef
+				.aggregate<{ _id: string }>([
+					{ $match: { channelId: p.channelId } },
+					{ $unwind: '$games' },
+					{
+						$group: {
+							_id: '$games',
+							timestamp: { $max: '$timestamp' },
+						},
+					},
+					{ $sort: { timestamp: -1 } },
+					{ $limit: 10 },
+				])
+				.toArray()
+		).map((doc) => doc._id)
 	}
 
 	async getUnexpiredMessagesBetweenDate(p: { start: Date; end: Date }): Promise<SearchPartnerMessage[]> {
