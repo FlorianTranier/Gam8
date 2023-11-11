@@ -1,5 +1,4 @@
 import { loadi18n } from './i18n/i18n'
-import dotenv from 'dotenv'
 import Discord, { roleMention } from 'discord.js'
 import CommandRouter from './routers/CommandRouter'
 import DBMessageProvider from './providers/database/messages/DBMessageProvider'
@@ -19,7 +18,8 @@ import { pino } from 'pino'
 import CancelCommand from './domain/services/commands/CancelCommand'
 import { ImageProvider } from './providers/s3/ImageProvider'
 
-dotenv.config()
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config()
 
 const logger = pino({ level: 'info' })
 

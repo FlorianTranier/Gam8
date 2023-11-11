@@ -58,9 +58,10 @@ export default class CommandRouter {
 
 			const games =
 				input.length === 0
-					? (await this.messageProvider.getLast5MessagesForChannel({ channelId: interaction.channelId })).map((msg) => {
+					? (await this.messageProvider.getLast10Games({ channelId: interaction.channelId })).map((game) => {
 							return {
-								name: msg.game,
+								name: game,
+								value: game,
 							}
 					  })
 					: await this.videoGameProvider.searchGames({ searchInput: input })
