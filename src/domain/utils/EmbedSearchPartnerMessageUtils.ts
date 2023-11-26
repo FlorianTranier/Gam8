@@ -29,14 +29,18 @@ export default {
 			})
 			.setTitle(
 				p.expired
-					? `[${i18next.t('embed.expired', { lng: p.locale })}] - ${p.games[0]}`
-					: i18next.t('embed.title', { lng: p.locale, author: p.authorUsername, game: p.games[0] })
+					? `[${i18next.t('embed.expired', { lng: p.locale })}] ${p.games.length <= 1 ? '- ' + p.games[0] : ''}`
+					: i18next.t('embed.title', {
+							lng: p.locale,
+							author: p.authorUsername,
+							game: p.games.length <= 1 ? p.games[0] : '',
+					  })
 			)
 
 		msg.addFields(
-			p.games.slice(1).map((game, index) => {
+			p.games.slice(1).map((game) => {
 				return {
-					name: index === 0 ? i18next.t('embed.other', { lng: p.locale }) : '-',
+					name: '↘️',
 					value: game,
 					inline: true,
 				}
