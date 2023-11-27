@@ -38,7 +38,7 @@ export default {
 			)
 
 		msg.addFields(
-			p.games.slice(1).map((game) => {
+			p.games.map((game) => {
 				return {
 					name: '↘️',
 					value: game,
