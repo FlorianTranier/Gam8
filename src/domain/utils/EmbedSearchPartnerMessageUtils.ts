@@ -37,15 +37,18 @@ export default {
 					  })
 			)
 
-		msg.addFields(
+		if (p.games.length > 1) {
+			msg.addFields(
 			p.games.map((game) => {
-				return {
-					name: '↘️',
-					value: game,
-					inline: true,
-				}
-			})
-		)
+					return {
+						name: '↘️',
+						value: game,
+						inline: true,
+					}
+				})
+			)
+		}
+		
 
 		if (p.additionalInformations) {
 			msg.addFields([
