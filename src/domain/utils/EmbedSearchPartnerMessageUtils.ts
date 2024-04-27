@@ -1,4 +1,4 @@
-import { Colors, EmbedBuilder, resolveColor } from 'discord.js'
+import { Colors, EmbedBuilder, resolveColor, channelMention } from 'discord.js'
 import i18next from 'i18next'
 
 export default {
@@ -9,7 +9,7 @@ export default {
 		membersId: string[]
 		lateMembersId: string[]
 		voiceChannelName?: string
-		voiceChannelInviteUrl?: string
+		voiceChannelId?: string
 		bgImg?: string
 		locale: string
 		additionalInformations?: string
@@ -75,11 +75,11 @@ export default {
 			])
 		}
 
-		if (p.voiceChannelName && p.voiceChannelInviteUrl) {
+		if (p.voiceChannelName && p.voiceChannelId) {
 			msg.addFields([
 				{
 					name: i18next.t('embed.join_channel', { lng: p.locale }),
-					value: `[${p.voiceChannelName}](${p.voiceChannelInviteUrl})`,
+					value: channelMention(p.voiceChannelId) //`[${p.voiceChannelName}](${p.voiceChannelInviteUrl})`,
 				},
 			])
 		}

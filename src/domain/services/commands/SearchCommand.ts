@@ -152,7 +152,7 @@ export default class SearchCommand implements CommandInterface {
 					membersId: [],
 					lateMembersId: [],
 					voiceChannelName: author?.voice.channel?.name,
-					voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
+					voiceChannelId: author?.voice.channel?.id,
 					bgImg: backgroundImage ?? gameInfos[0].background_image,
 					locale: p.context.guildLocale ?? 'en',
 					additionalInformations: additionalInformations ?? undefined,

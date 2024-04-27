@@ -97,7 +97,7 @@ export default class SelectReactionService {
 			lateMembersId: updatedMessage.lateMembersId,
 			games: updatedMessage.games,
 			voiceChannelName: author?.voice.channel?.name,
-			voiceChannelInviteUrl: (await author?.voice.channel?.createInvite())?.url,
+			voiceChannelId: author?.voice.channel?.id,
 			bgImg: updatedMessage.bgImg,
 			locale: p.interaction.guildLocale ?? 'en',
 			additionalInformations: updatedMessage.additionalInformations,
