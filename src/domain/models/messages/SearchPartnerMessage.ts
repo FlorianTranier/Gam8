@@ -39,8 +39,8 @@ export default class SearchPartnerMessage {
 		this.game = p.game
 		this.games = p.games
 		this.type = p.type
-		this.members = p.members
-		this.lateMembers = p.lateMembers
+		this.members = p.members ?? []
+		this.lateMembers = p.lateMembers ?? []
 		this.channelId = p.channelId
 		this.notifiedMembersId = p.notifiedMembersId ?? []
 		this.bgImg = p.bgImg
