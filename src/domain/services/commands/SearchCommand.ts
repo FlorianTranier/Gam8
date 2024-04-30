@@ -138,7 +138,7 @@ export default class SearchCommand implements CommandInterface {
 
 		const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
-		const selectRow = this.createSelectRow(p)
+		const selectRow = this.createSelectRow({...p, games: games})
 
 		const buttonRow = this.createButtonRow(p, gameInfos[0])
 
@@ -149,8 +149,8 @@ export default class SearchCommand implements CommandInterface {
 					authorUsername: getDiscordUsername(p.context.member as GuildMember),
 					authorPicture: author?.user.avatarURL() || '',
 					games,
-					membersId: [],
-					lateMembersId: [],
+					members: [],
+					lateMembers: [],
 					voiceChannelName: author?.voice.channel?.name,
 					voiceChannelId: author?.voice.channel?.id,
 					bgImg: backgroundImage ?? gameInfos[0].background_image,
@@ -169,8 +169,8 @@ export default class SearchCommand implements CommandInterface {
 			game: games[0],
 			games: games,
 			type: MessageType.RESEARCH_PARTNER,
-			membersId: [],
-			lateMembersId: [],
+			members: [],
+			lateMembers: [],
 			channelId: p.context.channel?.id || '',
 			bgImg: backgroundImage ?? gameInfos[0].background_image,
 			additionalInformations: additionalInformations ?? undefined,
@@ -200,25 +200,33 @@ export default class SearchCommand implements CommandInterface {
 		)
 	}
 
-	private createSelectRow(p: { context: ChatInputCommandInteraction }) {
+	private createSelectRow(p: { context: ChatInputCommandInteraction, games: string[] }) {
+		const gameOptions = p.games.map(game => {
+			return {
+				label: i18next.t('actions.lets_go', { lng: p.context.guildLocale ?? 'en', game: game }),
+				value: game,
+			}
+		})
+
+		const selectMenu = new StringSelectMenuBuilder()
+			.setCustomId('select')
+			.setPlaceholder(i18next.t('actions.placeholder', { lng: p.context.guildLocale ?? 'en' }))
+			.setMinValues(1)
+			.setMaxValues(p.games.length)
+			.addOptions(
+				...gameOptions,
+				{
+					label: i18next.t('actions.join_later', { lng: p.context.guildLocale ?? 'en' }),
+					value: 'join_later',
+				},
+				{
+					label: i18next.t('actions.no', { lng: p.context.guildLocale ?? 'en' }),
+					value: 'no',
+				}
+			)
+
 		return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-			new StringSelectMenuBuilder()
-				.setCustomId('select')
-				.setPlaceholder(i18next.t('actions.placeholder', { lng: p.context.guildLocale ?? 'en' }))
-				.addOptions(
-					{
-						label: i18next.t('actions.lets_go', { lng: p.context.guildLocale ?? 'en' }),
-						value: 'im_here',
-					},
-					{
-						label: i18next.t('actions.join_later', { lng: p.context.guildLocale ?? 'en' }),
-						value: 'join_later',
-					},
-					{
-						label: i18next.t('actions.no', { lng: p.context.guildLocale ?? 'en' }),
-						value: 'no',
-					}
-				)
+			selectMenu
 		)
 	}
 

@@ -49,8 +49,8 @@ export default class VoiceStateListener {
 					const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
 						authorUsername: getDiscordUsername(author),
 						authorPicture: author?.user.avatarURL() || undefined,
-						membersId: message.membersId,
-						lateMembersId: message.lateMembersId,
+						members: message.members,
+						lateMembers: message.lateMembers,
 						games: message.games,
 						voiceChannelName: author?.voice.channel?.name,
 						voiceChannelId: author?.voice.channel?.id,

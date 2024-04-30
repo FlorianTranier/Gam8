@@ -45,8 +45,11 @@ export default class SelectReactionService {
 		const message = await this.messageProvider.getMessageByMessageId({ msgId: p.interaction.message.id })
 		let updatedMessage = message
 
-		if (selectedValues.includes('im_here') && !message.membersId.includes(p.interaction.user.id)) {
-			updatedMessage = await this.addMember({ interaction: p.interaction })
+		if (
+			!(selectedValues.includes('join_later') || selectedValues.includes('no'))
+		) {
+			if (message.members.map((member) => member.id).includes(p.interaction.user.id)) this.removeMember({ interaction: p.interaction })
+			updatedMessage = await this.addMember({ interaction: p.interaction, games: selectedValues })
 			message.notifiedMembersId.forEach(async (memberId) => {
 				const member = await p.interaction.message.guild?.members.fetch(memberId)
 				member?.send({
@@ -54,17 +57,23 @@ export default class SelectReactionService {
 						i18next.t('dm.wants_to_play', {
 							lng: p.interaction.guildLocale ?? 'en',
 							userId: p.interaction.user.id,
-							game: message.game,
+							game: selectedValues[0],
 						}) ?? '',
 				})
 			})
 		}
 
-		if (!selectedValues.includes('im_here') && message.membersId.includes(p.interaction.user.id))
+		if (
+			(selectedValues.includes('join_later') || selectedValues.includes('no')) &&
+			message.members.map((member) => member.id).includes(p.interaction.user.id)
+		)
 			updatedMessage = await this.removeMember({ interaction: p.interaction })
 
-		if (selectedValues.includes('join_later') && !message.lateMembersId.includes(p.interaction.user.id)) {
-			updatedMessage = await this.addPlayLaterMember({ interaction: p.interaction })
+		if (
+			selectedValues.includes('join_later') &&
+			!message.lateMembers.map((member) => member.id).includes(p.interaction.user.id)
+		) {
+			updatedMessage = await this.addPlayLaterMember({ interaction: p.interaction, games: [] })
 			message.notifiedMembersId.forEach(async (memberId) => {
 				const member = await p.interaction.message.guild?.members.fetch(memberId)
 				member?.send({
@@ -78,13 +87,16 @@ export default class SelectReactionService {
 			})
 		}
 
-		if (!selectedValues.includes('join_later') && message.lateMembersId.includes(p.interaction.user.id))
+		if (
+			!selectedValues.includes('join_later') &&
+			message.lateMembers.map((member) => member.id).includes(p.interaction.user.id)
+		)
 			updatedMessage = await this.removePlayLaterMember({ interaction: p.interaction })
 
 		if (selectedValues.includes('no')) {
-			if (message.membersId.includes(p.interaction.user.id))
+			if (message.members.map((member) => member.id).includes(p.interaction.user.id))
 				updatedMessage = await this.removeMember({ interaction: p.interaction })
-			if (message.lateMembersId.includes(p.interaction.user.id))
+			if (message.lateMembers.map((member) => member.id).includes(p.interaction.user.id))
 				updatedMessage = await this.removePlayLaterMember({ interaction: p.interaction })
 		}
 
@@ -93,8 +105,8 @@ export default class SelectReactionService {
 		const embedMessage = await EmbedMessageGenerator.createOrUpdate({
 			authorUsername: getDiscordUsername(author),
 			authorPicture: author?.user.avatarURL() || undefined,
-			membersId: updatedMessage.membersId,
-			lateMembersId: updatedMessage.lateMembersId,
+			members: updatedMessage.members,
+			lateMembers: updatedMessage.lateMembers,
 			games: updatedMessage.games,
 			voiceChannelName: author?.voice.channel?.name,
 			voiceChannelId: author?.voice.channel?.id,
@@ -111,10 +123,11 @@ export default class SelectReactionService {
 		p.interaction.deleteReply()
 	}
 
-	async addMember(p: { interaction: StringSelectMenuInteraction }): Promise<SearchPartnerMessage> {
+	async addMember(p: { interaction: StringSelectMenuInteraction; games: string[] }): Promise<SearchPartnerMessage> {
 		return this.messageProvider.addMemberToMessageByMessageId({
 			msgId: p.interaction.message.id,
 			memberId: p.interaction.user.id,
+			games: p.games,
 		})
 	}
 
@@ -125,10 +138,14 @@ export default class SelectReactionService {
 		})
 	}
 
-	async addPlayLaterMember(p: { interaction: StringSelectMenuInteraction }): Promise<SearchPartnerMessage> {
+	async addPlayLaterMember(p: {
+		interaction: StringSelectMenuInteraction
+		games: string[]
+	}): Promise<SearchPartnerMessage> {
 		return this.messageProvider.addLateMemberToMessageByMessageId({
 			msgId: p.interaction.message.id,
 			memberId: p.interaction.user.id,
+			games: p.games,
 		})
 	}
 

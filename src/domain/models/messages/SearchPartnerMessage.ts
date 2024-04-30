@@ -1,4 +1,5 @@
 import MessageType from './enums/MessageType'
+import { MessageMember } from './MessageMember'
 
 export default class SearchPartnerMessage {
 	serverId: string
@@ -7,8 +8,8 @@ export default class SearchPartnerMessage {
 	game: string
 	games: string[]
 	type: MessageType
-	membersId: string[]
-	lateMembersId: string[]
+	members: MessageMember[]
+	lateMembers: MessageMember[]
 	notifiedMembersId: string[]
 	channelId: string
 	bgImg: string
@@ -23,8 +24,8 @@ export default class SearchPartnerMessage {
 		game: string
 		games: string[]
 		type: MessageType
-		membersId: string[]
-		lateMembersId: string[]
+		members: MessageMember[]
+		lateMembers: MessageMember[]
 		notifiedMembersId?: string[]
 		channelId: string
 		bgImg: string
@@ -38,8 +39,8 @@ export default class SearchPartnerMessage {
 		this.game = p.game
 		this.games = p.games
 		this.type = p.type
-		this.membersId = p.membersId
-		this.lateMembersId = p.lateMembersId
+		this.members = p.members
+		this.lateMembers = p.lateMembers
 		this.channelId = p.channelId
 		this.notifiedMembersId = p.notifiedMembersId ?? []
 		this.bgImg = p.bgImg

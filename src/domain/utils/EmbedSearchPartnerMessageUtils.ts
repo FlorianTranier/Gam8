@@ -1,13 +1,14 @@
 import { Colors, EmbedBuilder, resolveColor, channelMention } from 'discord.js'
 import i18next from 'i18next'
+import { MessageMember } from '../models/messages/MessageMember'
 
 export default {
 	async createOrUpdate(p: {
 		authorUsername: string
 		authorPicture?: string
 		games: string[]
-		membersId: string[]
-		lateMembersId: string[]
+		members: MessageMember[]
+		lateMembers: MessageMember[]
 		voiceChannelName?: string
 		voiceChannelId?: string
 		bgImg?: string
@@ -18,8 +19,8 @@ export default {
 		const msg = new EmbedBuilder()
 
 		const membersDisplay =
-			p.membersId.length > 0
-				? p.membersId.map((m) => `<@${m}>`).join(', ')
+			p.members.map(member => member.id).length > 0
+				? p.members.map((m) => `<@${m.id}> (${m.games.join(' / ')})`).join(', ')
 				: i18next.t('embed.waiting_for_players', { lng: p.locale })
 
 		msg
@@ -65,8 +66,8 @@ export default {
 			.setTimestamp()
 			.setColor(resolveColor(p.expired ? Colors.LightGrey : 'Random'))
 
-		if (p.lateMembersId.length > 0) {
-			const lateMembersDisplay = p.lateMembersId.map((m) => `<@${m}>`).join(',')
+		if (p.lateMembers.map(member => member.id).length > 0) {
+			const lateMembersDisplay = p.lateMembers.map(member => member.id).map((m) => `<@${m}>`).join(',')
 			msg.addFields([
 				{
 					name: i18next.t('embed.maybe_joining_later', { lng: p.locale }),

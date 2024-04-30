@@ -49,7 +49,7 @@ export const loadi18n = async (): Promise<void> => {
 					},
 					actions: {
 						placeholder: 'Est-ce que tu viens ?',
-						lets_go: `🚀 J'arrive !`,
+						lets_go: `🚀 J'arrive ! ({{game}})`,
 						join_later: `⏰ Peut-être plus tard`,
 						no: '😶‍🌫️ Non.',
 						notify_me: `🔔 M'avertir des réponses`,

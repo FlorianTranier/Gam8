@@ -59,8 +59,8 @@ export default class CancelCommand implements CommandInterface {
 				const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
 					authorUsername: getDiscordUsername(author),
 					authorPicture: author?.user.avatarURL() || undefined,
-					membersId: message.membersId,
-					lateMembersId: message.lateMembersId,
+					members: message.members,
+					lateMembers: message.lateMembers,
 					games: message.games,
 					locale: discordMessage.guild?.preferredLocale ?? 'en',
 					additionalInformations: message.additionalInformations,

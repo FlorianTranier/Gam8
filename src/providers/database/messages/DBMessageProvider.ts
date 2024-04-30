@@ -36,23 +36,37 @@ export default class {
 		return await this.dbRef.find<SearchPartnerMessage>({ channelId: p.channelId, expired: { $ne: true } }).toArray()
 	}
 
-	async addMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
-		await this.dbRef.updateOne({ messageId: p.msgId, expired: { $ne: true } }, { $push: { membersId: p.memberId } })
+	async addMemberToMessageByMessageId(p: {
+		msgId: string
+		memberId: string
+		games: string[]
+	}): Promise<SearchPartnerMessage> {
+		await this.dbRef.updateOne(
+			{ messageId: p.msgId, expired: { $ne: true } },
+			{ $push: { members: { id: p.memberId, games: p.games } } }
+		)
 		return await this.getMessageByMessageId({ msgId: p.msgId })
 	}
 
-	async addLateMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
-		await this.dbRef.updateOne({ messageId: p.msgId, expired: { $ne: true } }, { $push: { lateMembersId: p.memberId } })
+	async addLateMemberToMessageByMessageId(p: {
+		msgId: string
+		memberId: string
+		games: string[]
+	}): Promise<SearchPartnerMessage> {
+		await this.dbRef.updateOne(
+			{ messageId: p.msgId, expired: { $ne: true } },
+			{ $push: { lateMembers: { id: p.memberId, games: p.games } } }
+		)
 		return await this.getMessageByMessageId({ msgId: p.msgId })
 	}
 
 	async removeMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
-		await this.dbRef.updateOne({ messageId: p.msgId, expired: { $ne: true } }, { $pull: { membersId: p.memberId } })
+		await this.dbRef.updateOne({ messageId: p.msgId, expired: { $ne: true } }, { $pull: { members: { id: p.memberId } } })
 		return await this.getMessageByMessageId({ msgId: p.msgId })
 	}
 
 	async removeLateMemberToMessageByMessageId(p: { msgId: string; memberId: string }): Promise<SearchPartnerMessage> {
-		await this.dbRef.updateOne({ messageId: p.msgId, expired: { $ne: true } }, { $pull: { lateMembersId: p.memberId } })
+		await this.dbRef.updateOne({ messageId: p.msgId, expired: { $ne: true } }, { $pull: { lateMembers: { id: p.memberId } } })
 		return await this.getMessageByMessageId({ msgId: p.msgId })
 	}
 
