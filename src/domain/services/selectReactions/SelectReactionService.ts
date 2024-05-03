@@ -57,7 +57,7 @@ export default class SelectReactionService {
 						i18next.t('dm.wants_to_play', {
 							lng: p.interaction.guildLocale ?? 'en',
 							userId: p.interaction.user.id,
-							game: selectedValues[0],
+							game: selectedValues.join(', '),
 						}) ?? '',
 				})
 			})
@@ -81,7 +81,7 @@ export default class SelectReactionService {
 						i18next.t('dm.maybe_later', {
 							lng: p.interaction.guildLocale ?? 'en',
 							userId: p.interaction.user.id,
-							game: message.game,
+							game: message.games.join(', '),
 						}) ?? '',
 				})
 			})

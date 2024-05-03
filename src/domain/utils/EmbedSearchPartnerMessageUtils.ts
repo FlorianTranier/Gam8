@@ -1,6 +1,7 @@
 import { Colors, EmbedBuilder, resolveColor, channelMention } from 'discord.js'
 import i18next from 'i18next'
 import { MessageMember } from '../models/messages/MessageMember'
+import { emojiCounter } from './EmojiCounter'
 
 export default {
 	async createOrUpdate(p: {
@@ -42,8 +43,10 @@ export default {
 			msg.addFields(
 			p.games.map((game) => {
 					return {
-						name: '↘️',
-						value: game,
+						name: `↘️ ${emojiCounter(
+							p.members.flatMap((member) => member.games).filter((memberGame) => memberGame === game).length
+						)}`,
+						value: `${game}`,
 						inline: true,
 					}
 				})
