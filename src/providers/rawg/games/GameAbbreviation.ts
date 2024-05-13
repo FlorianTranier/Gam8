@@ -7,4 +7,5 @@ export const gameAbbreviation = new Map([
 	['rl', 'Rocket League'],
 	['sot', 'Sea of Thieves'],
 	['r6', `Tom Clancy's Rainbow Six Siege`],
+	['hs', 'Hearthstone']
 ])
