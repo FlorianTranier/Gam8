@@ -22,6 +22,7 @@ FROM node:20.3.1
 
 WORKDIR /app
 ENV NODE_ENV=production
+ENV TZ=Europe/Paris
 
 COPY package*.json ./
 RUN npm ci --quiet --only=production

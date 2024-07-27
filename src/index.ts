@@ -17,6 +17,7 @@ import { MongoClient } from 'mongodb'
 import { pino } from 'pino'
 import CancelCommand from './domain/services/commands/CancelCommand'
 import { ImageProvider } from './providers/s3/ImageProvider'
+import EventCommand from './domain/services/commands/EventCommand'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
@@ -48,6 +49,7 @@ const commands = [
 	new HelpCommand(),
 	new TagCommand({ channelProvider }),
 	new CancelCommand({ messageProvider }),
+	new EventCommand({ channelProvider })
 ]
 
 // Reactions
@@ -104,7 +106,7 @@ client.on('ready', async () => {
 
 			const message = await channel.send(
 				'@here Welcome everyone ! This is the PartnerResearch V2 discord channel !' +
-					`
+				`
 Please don't delete this channel ! Otherwise, I'm not going to work anymore. You can safely rename this channel and move it as you please into groups
 \`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
 \`-sp clear\` : Remove all messages from this bot (only if you have the permission to edit messages)

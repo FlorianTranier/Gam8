@@ -3,6 +3,7 @@ import { Client, REST, Routes } from 'discord.js'
 import CommandInterface from '../domain/services/commands/CommandInterface'
 import DBMessageProvider from '../providers/database/messages/DBMessageProvider'
 import pino from 'pino'
+import EventCommand from '../domain/services/commands/EventCommand'
 
 export default class CommandRouter {
 	private readonly client: Client
@@ -44,7 +45,7 @@ export default class CommandRouter {
 			})
 
 			if (!command) {
-				await interaction.reply(`Invalid command : Type \`-sp help\` if you need help :)`)
+				await interaction.reply(`Invalid command : Type \`/help\` if you need help :)`)
 			} else {
 				await command.exec({
 					context: interaction,
@@ -59,11 +60,11 @@ export default class CommandRouter {
 			const games =
 				input.length === 0
 					? (await this.messageProvider.getLast10Games({ channelId: interaction.channelId })).map((game) => {
-							return {
-								name: game,
-								value: game,
-							}
-					  })
+						return {
+							name: game,
+							value: game,
+						}
+					})
 					: await this.videoGameProvider.searchGames({ searchInput: input })
 
 			try {
@@ -75,6 +76,14 @@ export default class CommandRouter {
 			} catch (e) {
 				/* empty */
 			} // NON BLOCKING ERROR
+		})
+
+		this.client.on('interactionCreate', async (interaction) => {
+			if (!interaction.isModalSubmit()) return
+
+			if (interaction.customId === 'modalEvent') {
+				(this.commands.find((cmd) => cmd instanceof EventCommand) as EventCommand)?.submitHandler({ context: interaction })
+			}
 		})
 	}
 
