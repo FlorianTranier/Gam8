@@ -47,12 +47,18 @@ export default class SearchCommand implements CommandInterface {
 
 	getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
 		return new SlashCommandBuilder()
-			.setDescription('Say that you want to play at <game>, and wait for other players answers :)')
+			.setDescription(i18next.t('commands.search.description', { lng: 'en' }))
 			.setName(this.COMMAND)
+			.setDescriptionLocalizations({
+				fr: i18next.t('commands.search.description', { lng: 'fr' })
+			})
 			.addStringOption((option) =>
 				option
 					.setName('game')
-					.setDescription('What do you want to play ?')
+					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
+					.setDescriptionLocalizations({
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
+					})
 					.setRequired(true)
 					.setMaxLength(255)
 					.setAutocomplete(true)
@@ -60,7 +66,10 @@ export default class SearchCommand implements CommandInterface {
 			.addStringOption((option) =>
 				option
 					.setName('game2')
-					.setDescription('What do you want to play ?')
+					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
+					.setDescriptionLocalizations({
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
+					})
 					.setRequired(false)
 					.setMaxLength(255)
 					.setAutocomplete(true)
@@ -68,7 +77,10 @@ export default class SearchCommand implements CommandInterface {
 			.addStringOption((option) =>
 				option
 					.setName('game3')
-					.setDescription('What do you want to play ?')
+					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
+					.setDescriptionLocalizations({
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
+					})
 					.setRequired(false)
 					.setMaxLength(255)
 					.setAutocomplete(true)
@@ -76,7 +88,10 @@ export default class SearchCommand implements CommandInterface {
 			.addStringOption((option) =>
 				option
 					.setName('game4')
-					.setDescription('What do you want to play ?')
+					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
+					.setDescriptionLocalizations({
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
+					})
 					.setRequired(false)
 					.setMaxLength(255)
 					.setAutocomplete(true)
@@ -84,7 +99,10 @@ export default class SearchCommand implements CommandInterface {
 			.addStringOption((option) =>
 				option
 					.setName('additional_informations')
-					.setDescription('Add some additional informations')
+					.setDescription(i18next.t('commands.search.additional_informations', { lng: 'en' }))
+					.setDescriptionLocalizations({
+						fr: i18next.t('commands.search.additional_informations', { lng: 'fr' })
+					})
 					.setRequired(false)
 					.setMaxLength(255)
 			)
@@ -138,7 +156,7 @@ export default class SearchCommand implements CommandInterface {
 
 		const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
-		const selectRow = this.createSelectRow({...p, games: games})
+		const selectRow = this.createSelectRow({ ...p, games: games })
 
 		const buttonRow = this.createButtonRow(p, gameInfos[0])
 

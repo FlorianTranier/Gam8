@@ -1,6 +1,7 @@
-import { RESTPostAPIChatInputApplicationCommandsJSONBody, ChatInputCommandInteraction, SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalSubmitInteraction, ChannelType, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildTextBasedChannel } from "discord.js";
+import { RESTPostAPIChatInputApplicationCommandsJSONBody, ChatInputCommandInteraction, SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalSubmitInteraction, ChannelType, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildTextBasedChannel, PermissionFlagsBits } from "discord.js";
 import CommandInterface from "./CommandInterface";
 import DBChannelProvider from "../../../providers/database/channels/DBChannelProvider";
+import i18next from "i18next";
 
 export default class EventCommand implements CommandInterface {
   COMMAND = 'event'
@@ -15,19 +16,28 @@ export default class EventCommand implements CommandInterface {
 
   getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
     return new SlashCommandBuilder()
-      .setDescription('Create a scheduled event')
+      .setDescription(i18next.t('commands.event.description', { lng: 'en' }))
+      .setDescriptionLocalizations({
+        fr: i18next.t('commands.event.description', { lng: 'fr' })
+      })
       .setName(this.COMMAND)
       .addChannelOption((option) =>
         option
           .setName('channel')
-          .setDescription('Where do you want to create the event ?')
+          .setDescription(i18next.t('commands.event.channel_option', { lng: 'en' }))
+          .setDescriptionLocalizations({
+            fr: i18next.t('commands.event.channel_option', { lng: 'fr' })
+          })
           .addChannelTypes(ChannelType.GuildVoice)
           .setRequired(true)
       )
       .addChannelOption((option) =>
         option
           .setName('announcement_channel')
-          .setDescription('Publish to announcement channel ?')
+          .setDescription(i18next.t('commands.event.announcement_channel', { lng: 'en' }))
+          .setDescriptionLocalizations({
+            fr: i18next.t('commands.event.announcement_channel', { lng: 'fr' })
+          })
           .addChannelTypes(ChannelType.GuildAnnouncement)
           .setRequired(false)
       )
@@ -41,21 +51,21 @@ export default class EventCommand implements CommandInterface {
   async exec(p: { context: ChatInputCommandInteraction | undefined; }): Promise<void> {
     const modal = new ModalBuilder()
       .setCustomId('modalEvent')
-      .setTitle('Create new event')
+      .setTitle(i18next.t('modal.event.title', { lng: p.context?.guildLocale ?? 'en' }))
 
     const titleInput = new TextInputBuilder()
       .setCustomId('modalEventTitleInput')
-      .setLabel('title')
+      .setLabel(i18next.t('modal.event.title_input', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Short)
 
     const descriptionInput = new TextInputBuilder()
       .setCustomId('modalEventDescriptionInput')
-      .setLabel('description')
+      .setLabel(i18next.t('modal.event.description', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Paragraph)
 
     const dateInput = new TextInputBuilder()
       .setCustomId('modalEventDateInput')
-      .setLabel('date : DD/MM/YYYY, HH:mm')
+      .setLabel(i18next.t('modal.event.date', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Short)
       .setMinLength(17)
       .setMaxLength(17)
@@ -67,14 +77,14 @@ export default class EventCommand implements CommandInterface {
 
     const publishAnnouncementInput = new TextInputBuilder()
       .setCustomId('modalEventPublishAnnouncementInput')
-      .setLabel('Announcement channel (DO NOT MODIFY)')
+      .setLabel(i18next.t('modal.event.announcement', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Short)
       .setValue(p.context?.options.getChannel('announcement_channel')?.id ?? '')
 
 
     const voiceChannelInput = new TextInputBuilder()
       .setCustomId('modalEventVoiceChannelInput')
-      .setLabel('Voice channel (DO NOT MODIFY)')
+      .setLabel(i18next.t('modal.event.voice_channel', { lng: p.context?.guildLocale ?? 'en' }))
       .setValue(p.context?.options.getChannel('channel')?.id ?? '')
       .setStyle(TextInputStyle.Paragraph)
 
@@ -117,17 +127,23 @@ export default class EventCommand implements CommandInterface {
 
     const inviteUrl = await event?.createInviteURL()
 
+
+
     if (publishAnnouncement) {
-      await (await p.context.guild?.channels.fetch(publishAnnouncement) as GuildTextBasedChannel)?.send({
-        content: `${tag} ${title}\n\n${description}\n\n${inviteUrl}`,
-      })
+      const announcementChannel = await p.context.guild?.channels.fetch(publishAnnouncement) as GuildTextBasedChannel;
+      if (announcementChannel?.permissionsFor(p.context.user)?.has(PermissionFlagsBits.SendMessages)) {
+        await announcementChannel.send({
+          content: `${tag} ${title}\n\n${description}\n\n${inviteUrl}`,
+        });
+      } else {
+        await p.context.editReply({
+          content: i18next.t('commands.event.response_no_announce', { lng: p.context.guildLocale ?? 'en' })
+        })
+      }
     }
 
-
-
     await p.context.editReply({
-      content: `Event created`
+      content: i18next.t('commands.event.response', { lng: p.context.guildLocale ?? 'en' })
     })
-
   }
 }

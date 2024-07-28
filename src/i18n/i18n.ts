@@ -7,6 +7,30 @@ export const loadi18n = async (): Promise<void> => {
 		resources: {
 			en: {
 				translation: {
+					commands: {
+						search: {
+							description: 'Say that you want to play at <game>, and wait for other players answers :)',
+							game_option: 'What do you want to play ?',
+							additional_informations: 'Add some additional informations',
+						},
+						event: {
+							description: 'Create a scheduled event',
+							channel_option: 'Where do you want to create the event ?',
+							announcement_channel: 'Publish to an announcement channel ?',
+							response: 'Event created',
+							response_no_announce: 'Event created but not posted to announcement channel (no permission)'
+						},
+					},
+					modal: {
+						event: {
+							title: 'Create new event',
+							title_input: 'Title',
+							description: 'Describe your event',
+							date: 'date : DD/MM/YYYY, HH:mm',
+							announcement: 'Announcement channel (DO NOT MODIFY)',
+							voice_channel: 'Voice channel (DO NOT MODIFY)'
+						},
+					},
 					embed: {
 						title: '{{author}} wants to play at {{game}}',
 						answer_title: 'Answering the call',
@@ -37,6 +61,30 @@ export const loadi18n = async (): Promise<void> => {
 			},
 			fr: {
 				translation: {
+					commands: {
+						search: {
+							description: 'Dis que tu veux jouer à <game>, et attends les réponses des autres joueurs :)',
+							game_option: 'À jeu voulez-vous jouer?',
+							additional_informations: 'Ajouter des informations supplémentaires',
+						},
+						event: {
+							description: 'Créer un événement planifié',
+							channel_option: 'Où voulez-vous créer l\'événement ?',
+							announcement_channel: 'Publier sur un channel d\'annonce ?',
+							response: 'Événement créé',
+							response_no_announce: 'Événement créé mais non publié sur le channel d\'annonce (pas de permission)'
+						},
+					},
+					modal: {
+						event: {
+							title: 'Créer un nouvel événement',
+							title_input: 'Titre',
+							description: 'Décrivez votre événement',
+							date: 'date : JJ/MM/AAAA, HH:mm',
+							announcement: 'Channel d\'annonce (NE PAS MODIFIER)',
+							voice_channel: 'Channel vocal (NE PAS MODIFIER)'
+						},
+					},
 					embed: {
 						title: '{{author}} veut jouer à {{game}}',
 						answer_title: `Réponses à l'appel`,
