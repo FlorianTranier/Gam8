@@ -48,6 +48,7 @@ export const loadi18n = async (): Promise<void> => {
 						no: '😶‍🌫️ No.',
 						notify_me: 'Notify me !',
 						disable_notification: 'Disable notifications',
+						reboot: '🔄️ Reboot'
 					},
 					response: {
 						notification_validation: `You'll be notified when someone interact !`,
@@ -102,6 +103,7 @@ export const loadi18n = async (): Promise<void> => {
 						no: '😶‍🌫️ Non.',
 						notify_me: `🔔 M'avertir des réponses`,
 						disable_notification: `Ne pas m'avertir`,
+						reboot: '🔄️ Relancer'
 					},
 					response: {
 						notification_validation: `Tu seras averti par MP lorsque quelqu'un répondra à ton message !`,

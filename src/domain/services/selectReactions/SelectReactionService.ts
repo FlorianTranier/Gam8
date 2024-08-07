@@ -1,19 +1,26 @@
-import { ButtonInteraction, StringSelectMenuInteraction } from 'discord.js'
+import { ButtonInteraction, GuildMember, StringSelectMenuInteraction } from 'discord.js'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
 import i18next from 'i18next'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
+import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
+import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
+import SearchCommand from '../commands/SearchCommand'
 
 export default class SelectReactionService {
 	private readonly messageProvider: DBMessageProvider
+	private readonly channelProvider: DBChannelProvider
+	private readonly videoGameProvider: VideoGameProvider
 
-	constructor(p: { messageProvider: DBMessageProvider }) {
+	constructor(p: { messageProvider: DBMessageProvider, channelProvider: DBChannelProvider, videoGameProvider: VideoGameProvider }) {
 		this.messageProvider = p.messageProvider
+		this.channelProvider = p.channelProvider
+		this.videoGameProvider = p.videoGameProvider
 	}
 
 	async handleButtons(p: { interaction: ButtonInteraction }): Promise<void> {
-		await p.interaction.deferReply({ ephemeral: true })
+		await p.interaction.deferReply({ ephemeral: p.interaction.customId !== 'reboot' })
 
 		const message = await this.messageProvider.getMessageByMessageId({ msgId: p.interaction.message.id })
 		let updatedMessage = message
@@ -34,6 +41,44 @@ export default class SelectReactionService {
 			p.interaction.editReply({
 				content: i18next.t('response.notification_disabled', { lng: p.interaction.guildLocale ?? 'en' }),
 			})
+		}
+
+		if (p.interaction.customId === 'reboot') {
+			const author = await p.interaction.guild?.members.fetch(p.interaction.member?.user.id ?? '')
+
+			await p.interaction.message.edit({ content: p.interaction.message.content, embeds: p.interaction.message.embeds, components: [] })
+
+			const association = await this.channelProvider.getByGuildId({ guildId: p.interaction.guild?.id ?? '' })
+
+			const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
+
+			const gameInfos = await Promise.all(message.games.map((game) => SearchCommand.getGameInfos(game, this.videoGameProvider)))
+
+			const selectRow = SearchCommand.createSelectRow({ context: p.interaction, games: message.games })
+
+			const buttonRow = SearchCommand.createButtonRow({ context: p.interaction }, gameInfos[0])
+
+			const newMessage = await p.interaction.editReply({
+				content: tag,
+				embeds: [
+					await EmbedMessageGenerator.createOrUpdate({
+						authorUsername: getDiscordUsername(p.interaction.member as GuildMember),
+						authorPicture: author?.user.avatarURL() || '',
+						games: message.games,
+						members: [],
+						lateMembers: [],
+						voiceChannelName: author?.voice.channel?.name,
+						voiceChannelId: author?.voice.channel?.id,
+						bgImg: message.bgImg,
+						locale: p.interaction.guildLocale ?? 'en',
+						additionalInformations: undefined,
+					}),
+				],
+				components: [buttonRow, selectRow],
+				allowedMentions: { roles: [association?.tagRoleId ?? ''] },
+			})
+
+			await this.messageProvider.cloneMessage({ msgId: p.interaction.message.id, newMsgId: newMessage.id, authorId: p.interaction.user.id })
 		}
 	}
 
