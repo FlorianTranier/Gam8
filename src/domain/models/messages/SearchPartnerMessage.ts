@@ -1,7 +1,9 @@
+import { ObjectId } from 'mongodb'
 import MessageType from './enums/MessageType'
 import { MessageMember } from './MessageMember'
 
 export default class SearchPartnerMessage {
+	_id?: ObjectId
 	serverId: string
 	messageId: string
 	authorId: string
@@ -18,6 +20,7 @@ export default class SearchPartnerMessage {
 	expired: boolean
 
 	constructor(p: {
+		_id?: string
 		serverId: string
 		messageId: string
 		authorId: string

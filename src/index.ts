@@ -53,7 +53,7 @@ const commands = [
 ]
 
 // Reactions
-const selectReactionService = new SelectReactionService({ messageProvider })
+const selectReactionService = new SelectReactionService({ messageProvider, channelProvider, videoGameProvider })
 
 // Routers
 new CommandRouter({ client, messageProvider, videoGameProvider, commands })

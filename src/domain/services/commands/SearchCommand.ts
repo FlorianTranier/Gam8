@@ -1,5 +1,6 @@
 import {
 	ActionRowBuilder,
+	BaseInteraction,
 	ButtonBuilder,
 	ButtonStyle,
 	ChatInputCommandInteraction,
@@ -133,7 +134,7 @@ export default class SearchCommand implements CommandInterface {
 
 		const additionalInformations = p.context.options.getString('additional_informations')
 
-		const gameInfos = await Promise.all(games.map((game) => this.getGameInfos(game)))
+		const gameInfos = await Promise.all(games.map((game) => SearchCommand.getGameInfos(game, this.videoGameProvider)))
 
 		let backgroundImage
 
@@ -156,9 +157,9 @@ export default class SearchCommand implements CommandInterface {
 
 		const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
-		const selectRow = this.createSelectRow({ ...p, games: games })
+		const selectRow = SearchCommand.createSelectRow({ ...p, games: games })
 
-		const buttonRow = this.createButtonRow(p, gameInfos[0])
+		const buttonRow = SearchCommand.createButtonRow(p, gameInfos[0])
 
 		const message = await p.context.editReply({
 			content: tag,
@@ -209,16 +210,16 @@ export default class SearchCommand implements CommandInterface {
 		)
 	}
 
-	private async getGameInfos(game: string) {
+	public static async getGameInfos(game: string, videoGameProvider: VideoGameProvider) {
 		return (
-			(await this.videoGameProvider.searchGames({ searchInput: game }))[0] ?? {
+			(await videoGameProvider.searchGames({ searchInput: game }))[0] ?? {
 				background_image:
 					'https://unsplash.com/photos/sxiSod0tyYQ/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8MXx8bm90JTIwZm91bmR8ZnJ8MHx8fHwxNjc1NDI0OTMz&force=true&w=1920',
 			}
 		)
 	}
 
-	private createSelectRow(p: { context: ChatInputCommandInteraction, games: string[] }) {
+	public static createSelectRow(p: { context: BaseInteraction, games: string[] }) {
 		const gameOptions = p.games.map(game => {
 			return {
 				label: i18next.t('actions.lets_go', { lng: p.context.guildLocale ?? 'en', game: game }),
@@ -248,7 +249,7 @@ export default class SearchCommand implements CommandInterface {
 		)
 	}
 
-	private createButtonRow(p: { context: ChatInputCommandInteraction }, gameInfos: Game) {
+	public static createButtonRow(p: { context: BaseInteraction }, gameInfos: Game) {
 		return new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId('notify')

@@ -125,4 +125,14 @@ export default class {
 		)
 		return await this.findMessagesByMessageId({ msgIds: p.msgIds })
 	}
+
+	async cloneMessage(p: { msgId: string; newMsgId: string, authorId?: string }): Promise<void> {
+		const message = await this.getMessageByMessageId({ msgId: p.msgId })
+		delete message._id
+		await this.saveMessage({
+			message: {
+				...message, messageId: p.newMsgId, authorId: p.authorId || '', additionalInformations: undefined, members: [], lateMembers: [], notifiedMembersId: [], expired: false, timestamp: new Date().getTime()
+			}
+		})
+	}
 }

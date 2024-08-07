@@ -2,10 +2,11 @@ import { CronJob } from 'cron'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import { DateTime } from 'luxon'
 import { Job } from './Job'
-import { Client, TextBasedChannel } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, TextBasedChannel } from 'discord.js'
 import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils'
 import pino from 'pino'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
+import i18next from 'i18next'
 
 export class ExpirationJob extends Job {
 	protected job: CronJob
@@ -18,13 +19,14 @@ export class ExpirationJob extends Job {
 		this.messageProvider = p.messageProvider
 		this.client = p.discordClient
 
-		this.job = new CronJob('0 0 * * * *', this.handler.bind(this))
+		this.job = new CronJob('0 * * * * *', this.handler.bind(this))
+
 	}
 
 	private async handler() {
 		const messages = await this.messageProvider.getUnexpiredMessagesBetweenDate({
-			start: DateTime.now().minus({ days: 2 }).toJSDate(),
-			end: DateTime.now().minus({ hours: 3 }).toJSDate(),
+			start: DateTime.now().minus({ minutes: 2 }).toJSDate(),
+			end: DateTime.now().toJSDate(),
 		})
 
 		await Promise.all(
@@ -51,11 +53,18 @@ export class ExpirationJob extends Job {
 						expired: true,
 					})
 
+					const rebootButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+						new ButtonBuilder()
+							.setCustomId('reboot')
+							.setLabel(i18next.t('actions.reboot', { lng: discordMessage.guild?.preferredLocale ?? 'en' }))
+							.setStyle(ButtonStyle.Primary)
+					)
+
 					return Promise.all([
 						this.messageProvider.setMessageExpired({ msgId: message.messageId, expired: true }),
 						discordMessage.edit({
 							embeds: [embedMessage],
-							components: [],
+							components: [rebootButton],
 						}),
 						(async (): Promise<void> => this.logger.info(discordMessage, 'Set as expired'))(),
 					])
