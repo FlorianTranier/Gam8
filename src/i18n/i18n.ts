@@ -18,7 +18,7 @@ export const loadi18n = async (): Promise<void> => {
 							channel_option: 'Where do you want to create the event ?',
 							announcement_channel: 'Publish to an announcement channel ?',
 							response: 'Event created',
-							response_no_announce: 'Event created but not posted to announcement channel (no permission)'
+							response_no_announce: 'Event created but not posted to announcement channel (no permission)',
 						},
 					},
 					modal: {
@@ -28,11 +28,11 @@ export const loadi18n = async (): Promise<void> => {
 							description: 'Describe your event',
 							date: 'date : DD/MM/YYYY, HH:mm',
 							announcement: 'Announcement channel (DO NOT MODIFY)',
-							voice_channel: 'Voice channel (DO NOT MODIFY)'
+							voice_channel: 'Voice channel (DO NOT MODIFY)',
 						},
 					},
 					embed: {
-						title: '{{author}} wants to play at {{game}}',
+						title: '# {{author}} wants to play at {{game}}',
 						answer_title: 'Answering the call',
 						waiting_for_players: 'Waiting for players',
 						maybe_joining_later: 'Maybe joining later',
@@ -48,7 +48,7 @@ export const loadi18n = async (): Promise<void> => {
 						no: '😶‍🌫️ No.',
 						notify_me: 'Notify me !',
 						disable_notification: 'Disable notifications',
-						reboot: '🔄️ Reboot'
+						reboot: '🔄️ Reboot',
 					},
 					response: {
 						notification_validation: `You'll be notified when someone interact !`,
@@ -70,10 +70,10 @@ export const loadi18n = async (): Promise<void> => {
 						},
 						event: {
 							description: 'Créer un événement planifié',
-							channel_option: 'Où voulez-vous créer l\'événement ?',
-							announcement_channel: 'Publier sur un channel d\'annonce ?',
+							channel_option: "Où voulez-vous créer l'événement ?",
+							announcement_channel: "Publier sur un channel d'annonce ?",
 							response: 'Événement créé',
-							response_no_announce: 'Événement créé mais non publié sur le channel d\'annonce (pas de permission)'
+							response_no_announce: "Événement créé mais non publié sur le channel d'annonce (pas de permission)",
 						},
 					},
 					modal: {
@@ -82,12 +82,12 @@ export const loadi18n = async (): Promise<void> => {
 							title_input: 'Titre',
 							description: 'Décrivez votre événement',
 							date: 'date : JJ/MM/AAAA, HH:mm',
-							announcement: 'Channel d\'annonce (NE PAS MODIFIER)',
-							voice_channel: 'Channel vocal (NE PAS MODIFIER)'
+							announcement: "Channel d'annonce (NE PAS MODIFIER)",
+							voice_channel: 'Channel vocal (NE PAS MODIFIER)',
 						},
 					},
 					embed: {
-						title: '{{author}} veut jouer à {{game}}',
+						title: '# {{author}} veut jouer à {{game}}',
 						answer_title: `Réponses à l'appel`,
 						waiting_for_players: 'En attente de joueurs',
 						maybe_joining_later: 'Peut-être plus tard',
@@ -103,7 +103,7 @@ export const loadi18n = async (): Promise<void> => {
 						no: '😶‍🌫️ Non.',
 						notify_me: `🔔 M'avertir des réponses`,
 						disable_notification: `Ne pas m'avertir`,
-						reboot: '🔄️ Relancer'
+						reboot: '🔄️ Relancer',
 					},
 					response: {
 						notification_validation: `Tu seras averti par MP lorsque quelqu'un répondra à ton message !`,

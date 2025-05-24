@@ -49,7 +49,7 @@ const commands = [
 	new HelpCommand(),
 	new TagCommand({ channelProvider }),
 	new CancelCommand({ messageProvider }),
-	new EventCommand({ channelProvider })
+	new EventCommand({ channelProvider }),
 ]
 
 // Reactions
@@ -60,7 +60,7 @@ new CommandRouter({ client, messageProvider, videoGameProvider, commands })
 new ReactionRouter({ client, selectReactionService })
 
 // Global Listeners
-new VoiceStateListener({ client, messageProvider, channelProvider })
+new VoiceStateListener({ client, messageProvider, channelProvider, videoGameProvider })
 
 // Jobs
 const jobs = [new ExpirationJob({ messageProvider, discordClient: client })]
@@ -91,7 +91,7 @@ client.on('ready', async () => {
 		if (announceState?.shouldAnnounce) {
 			const { markdownNote } = <{ markdownNote: string }>await import(`./patchnotes/${process.env.VERSION}`)
 			const channel = await client.channels.fetch(association?.channelId ?? '')
-			if (channel != null && channel.isTextBased())
+			if (channel != null && channel.isTextBased() && channel.isSendable())
 				channel.send({
 					content: `${roleMention(association?.tagRoleId ?? '')}\n${markdownNote}`,
 				})
@@ -106,7 +106,7 @@ client.on('ready', async () => {
 
 			const message = await channel.send(
 				'@here Welcome everyone ! This is the PartnerResearch V2 discord channel !' +
-				`
+					`
 Please don't delete this channel ! Otherwise, I'm not going to work anymore. You can safely rename this channel and move it as you please into groups
 \`-sp search <game>\` : Say that you want to play at <game>, and wait for other players answers :)
 \`-sp clear\` : Remove all messages from this bot (only if you have the permission to edit messages)
