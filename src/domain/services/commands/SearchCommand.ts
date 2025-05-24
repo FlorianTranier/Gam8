@@ -123,7 +123,7 @@ export default class SearchCommand implements CommandInterface {
 		const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
 
 		await p.context.reply({
-			components: [new TextDisplayBuilder().setContent('HELLO')],
+			components: [new TextDisplayBuilder().setContent(tag)],
 			flags: MessageFlags.IsComponentsV2,
 		})
 
