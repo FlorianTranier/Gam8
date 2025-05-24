@@ -6,17 +6,15 @@ import {
 	ChatInputCommandInteraction,
 	GuildMember,
 	MessageActionRowComponentBuilder,
-	MessageFlags,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 	SlashCommandBuilder,
 	StringSelectMenuBuilder,
-	TextDisplayBuilder,
-	VoiceState,
 } from 'discord.js'
 import MessageType from '../../models/messages/enums/MessageType'
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import CommandInterface from './CommandInterface'
+import EmbedMessageGenerator from '../../utils/EmbedSearchPartnerMessageUtils'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
 import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
 import i18next from 'i18next'
@@ -25,7 +23,7 @@ import pino from 'pino'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import { Game } from '../../models/games/Game'
 import { ImageProvider } from '../../../providers/s3/ImageProvider'
-import ComponentSearchPartnerMessageUtils from '../../utils/ComponentSearchPartnerMessageUtils'
+import { mergeImages } from '../../utils/ImageUtils'
 
 export default class SearchCommand implements CommandInterface {
 	COMMAND = 'search'
@@ -53,14 +51,14 @@ export default class SearchCommand implements CommandInterface {
 			.setDescription(i18next.t('commands.search.description', { lng: 'en' }))
 			.setName(this.COMMAND)
 			.setDescriptionLocalizations({
-				fr: i18next.t('commands.search.description', { lng: 'fr' }),
+				fr: i18next.t('commands.search.description', { lng: 'fr' })
 			})
 			.addStringOption((option) =>
 				option
 					.setName('game')
 					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
 					.setDescriptionLocalizations({
-						fr: i18next.t('commands.search.game_option', { lng: 'fr' }),
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
 					})
 					.setRequired(true)
 					.setMaxLength(255)
@@ -71,7 +69,7 @@ export default class SearchCommand implements CommandInterface {
 					.setName('game2')
 					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
 					.setDescriptionLocalizations({
-						fr: i18next.t('commands.search.game_option', { lng: 'fr' }),
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
 					})
 					.setRequired(false)
 					.setMaxLength(255)
@@ -82,7 +80,7 @@ export default class SearchCommand implements CommandInterface {
 					.setName('game3')
 					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
 					.setDescriptionLocalizations({
-						fr: i18next.t('commands.search.game_option', { lng: 'fr' }),
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
 					})
 					.setRequired(false)
 					.setMaxLength(255)
@@ -93,7 +91,7 @@ export default class SearchCommand implements CommandInterface {
 					.setName('game4')
 					.setDescription(i18next.t('commands.search.game_option', { lng: 'en' }))
 					.setDescriptionLocalizations({
-						fr: i18next.t('commands.search.game_option', { lng: 'fr' }),
+						fr: i18next.t('commands.search.game_option', { lng: 'fr' })
 					})
 					.setRequired(false)
 					.setMaxLength(255)
@@ -104,7 +102,7 @@ export default class SearchCommand implements CommandInterface {
 					.setName('additional_informations')
 					.setDescription(i18next.t('commands.search.additional_informations', { lng: 'en' }))
 					.setDescriptionLocalizations({
-						fr: i18next.t('commands.search.additional_informations', { lng: 'fr' }),
+						fr: i18next.t('commands.search.additional_informations', { lng: 'fr' })
 					})
 					.setRequired(false)
 					.setMaxLength(255)
@@ -123,8 +121,8 @@ export default class SearchCommand implements CommandInterface {
 		const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
 
 		await p.context.reply({
-			components: [new TextDisplayBuilder().setContent('HELLO')],
-			flags: MessageFlags.IsComponentsV2,
+			content: tag,
+			allowedMentions: { roles: [association?.tagRoleId ?? ''] },
 		})
 
 		const games = [
@@ -138,6 +136,25 @@ export default class SearchCommand implements CommandInterface {
 
 		const gameInfos = await Promise.all(games.map((game) => SearchCommand.getGameInfos(game, this.videoGameProvider)))
 
+		let backgroundImage
+
+		if (gameInfos.length > 1) {
+			const backgroundImageFileName = gameInfos.map((gameInfo) => gameInfo.slug).join('_') + '.png'
+
+			if (await this.imageProvider.fileExists(backgroundImageFileName)) {
+				backgroundImage = await this.imageProvider.getPresignedUrl(backgroundImageFileName)
+			} else {
+				const image = await mergeImages(
+					gameInfos[0].background_image,
+					gameInfos[1].background_image,
+					gameInfos[2]?.background_image,
+					gameInfos[3]?.background_image
+				)
+
+				backgroundImage = await this.imageProvider.uploadFile(image, backgroundImageFileName)
+			}
+		}
+
 		const author = await p.context.guild?.members.fetch(p.context.member?.user.id ?? '')
 
 		const selectRow = SearchCommand.createSelectRow({ ...p, games: games })
@@ -145,10 +162,9 @@ export default class SearchCommand implements CommandInterface {
 		const buttonRow = SearchCommand.createButtonRow(p, gameInfos[0])
 
 		const message = await p.context.editReply({
-			withComponents: true,
-			components: [
-				new TextDisplayBuilder().setContent(tag),
-				ComponentSearchPartnerMessageUtils.createOrUpdate({
+			content: tag,
+			embeds: [
+				await EmbedMessageGenerator.createOrUpdate({
 					authorUsername: getDiscordUsername(p.context.member as GuildMember),
 					authorPicture: author?.user.avatarURL() || '',
 					games,
@@ -156,15 +172,13 @@ export default class SearchCommand implements CommandInterface {
 					lateMembers: [],
 					voiceChannelName: author?.voice.channel?.name,
 					voiceChannelId: author?.voice.channel?.id,
-					bgImgs: gameInfos.map((game) => game.background_image),
+					bgImg: backgroundImage ?? gameInfos[0].background_image,
 					locale: p.context.guildLocale ?? 'en',
 					additionalInformations: additionalInformations ?? undefined,
-				}).addActionRowComponents(selectRow, buttonRow),
+				}),
 			],
-			allowedMentions: {
-				parse: ['roles'],
-			},
-			flags: MessageFlags.IsComponentsV2,
+			components: [buttonRow, selectRow],
+			allowedMentions: { roles: [association?.tagRoleId ?? ''] },
 		})
 
 		const newMessage = new SearchPartnerMessage({
@@ -177,7 +191,7 @@ export default class SearchCommand implements CommandInterface {
 			members: [],
 			lateMembers: [],
 			channelId: p.context.channel?.id || '',
-			bgImgs: gameInfos.map((game) => game.background_image),
+			bgImg: backgroundImage ?? gameInfos[0].background_image,
 			additionalInformations: additionalInformations ?? undefined,
 		})
 
@@ -205,45 +219,45 @@ export default class SearchCommand implements CommandInterface {
 		)
 	}
 
-	public static createSelectRow(p: { context: BaseInteraction | VoiceState; games: string[] }) {
-		const guildLocale = p.context instanceof VoiceState ? p.context.guild.preferredLocale : p.context.guildLocale
-		const gameOptions = p.games.map((game) => {
+	public static createSelectRow(p: { context: BaseInteraction, games: string[] }) {
+		const gameOptions = p.games.map(game => {
 			return {
-				label: i18next.t('actions.lets_go', { lng: guildLocale ?? 'en', game: game }),
+				label: i18next.t('actions.lets_go', { lng: p.context.guildLocale ?? 'en', game: game }),
 				value: game,
 			}
 		})
 
 		const selectMenu = new StringSelectMenuBuilder()
 			.setCustomId('select')
-			.setPlaceholder(i18next.t('actions.placeholder', { lng: guildLocale ?? 'en' }))
+			.setPlaceholder(i18next.t('actions.placeholder', { lng: p.context.guildLocale ?? 'en' }))
 			.setMinValues(1)
 			.setMaxValues(p.games.length)
 			.addOptions(
 				...gameOptions,
 				{
-					label: i18next.t('actions.join_later', { lng: guildLocale ?? 'en' }),
+					label: i18next.t('actions.join_later', { lng: p.context.guildLocale ?? 'en' }),
 					value: 'join_later',
 				},
 				{
-					label: i18next.t('actions.no', { lng: guildLocale ?? 'en' }),
+					label: i18next.t('actions.no', { lng: p.context.guildLocale ?? 'en' }),
 					value: 'no',
 				}
 			)
 
-		return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(selectMenu)
+		return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+			selectMenu
+		)
 	}
 
-	public static createButtonRow(p: { context: BaseInteraction | VoiceState }, gameInfos: Game) {
-		const guildLocale = p.context instanceof VoiceState ? p.context.guild.preferredLocale : p.context.guildLocale
+	public static createButtonRow(p: { context: BaseInteraction }, gameInfos: Game) {
 		return new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId('notify')
-				.setLabel(i18next.t('actions.notify_me', { lng: guildLocale ?? 'en' }))
+				.setLabel(i18next.t('actions.notify_me', { lng: p.context.guildLocale ?? 'en' }))
 				.setStyle(ButtonStyle.Success),
 			new ButtonBuilder()
 				.setCustomId('dont_notify')
-				.setLabel(i18next.t('actions.disable_notification', { lng: guildLocale ?? 'en' }))
+				.setLabel(i18next.t('actions.disable_notification', { lng: p.context.guildLocale ?? 'en' }))
 				.setStyle(ButtonStyle.Primary),
 			new ButtonBuilder().setLabel('?').setStyle(ButtonStyle.Link).setURL(`https://rawg.io/games/${gameInfos.slug}`)
 		)

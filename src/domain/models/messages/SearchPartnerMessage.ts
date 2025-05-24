@@ -14,7 +14,7 @@ export default class SearchPartnerMessage {
 	lateMembers: MessageMember[]
 	notifiedMembersId: string[]
 	channelId: string
-	bgImgs: string[]
+	bgImg: string
 	additionalInformations?: string
 	timestamp: number
 	expired: boolean
@@ -31,7 +31,7 @@ export default class SearchPartnerMessage {
 		lateMembers: MessageMember[]
 		notifiedMembersId?: string[]
 		channelId: string
-		bgImgs: string[]
+		bgImg: string
 		additionalInformations?: string
 		timestamp?: number
 		expired?: boolean
@@ -46,7 +46,7 @@ export default class SearchPartnerMessage {
 		this.lateMembers = p.lateMembers ?? []
 		this.channelId = p.channelId
 		this.notifiedMembersId = p.notifiedMembersId ?? []
-		this.bgImgs = p.bgImgs
+		this.bgImg = p.bgImg
 		this.timestamp = p.timestamp ?? new Date().getTime()
 		this.additionalInformations = p.additionalInformations
 		this.expired = p.expired ?? false

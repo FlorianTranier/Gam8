@@ -41,8 +41,8 @@ jobs:
       - name: Login to registry
         run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }} ${{ secrets.DOCKER_REGISTRY }}
       - name: Tag latest
-        run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8:latest
+        run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/partner-research:latest
       - name: Tag current version
-        run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8:$PACKAGE_VERSION
+        run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/partner-research:$PACKAGE_VERSION
       - name: Push
-        run: docker push --all-tags ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8
+        run: docker push --all-tags ${{ secrets.DOCKER_REGISTRY }}/partner-research
