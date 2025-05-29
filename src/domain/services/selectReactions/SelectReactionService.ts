@@ -171,7 +171,7 @@ export default class SelectReactionService {
 		const buttonRow = SearchCommand.createButtonRow({ context: p.interaction }, gameInfos[0])
 
 		const embedMessage = ComponentSearchPartnerMessageUtils.createOrUpdate({
-			authorUsername: getDiscordUsername(p.interaction.member as GuildMember),
+			authorUsername: getDiscordUsername(author),
 			authorPicture: author?.user.avatarURL() || '',
 			games: updatedMessage.games,
 			members: updatedMessage.members,

@@ -46,7 +46,7 @@ const createOrUpdate = (p: {
 
 	// Add games section if multiple games
 	if (p.games.length > 1) {
-		const gameText = new TextDisplayBuilder().setContent(p.games.map((game) => `### ${game}`).join('\n'))
+		const gameText = new TextDisplayBuilder().setContent(p.games.map((game) => `***${game}***`).join(' | '))
 		titleSection.addTextDisplayComponents(gameText)
 		msgBaseContainer.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small))
 	}
@@ -58,15 +58,15 @@ const createOrUpdate = (p: {
 	}
 
 	// Add members section
-	const answerText = new TextDisplayBuilder()
-	answerText.setContent(
-		p.members.length > 0
-			? p.members.map((m) => `<@${m.id}> (${m.games.join(' / ')})`).join(', ')
-			: i18next.t('embed.waiting_for_players', { lng: p.locale })
-	)
-	msgBaseContainer.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(i18next.t('embed.answer_title', { lng: p.locale })),
-		answerText
+
+	titleSection.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18next.t('embed.answer_title', { lng: p.locale }) +
+				'\n' +
+				(p.members.length > 0
+					? p.members.map((m) => `<@${m.id}> (${m.games.join(' / ')})`).join(', ')
+					: i18next.t('embed.waiting_for_players', { lng: p.locale }))
+		)
 	)
 
 	// Add late members section if present
@@ -84,8 +84,11 @@ const createOrUpdate = (p: {
 
 	// Add background image if present
 	if (p.bgImgs) {
+		const size = p.bgImgs.length > 1 ? 250 : 350
 		const image = new MediaGalleryBuilder().addItems(
-			p.bgImgs.map((bgImg) => new MediaGalleryItemBuilder().setURL(bgImg))
+			p.bgImgs.map((bgImg) =>
+				new MediaGalleryItemBuilder().setURL(`https://flyimg.ftranier.fr/upload/w_${size}/${bgImg}`)
+			)
 		)
 		msgBaseContainer.addMediaGalleryComponents(image)
 		msgBaseContainer.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small))

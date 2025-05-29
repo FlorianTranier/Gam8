@@ -32,7 +32,7 @@ export const loadi18n = async (): Promise<void> => {
 						},
 					},
 					embed: {
-						title: '# {{author}} wants to play at {{game}}',
+						title: '## {{author}} wants to play at {{game}}',
 						answer_title: 'Answering the call',
 						waiting_for_players: 'Waiting for players',
 						maybe_joining_later: 'Maybe joining later',
@@ -87,7 +87,7 @@ export const loadi18n = async (): Promise<void> => {
 						},
 					},
 					embed: {
-						title: '# {{author}} veut jouer à {{game}}',
+						title: '## {{author}} veut jouer à {{game}}',
 						answer_title: `Réponses à l'appel`,
 						waiting_for_players: 'En attente de joueurs',
 						maybe_joining_later: 'Peut-être plus tard',
