@@ -27,9 +27,19 @@ const createOrUpdate = (p: {
 }): ContainerBuilder => {
 	const msgBaseContainer = new ContainerBuilder()
 
+	if (p.expired) {
+		msgBaseContainer.setAccentColor(10070709)
+	} else {
+		msgBaseContainer.setAccentColor(3066993)
+	}
+
 	// Create header section
 	const titleSection = new SectionBuilder()
-		.setThumbnailAccessory(new ThumbnailBuilder().setURL(p.authorPicture ?? ''))
+		.setThumbnailAccessory(
+			new ThumbnailBuilder().setURL(
+				p.expired ? `https://flyimg.ftranier.fr/upload/clsp_Gray/${p.authorPicture}` : p.authorPicture ?? ''
+			)
+		)
 		.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
 				p.expired
@@ -83,7 +93,7 @@ const createOrUpdate = (p: {
 	}
 
 	// Add background image if present
-	if (p.bgImgs) {
+	if (p.bgImgs && !p.expired) {
 		const size = p.bgImgs.length > 1 ? 250 : 350
 		const image = new MediaGalleryBuilder().addItems(
 			p.bgImgs.map((bgImg) =>
