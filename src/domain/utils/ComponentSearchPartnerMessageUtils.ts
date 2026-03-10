@@ -37,7 +37,7 @@ const createOrUpdate = (p: {
 	const titleSection = new SectionBuilder()
 		.setThumbnailAccessory(
 			new ThumbnailBuilder().setURL(
-				p.expired ? `https://flyimg.ftranier.fr/upload/clsp_Gray/${p.authorPicture}` : p.authorPicture ?? ''
+				p.expired ? `https://flyimg.tech.tranier.dev/upload/clsp_Gray/${p.authorPicture}` : p.authorPicture ?? ''
 			)
 		)
 		.addTextDisplayComponents(
@@ -97,7 +97,7 @@ const createOrUpdate = (p: {
 		const size = p.bgImgs.length > 1 ? 250 : 350
 		const image = new MediaGalleryBuilder().addItems(
 			p.bgImgs.map((bgImg) =>
-				new MediaGalleryItemBuilder().setURL(`https://flyimg.ftranier.fr/upload/w_${size}/${bgImg}`)
+				new MediaGalleryItemBuilder().setURL(`https://flyimg.tech.tranier.dev/upload/w_${size}/${bgImg}`)
 			)
 		)
 		msgBaseContainer.addMediaGalleryComponents(image)
