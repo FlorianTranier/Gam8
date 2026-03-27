@@ -2,68 +2,68 @@
 ![License](https://badgen.net/github/license/FlorianTranier/partner-research-v2)
 ![Release](https://badgen.net/github/release/FlorianTranier/partner-research-v2/stable)
 
-# Partner Research
+# Gam8
 
 ## About
 
-Partner Research is a discord bot designed to help multi-gaming discord communities to find game partners
+**Gam8** is a Discord bot designed to help multi-gaming communities find gaming partners efficiently. It leverages Discord's latest features like Slash Commands and Components V2 to provide a rich, interactive experience.
 
 ## Install it on your Discord server
 
-[Click here to invite the bot on your server](https://discord.com/api/oauth2/authorize?client_id=700290127460827158&permissions=302251088&scope=bot)
+[Click here to invite the bot to your server](https://discord.com/api/oauth2/authorize?client_id=700290127460827158&permissions=302251088&scope=bot)
 
-Upon install, the bot will create a channel `#partner-research-bot`
-
-The bot will live on this channel, you can rename it, but DON'T DELETE IT
+Upon installation, the bot will automatically create a dedicated channel (defaults to `#partner-research-bot`). The bot operates within this channel. You can rename it or move it to a category, but **DO NOT DELETE IT**.
 
 ## How to use
 
-`-sp search <game>` : Say what you want to play at <game>, and wait for other players answers :)
+Partner Research uses **Slash Commands**. Simply type `/` in your Discord text box to see available commands.
 
-`-sp clear` : Remove all messages from this bot (only if you have the permission to edit messages)
+- `/search <game> [game2] [game3] [game4] [additional_informations]`: Start a search for one or more games. Others can join using interactive components.
+- `/event <channel> [announcement_channel]`: Create a Discord Scheduled Event with a modal for details.
+- `/cancel`: Cancel all your active search messages.
+- `/tag <@role>`: Choose a role to be notified when a new search is created (Requires `Manage Messages` permission).
+- `/clear`: Remove all messages from this bot (Requires `Manage Messages` permission).
+- `/help`: Displays help information.
 
-`-sp tag @role|reset` : choose a role to tag when a new search message is created (only if you have the permission to edit messages)
+### /search usage
 
-`-sp help` : displays help
+When you use `/search`, the bot creates an interactive message:
 
-### -sp search
-
-#### Example usage
-
-- Type `-sp search League of Legends`, it will create the following message
-
-<img src="https://res.cloudinary.com/drq3rp3qd/image/upload/v1613324368/partner-research-doc/Capture_d_%C3%A9cran_2021-02-14_183732_ueq27i.png">
-
-- Members of your server can interact with this using reactions
-
-#### Reactions
-
-☝️ : I want to play with you !
-
-⏰ : I will maybe join later
-
-🔔 : I want to get notified by private message when someone interact
-
-🚫 : Delete this message (only if you are the author of this message)
+- **Select Menu**: Members can choose which games they want to play, or indicate they'll join later.
+- **Notify Me**: Members can opt-in to receive a private message notification when others interact with the search.
+- **Link**: A direct link to the game's page on RAWG.io for more information.
 
 ## Build and deploy from source
 
 ### Requirements
 
-- Nodejs 12+
-- A Firebase project (You can create one for free [here](https://console.firebase.google.com/))
-- A discord app (You can create one for free [here](https://discord.com/developers/applications/))
+- **Node.js 20+**
+- **MongoDB**: A running MongoDB instance (e.g., [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
+- **AWS S3** (or compatible): For image processing and hosting
+- **Discord App**: Create one at the [Discord Developer Portal](https://discord.com/developers/applications/)
+- **RAWG API Key**: For fetching game information (Optional, but recommended)
 
 ### Installation steps
 
-- `git clone https://github.com/Blanymon/partner-research-v2`
-- Add a `.env` file with the following variables
+1. `git clone https://github.com/FlorianTranier/partner-research-v2`
+2. `npm install`
+3. Create a `.env` file in the root directory with the following variables:
 
-```
-BOT_TOKEN=<Bot token from your discord app>
-BOT_CHANNEL=<name of the channel that will be created and where the bot will live>
+```env
+BOT_TOKEN=<Your Discord Bot Token>
+BOT_CHANNEL=<Name of the channel the bot will create/use>
+DB_CONN_STRING=<Your MongoDB connection string>
+S3_ACCESS_KEY=<Your S3 Access Key>
+S3_SECRET_KEY=<Your S3 Secret Key>
+S3_ENDPOINT=<Your S3 Endpoint>
+S3_BUCKET_NAME=<Your S3 Bucket Name>
+RAWG_API_KEY=<Your RAWG API Key>
 ```
 
-- Add your Firebase service account file under the name `src/config/firebase_credentials.json`
-- Install dependencies `npm install`
-- Run it with `npm start`
+4. Build the project:
+   `npm run build`
+5. Start the bot:
+   `npm start`
+
+For development with hot-reload:
+`npm run start:dev`
