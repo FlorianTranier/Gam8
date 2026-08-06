@@ -5,7 +5,7 @@ import pino from 'pino'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import ComponentSearchPartnerMessageUtils from '../../utils/ComponentSearchPartnerMessageUtils'
 import SearchCommand from '../commands/SearchCommand'
-import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
+import { VideoGameProvider } from '../../../providers/igdb/games/VideoGameProvider'
 
 export default class VoiceStateListener {
 	private readonly client: Client

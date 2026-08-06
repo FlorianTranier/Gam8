@@ -18,9 +18,9 @@ import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 import CommandInterface from './CommandInterface'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
-import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
+import { VideoGameProvider } from '../../../providers/igdb/games/VideoGameProvider'
 import i18next from 'i18next'
-import { gameAbbreviation } from '../../../providers/rawg/games/GameAbbreviation'
+import { gameAbbreviation } from '../../../providers/igdb/games/GameAbbreviation'
 import pino from 'pino'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import { Game } from '../../models/games/Game'
@@ -245,7 +245,7 @@ export default class SearchCommand implements CommandInterface {
 				.setCustomId('dont_notify')
 				.setLabel(i18next.t('actions.disable_notification', { lng: guildLocale ?? 'en' }))
 				.setStyle(ButtonStyle.Primary),
-			new ButtonBuilder().setLabel('?').setStyle(ButtonStyle.Link).setURL(`https://rawg.io/games/${gameInfos.slug}`)
+			new ButtonBuilder().setLabel('?').setStyle(ButtonStyle.Link).setURL(`https://www.igdb.com/games/${gameInfos.slug}`)
 		)
 	}
 }

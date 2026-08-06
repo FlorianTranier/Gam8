@@ -1,4 +1,4 @@
-import { VideoGameProvider } from './../providers/rawg/games/VideoGameProvider'
+import { VideoGameProvider } from './../providers/igdb/games/VideoGameProvider'
 import { Client, REST, Routes } from 'discord.js'
 import CommandInterface from '../domain/services/commands/CommandInterface'
 import DBMessageProvider from '../providers/database/messages/DBMessageProvider'

@@ -4,7 +4,7 @@ import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
 import i18next from 'i18next'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
-import { VideoGameProvider } from '../../../providers/rawg/games/VideoGameProvider'
+import { VideoGameProvider } from '../../../providers/igdb/games/VideoGameProvider'
 import SearchCommand from '../commands/SearchCommand'
 import ComponentSearchPartnerMessageUtils from '../../utils/ComponentSearchPartnerMessageUtils'
 
