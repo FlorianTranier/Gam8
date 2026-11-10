@@ -39,7 +39,6 @@ When you use `/search`, the bot creates an interactive message:
 
 - **Node.js 20+**
 - **MongoDB**: A running MongoDB instance (e.g., [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
-- **AWS S3** (or compatible): For image processing and hosting
 - **Discord App**: Create one at the [Discord Developer Portal](https://discord.com/developers/applications/)
 - **Twitch App**: Create one at the [Twitch Developer Console](https://dev.twitch.tv/console/apps) to get the Client ID / Client Secret used by the [IGDB API](https://api-docs.igdb.com/) for fetching game information (Optional, but recommended)
 
@@ -53,10 +52,6 @@ When you use `/search`, the bot creates an interactive message:
 BOT_TOKEN=<Your Discord Bot Token>
 BOT_CHANNEL=<Name of the channel the bot will create/use>
 DB_CONN_STRING=<Your MongoDB connection string>
-S3_ACCESS_KEY=<Your S3 Access Key>
-S3_SECRET_KEY=<Your S3 Secret Key>
-S3_ENDPOINT=<Your S3 Endpoint>
-S3_BUCKET_NAME=<Your S3 Bucket Name>
 TWITCH_CLIENT_ID=<Your Twitch App Client ID>
 TWITCH_CLIENT_SECRET=<Your Twitch App Client Secret>
 ```

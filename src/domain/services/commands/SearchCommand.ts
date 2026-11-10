@@ -25,7 +25,6 @@ import { gameAbbreviation } from '../../../providers/igdb/games/GameAbbreviation
 import pino from 'pino'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import { Game } from '../../models/games/Game'
-import { ImageProvider } from '../../../providers/s3/ImageProvider'
 import ComponentSearchPartnerMessageUtils from '../../utils/ComponentSearchPartnerMessageUtils'
 
 export default class SearchCommand implements CommandInterface {
@@ -34,19 +33,16 @@ export default class SearchCommand implements CommandInterface {
 	private readonly messageProvider: DBMessageProvider
 	private readonly channelProvider: DBChannelProvider
 	private readonly videoGameProvider: VideoGameProvider
-	private readonly imageProvider: ImageProvider
 	private readonly logger = pino({ level: 'info', name: 'SearchCommand' })
 
 	constructor(p: {
 		messageProvider: DBMessageProvider
 		channelProvider: DBChannelProvider
 		videoGameProvider: VideoGameProvider
-		imageProvider: ImageProvider
 	}) {
 		this.messageProvider = p.messageProvider
 		this.channelProvider = p.channelProvider
 		this.videoGameProvider = p.videoGameProvider
-		this.imageProvider = p.imageProvider
 	}
 
 	getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
