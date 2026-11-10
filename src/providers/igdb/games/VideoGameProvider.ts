@@ -8,6 +8,14 @@ const PC_PLATFORM_ID = 6
 // Ports matter: IGDB files "Minecraft" itself as a port of the Java edition.
 const PLAYABLE_GAME_TYPES = [0, 4, 8, 9, 10, 11, 12]
 
+const IMAGE_BASE_URL = 'https://images.igdb.com/igdb/image/upload'
+
+// Artwork types usable as a banner, best first: key art with logo (it names the game), key art
+// without logo, plain artwork, concept art, historical artwork. Logos, covers, icons and
+// infographics are left out: cropped to 16:9 they show a cut-off logo or a sliver of a poster.
+const BANNER_ARTWORK_TYPES = [3, 2, 1, 4, 15]
+const PLAIN_ARTWORK_TYPE = 1
+
 const RESULT_LIMIT = 5
 const CANDIDATE_LIMIT = 30
 
@@ -25,6 +33,8 @@ type IgdbGame = {
 	name: string
 	slug: string
 	cover?: { image_id: string }
+	artworks?: { image_id: string; width: number; height: number; artwork_type?: number }[]
+	screenshots?: { image_id: string }[]
 	platforms?: number[]
 	total_rating_count?: number
 }
@@ -147,10 +157,28 @@ export class VideoGameProvider {
 			.map((game) => ({
 				name: game.name,
 				slug: game.slug,
-				background_image: game.cover
-					? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg`
-					: 'https://http.cat/404',
+				background_image: VideoGameProvider.bannerUrl(game),
 			}))
+	}
+
+	/**
+	 * Landscape banner for the search message: the best usable artwork (by type, then the closest
+	 * to 16:9), else a screenshot, else the portrait cover.
+	 * t_screenshot_big crops to 889x500, so every banner gets the same 16:9 shape.
+	 */
+	private static bannerUrl(game: IgdbGame): string {
+		// Older artworks have no type: rank them as plain artwork
+		const typeRank = (a: { artwork_type?: number }) =>
+			BANNER_ARTWORK_TYPES.indexOf(a.artwork_type ?? PLAIN_ARTWORK_TYPE)
+		const offRatio = (a: { width: number; height: number }) => Math.abs(a.width / a.height - 16 / 9)
+
+		const artwork = game.artworks
+			?.filter((a) => typeRank(a) !== -1 && a.width >= 889 && a.width / a.height >= 1.3)
+			.sort((a, b) => typeRank(a) - typeRank(b) || offRatio(a) - offRatio(b))[0]
+
+		const image = artwork ?? game.screenshots?.[0]
+		if (image) return `${IMAGE_BASE_URL}/t_screenshot_big/${image.image_id}.jpg`
+		return game.cover ? `${IMAGE_BASE_URL}/t_720p/${game.cover.image_id}.jpg` : 'https://http.cat/404'
 	}
 
 	private async queryIgdb(q: { search: string } | { namePrefix: string }): Promise<IgdbGame[]> {
@@ -168,7 +196,8 @@ export class VideoGameProvider {
 				'Client-ID': process.env.TWITCH_CLIENT_ID ?? '',
 				Authorization: `Bearer ${await this.getToken()}`,
 			},
-			body: `fields name,slug,cover.image_id,platforms,total_rating_count; ${query} limit ${CANDIDATE_LIMIT};`,
+			body: `fields name,slug,platforms,total_rating_count,cover.image_id,` +
+				`artworks.image_id,artworks.width,artworks.height,artworks.artwork_type,screenshots.image_id; ${query} limit ${CANDIDATE_LIMIT};`,
 		})
 
 		if (!response.ok) {
