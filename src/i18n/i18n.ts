@@ -53,7 +53,7 @@ export const loadi18n = async (): Promise<void> => {
 						notify_me: 'Notify me !',
 						disable_notification: 'Disable notifications',
 						reboot: '🔄️ Reboot',
-						follow_game: '🔔 Follow the game',
+						follow_game: '⭐ Follow the game',
 					},
 					response: {
 						notification_validation: `You'll be notified when someone interact !`,
@@ -83,7 +83,7 @@ export const loadi18n = async (): Promise<void> => {
 						response_already: 'You already follow {{games}}. To unsubscribe, use the button in your DMs.',
 						response_dm_closed: `I can't send you DMs, so the subscription was cancelled. Allow direct messages from this server's members in your privacy settings, then try again.`,
 						dm_subscribed:
-							'🔔 **Subscription enabled**\nYou will get a DM every time someone looks for players for {{games}} on **{{guild}}**.\nTo stop, click the button below, here or under any of these notifications.',
+							'⭐ **Subscription enabled**\nYou will get a DM every time someone looks for players for {{games}} on **{{guild}}**.\nTo stop, click the button below, here or under any of these notifications.',
 						dm_new_search: '🎮 **{{author}}** is looking for players for {{games}} on **{{guild}}**!',
 						view_search: 'View the search',
 						unsubscribe: 'Unsubscribe from {{game}}',
@@ -138,7 +138,7 @@ export const loadi18n = async (): Promise<void> => {
 						notify_me: `🔔 M'avertir des réponses`,
 						disable_notification: `Ne pas m'avertir`,
 						reboot: '🔄️ Relancer',
-						follow_game: '🔔 Suivre le jeu',
+						follow_game: '⭐ Suivre le jeu',
 					},
 					response: {
 						notification_validation: `Tu seras averti par MP lorsque quelqu'un répondra à ton message !`,
@@ -168,7 +168,7 @@ export const loadi18n = async (): Promise<void> => {
 						response_already: 'Tu suis déjà {{games}}. Pour te désabonner, utilise le bouton dans tes MP.',
 						response_dm_closed: `Je ne peux pas t'envoyer de MP, donc l'abonnement a été annulé. Autorise les messages privés des membres de ce serveur dans tes paramètres de confidentialité, puis réessaie.`,
 						dm_subscribed:
-							"🔔 **Abonnement activé**\nTu recevras un MP chaque fois que quelqu'un cherche des joueurs pour {{games}} sur **{{guild}}**.\nPour arrêter, clique sur le bouton ci-dessous, ici ou sous n'importe laquelle de ces notifications.",
+							"⭐ **Abonnement activé**\nTu recevras un MP chaque fois que quelqu'un cherche des joueurs pour {{games}} sur **{{guild}}**.\nPour arrêter, clique sur le bouton ci-dessous, ici ou sous n'importe laquelle de ces notifications.",
 						dm_new_search: '🎮 **{{author}}** cherche des joueurs pour {{games}} sur **{{guild}}** !',
 						view_search: 'Voir la recherche',
 						unsubscribe: 'Me désabonner de {{game}}',
