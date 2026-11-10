@@ -39,6 +39,8 @@ export const loadi18n = async (): Promise<void> => {
 						join_channel: 'Join vocal channel',
 						additional_informations_title: 'Additional notes',
 						expired: 'EXPIRED',
+						expired_players: 'with {{members}}',
+						expired_no_players: 'nobody answered',
 						other: 'or',
 					},
 					actions: {
@@ -94,6 +96,8 @@ export const loadi18n = async (): Promise<void> => {
 						join_channel: 'Rejoindre le channel vocal',
 						additional_informations_title: 'Détails',
 						expired: 'EXPIRÉ',
+						expired_players: 'avec {{members}}',
+						expired_no_players: `personne n'a répondu`,
 						other: 'ou',
 					},
 					actions: {

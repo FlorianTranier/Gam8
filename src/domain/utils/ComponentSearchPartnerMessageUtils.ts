@@ -25,30 +25,20 @@ const createOrUpdate = (p: {
 	additionalInformations?: string
 	expired?: boolean
 }): ContainerBuilder => {
-	const msgBaseContainer = new ContainerBuilder()
+	if (p.expired) return createExpired(p)
 
-	if (p.expired) {
-		msgBaseContainer.setAccentColor(10070709)
-	} else {
-		msgBaseContainer.setAccentColor(3066993)
-	}
+	const msgBaseContainer = new ContainerBuilder().setAccentColor(3066993)
 
 	// Create header section
 	const titleSection = new SectionBuilder()
-		.setThumbnailAccessory(
-			new ThumbnailBuilder().setURL(
-				p.expired ? `https://flyimg.tech.tranier.dev/upload/clsp_Gray/${p.authorPicture}` : p.authorPicture ?? ''
-			)
-		)
+		.setThumbnailAccessory(new ThumbnailBuilder().setURL(p.authorPicture ?? ''))
 		.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
-				p.expired
-					? `[${i18next.t('embed.expired', { lng: p.locale })}] ${p.games.length <= 1 ? '- ' + p.games[0] : ''}`
-					: i18next.t('embed.title', {
-							lng: p.locale,
-							author: p.authorUsername,
-							game: p.games.length <= 1 ? p.games[0] : '',
-					  })
+				i18next.t('embed.title', {
+					lng: p.locale,
+					author: p.authorUsername,
+					game: p.games.length <= 1 ? p.games[0] : '',
+				})
 			)
 		)
 
@@ -93,7 +83,7 @@ const createOrUpdate = (p: {
 	}
 
 	// Add background image if present
-	if (p.bgImgs && !p.expired) {
+	if (p.bgImgs) {
 		const size = p.bgImgs.length > 1 ? 250 : 350
 		const image = new MediaGalleryBuilder().addItems(
 			p.bgImgs.map((bgImg) =>
@@ -105,6 +95,34 @@ const createOrUpdate = (p: {
 	}
 
 	return msgBaseContainer
+}
+
+/**
+ * An expired search collapses to a single grey line, so old searches stop cluttering the channel:
+ * "⌛ EXPIRED · Valorant | Minecraft · Flo · with @a, @b"
+ */
+const createExpired = (p: {
+	authorUsername: string
+	games: string[]
+	members: MessageMember[]
+	locale: string
+}): ContainerBuilder => {
+	const players =
+		p.members.length > 0
+			? i18next.t('embed.expired_players', {
+					lng: p.locale,
+					members: p.members.map((m) => `<@${m.id}>`).join(', '),
+					interpolation: { escapeValue: false },
+			  })
+			: i18next.t('embed.expired_no_players', { lng: p.locale })
+
+	return new ContainerBuilder()
+		.setAccentColor(10070709)
+		.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				`-# ⌛ ${i18next.t('embed.expired', { lng: p.locale })} · **${p.games.join(' | ')}** · ${p.authorUsername} · ${players}`
+			)
+		)
 }
 
 export default {
