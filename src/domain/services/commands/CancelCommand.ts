@@ -10,7 +10,7 @@ import {
 import CommandInterface from './CommandInterface'
 import pino from 'pino'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
-import EmbedSearchPartnerMessageUtils from '../../utils/EmbedSearchPartnerMessageUtils'
+import ComponentSearchPartnerMessageUtils from '../../utils/ComponentSearchPartnerMessageUtils'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 
 export default class CancelCommand implements CommandInterface {
@@ -36,47 +36,62 @@ export default class CancelCommand implements CommandInterface {
 	}
 
 	async exec(p: { context: ChatInputCommandInteraction<CacheType> | undefined }): Promise<void> {
-		await p.context?.deferReply({
+		if (!p.context) return
+		const context = p.context
+
+		await context.deferReply({
 			flags: MessageFlags.Ephemeral,
 		})
-		await p.context?.deleteReply()
+		await context.deleteReply()
 
-		const messages = await this.messageProvider.getMessagesByAuthorId({ authorId: p.context?.user.id ?? '' })
+		// Only cancel searches from this server: the author may have active searches elsewhere
+		const messages = (await this.messageProvider.getMessagesByAuthorId({ authorId: context.user.id })).filter(
+			(msg) => msg.serverId === context.guildId
+		)
+
+		if (messages.length === 0) return
 
 		const updatedMessages = await this.messageProvider.setMessagesExpired({
 			msgIds: messages.map((msg) => msg.messageId),
 			expired: true,
 		})
 
-		await Promise.all(
+		const results = await Promise.allSettled(
 			updatedMessages.map(async (message) => {
-				const discordChannel = <TextBasedChannel>p.context?.channel
-				const discordMessage = await discordChannel?.messages.fetch({
+				// Searches live in the bot channel, not necessarily where /cancel was typed
+				const discordChannel = <TextBasedChannel>await context.client.channels.fetch(message.channelId, { cache: false })
+
+				const discordMessage = await discordChannel.messages.fetch({
 					message: message.messageId,
 					cache: false,
 				})
 
 				const author = await discordMessage.guild?.members.fetch(message.authorId)
 
-				const embedMessage = await EmbedSearchPartnerMessageUtils.createOrUpdate({
-					authorUsername: getDiscordUsername(author),
-					authorPicture: author?.user.avatarURL() || undefined,
-					members: message.members,
-					lateMembers: message.lateMembers,
-					games: message.games,
-					locale: discordMessage.guild?.preferredLocale ?? 'en',
-					additionalInformations: message.additionalInformations,
-					expired: true,
+				await discordMessage.edit({
+					components: [
+						ComponentSearchPartnerMessageUtils.createOrUpdate({
+							authorUsername: getDiscordUsername(author),
+							authorPicture: author?.user.avatarURL() || undefined,
+							members: message.members,
+							lateMembers: message.lateMembers,
+							games: message.games,
+							locale: discordMessage.guild?.preferredLocale ?? 'en',
+							additionalInformations: message.additionalInformations,
+							expired: true,
+						}),
+					],
+					flags: MessageFlags.IsComponentsV2,
 				})
 
-				return Promise.all([
-					discordMessage.edit({
-						embeds: [embedMessage],
-						components: [],
-					}),
-					(async (): Promise<void> => this.logger.info(discordMessage, 'Set as expired'))(),
-				])
+				this.logger.info({ messageId: message.messageId }, 'Set as expired')
 			})
 		)
+
+		// A search message deleted by hand must not prevent the others from being cancelled
+		results.forEach((result, i) => {
+			if (result.status === 'rejected')
+				this.logger.error({ err: result.reason, messageId: updatedMessages[i].messageId }, 'Could not cancel message')
+		})
 	}
 }
