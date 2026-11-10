@@ -38,7 +38,7 @@ When you use `/search`, the bot creates an interactive message:
 
 ### Requirements
 
-- **Node.js 20+**
+- **Node.js 24+**
 - **MongoDB**: A running MongoDB instance (e.g., [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
 - **Discord App**: Create one at the [Discord Developer Portal](https://discord.com/developers/applications/)
 - **Twitch App**: Create one at the [Twitch Developer Console](https://dev.twitch.tv/console/apps) to get the Client ID / Client Secret used by the [IGDB API](https://api-docs.igdb.com/) for fetching game information (Optional, but recommended)

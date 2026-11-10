@@ -3,14 +3,14 @@
 # Builder stage.
 # This state compile our TypeScript to get the JavaScript code
 #
-FROM node:20.3.1 AS builder
+FROM node:24-bookworm-slim AS builder
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 COPY tsconfig*.json ./
 COPY ./src ./src
-RUN npm install && npm run build
+RUN npm ci && npm run build
 
 
 #
@@ -18,14 +18,14 @@ RUN npm install && npm run build
 # This state compile get back the JavaScript code from builder stage
 # It will also install the production package only
 #
-FROM node:20.3.1
+FROM node:24-bookworm-slim
 
 WORKDIR /app
 ENV NODE_ENV=production
 ENV TZ=Europe/Paris
 
 COPY package*.json ./
-RUN npm ci --quiet --only=production
+RUN npm ci --quiet --omit=dev
 
 ## We just need the build to execute the command
 COPY --from=builder /usr/src/app/build ./build
