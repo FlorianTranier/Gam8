@@ -80,7 +80,7 @@ client.on('guildCreate', async (guild) => {
 	})
 })
 
-client.on('ready', async () => {
+client.on(Discord.Events.ClientReady, async () => {
 	const announceState = await db.collection('announcement').findOne<{ shouldAnnounce: boolean }>()
 
 	client.guilds.cache.forEach(async (guild) => {

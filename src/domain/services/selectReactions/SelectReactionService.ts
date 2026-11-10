@@ -24,7 +24,7 @@ export default class SelectReactionService {
 	}
 
 	async handleButtons(p: { interaction: ButtonInteraction }): Promise<void> {
-		await p.interaction.deferReply({ ephemeral: p.interaction.customId !== 'reboot' })
+		await p.interaction.deferReply({ flags: p.interaction.customId !== 'reboot' ? MessageFlags.Ephemeral : undefined })
 
 		const message = await this.messageProvider.getMessageByMessageId({ msgId: p.interaction.message.id })
 		let updatedMessage = message
@@ -99,7 +99,7 @@ export default class SelectReactionService {
 	}
 
 	async handleSelectedValues(p: { interaction: StringSelectMenuInteraction }): Promise<void> {
-		await p.interaction.deferReply({ ephemeral: true })
+		await p.interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
 		const selectedValues = p.interaction.values
 

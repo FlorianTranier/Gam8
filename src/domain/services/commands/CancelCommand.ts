@@ -4,6 +4,8 @@ import {
 	CacheType,
 	SlashCommandBuilder,
 	TextBasedChannel,
+	MessageFlags,
+	InteractionContextType,
 } from 'discord.js'
 import CommandInterface from './CommandInterface'
 import pino from 'pino'
@@ -25,7 +27,7 @@ export default class CancelCommand implements CommandInterface {
 		return new SlashCommandBuilder()
 			.setDescription('Cancel all your Gam8 messages')
 			.setName(this.COMMAND)
-			.setDMPermission(false)
+			.setContexts(InteractionContextType.Guild)
 			.toJSON()
 	}
 
@@ -35,7 +37,7 @@ export default class CancelCommand implements CommandInterface {
 
 	async exec(p: { context: ChatInputCommandInteraction<CacheType> | undefined }): Promise<void> {
 		await p.context?.deferReply({
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		})
 		await p.context?.deleteReply()
 

@@ -1,4 +1,4 @@
-import { RESTPostAPIChatInputApplicationCommandsJSONBody, ChatInputCommandInteraction, SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalSubmitInteraction, ChannelType, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildTextBasedChannel, PermissionFlagsBits } from "discord.js";
+import { RESTPostAPIChatInputApplicationCommandsJSONBody, ChatInputCommandInteraction, SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, ModalSubmitInteraction, ChannelType, GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel, GuildTextBasedChannel, PermissionFlagsBits, MessageFlags } from "discord.js";
 import CommandInterface from "./CommandInterface";
 import DBChannelProvider from "../../../providers/database/channels/DBChannelProvider";
 import i18next from "i18next";
@@ -55,17 +55,14 @@ export default class EventCommand implements CommandInterface {
 
     const titleInput = new TextInputBuilder()
       .setCustomId('modalEventTitleInput')
-      .setLabel(i18next.t('modal.event.title_input', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Short)
 
     const descriptionInput = new TextInputBuilder()
       .setCustomId('modalEventDescriptionInput')
-      .setLabel(i18next.t('modal.event.description', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Paragraph)
 
     const dateInput = new TextInputBuilder()
       .setCustomId('modalEventDateInput')
-      .setLabel(i18next.t('modal.event.date', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Short)
       .setMinLength(17)
       .setMaxLength(17)
@@ -77,24 +74,27 @@ export default class EventCommand implements CommandInterface {
 
     const publishAnnouncementInput = new TextInputBuilder()
       .setCustomId('modalEventPublishAnnouncementInput')
-      .setLabel(i18next.t('modal.event.announcement', { lng: p.context?.guildLocale ?? 'en' }))
       .setStyle(TextInputStyle.Short)
       .setValue(p.context?.options.getChannel('announcement_channel')?.id ?? '')
 
 
     const voiceChannelInput = new TextInputBuilder()
       .setCustomId('modalEventVoiceChannelInput')
-      .setLabel(i18next.t('modal.event.voice_channel', { lng: p.context?.guildLocale ?? 'en' }))
       .setValue(p.context?.options.getChannel('channel')?.id ?? '')
       .setStyle(TextInputStyle.Paragraph)
 
-    const rows = Array(5).fill(undefined).map(() => new ActionRowBuilder<TextInputBuilder>())
-    rows[0].addComponents(titleInput)
-    rows[1].addComponents(descriptionInput)
-    rows[2].addComponents(dateInput)
-    rows[3].addComponents(publishAnnouncementInput)
-    rows[4].addComponents(voiceChannelInput)
-    modal.addComponents(...rows)
+    const lng = p.context?.guildLocale ?? 'en'
+    modal.addLabelComponents(
+      ([
+        ['modal.event.title_input', titleInput],
+        ['modal.event.description', descriptionInput],
+        ['modal.event.date', dateInput],
+        ['modal.event.announcement', publishAnnouncementInput],
+        ['modal.event.voice_channel', voiceChannelInput],
+      ] as const).map(([labelKey, input]) =>
+        new LabelBuilder().setLabel(i18next.t(labelKey, { lng })).setTextInputComponent(input)
+      )
+    )
     await p.context?.showModal(modal)
   }
 
@@ -104,7 +104,7 @@ export default class EventCommand implements CommandInterface {
     const tag = association?.tagRoleId ? `<@&${association.tagRoleId}>` : ''
 
     await p.context.deferReply({
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     })
     const title = p.context.fields.getTextInputValue('modalEventTitleInput')
     const description = p.context.fields.getTextInputValue('modalEventDescriptionInput')

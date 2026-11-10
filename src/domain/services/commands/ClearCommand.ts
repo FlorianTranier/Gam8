@@ -4,6 +4,7 @@ import {
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 	SlashCommandBuilder,
 	ChatInputCommandInteraction,
+	InteractionContextType,
 } from 'discord.js'
 import DBMessageProvider from '../../../providers/database/messages/DBMessageProvider'
 
@@ -20,7 +21,7 @@ export default class ClearCommand implements CommandInterface {
 		return new SlashCommandBuilder()
 			.setDescription('Clear all bot messages')
 			.setName(this.COMMAND)
-			.setDMPermission(false)
+			.setContexts(InteractionContextType.Guild)
 			.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 			.toJSON()
 	}

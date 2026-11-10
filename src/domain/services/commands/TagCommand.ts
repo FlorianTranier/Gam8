@@ -4,6 +4,7 @@ import {
 	PermissionFlagsBits,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 	SlashCommandBuilder,
+	InteractionContextType,
 } from 'discord.js'
 import DBChannelProvider from '../../../providers/database/channels/DBChannelProvider'
 
@@ -21,7 +22,7 @@ export default class TagCommand implements CommandInterface {
 			.setDescription('Choose a role to tag when a new search message is created')
 			.addRoleOption((option) => option.setName('tag').setDescription('tag').setRequired(true))
 			.setName(this.COMMAND)
-			.setDMPermission(false)
+			.setContexts(InteractionContextType.Guild)
 			.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 
 			.toJSON()

@@ -12,6 +12,7 @@ import {
 	StringSelectMenuBuilder,
 	TextDisplayBuilder,
 	VoiceState,
+	InteractionContextType,
 } from 'discord.js'
 import MessageType from '../../models/messages/enums/MessageType'
 import SearchPartnerMessage from '../../models/messages/SearchPartnerMessage'
@@ -109,7 +110,7 @@ export default class SearchCommand implements CommandInterface {
 					.setRequired(false)
 					.setMaxLength(255)
 			)
-			.setDMPermission(false)
+			.setContexts(InteractionContextType.Guild)
 			.toJSON()
 	}
 
