@@ -35,6 +35,7 @@ type IgdbGame = {
 	cover?: { image_id: string }
 	artworks?: { image_id: string; width: number; height: number; artwork_type?: number }[]
 	screenshots?: { image_id: string }[]
+	first_release_date?: number
 	platforms?: number[]
 	total_rating_count?: number
 }
@@ -158,6 +159,7 @@ export class VideoGameProvider {
 				name: game.name,
 				slug: game.slug,
 				background_image: VideoGameProvider.bannerUrl(game),
+				year: game.first_release_date ? new Date(game.first_release_date * 1000).getUTCFullYear() : undefined,
 			}))
 	}
 
@@ -196,7 +198,7 @@ export class VideoGameProvider {
 				'Client-ID': process.env.TWITCH_CLIENT_ID ?? '',
 				Authorization: `Bearer ${await this.getToken()}`,
 			},
-			body: `fields name,slug,platforms,total_rating_count,cover.image_id,` +
+			body: `fields name,slug,first_release_date,platforms,total_rating_count,cover.image_id,` +
 				`artworks.image_id,artworks.width,artworks.height,artworks.artwork_type,screenshots.image_id; ${query} limit ${CANDIDATE_LIMIT};`,
 		})
 

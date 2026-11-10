@@ -57,22 +57,21 @@ export default class CommandRouter {
 			if (!interaction.isAutocomplete()) return
 			const input = interaction.options.getFocused()
 
-			const games =
+			// Discord caps choice names and values at 100 characters
+			const choices =
 				input.length === 0
-					? (await this.messageProvider.getLast10Games({ channelId: interaction.channelId })).map((game) => {
-						return {
-							name: game,
-							value: game,
-						}
-					})
-					: await this.videoGameProvider.searchGames({ searchInput: input })
+					? (await this.messageProvider.getLast10Games({ channelId: interaction.channelId })).map((game) => ({
+							name: game.slice(0, 100),
+							value: game.slice(0, 100),
+					  }))
+					: (await this.videoGameProvider.searchGames({ searchInput: input })).map((game) => ({
+							// The year tells same-name games apart ("Among Us (2018)"), the value stays the bare name
+							name: (game.year ? `${game.name} (${game.year})` : game.name).slice(0, 100),
+							value: game.name.slice(0, 100),
+					  }))
 
 			try {
-				await interaction.respond(
-					games.map((game) => {
-						return { name: game.name, value: game.name }
-					})
-				)
+				await interaction.respond(choices)
 			} catch (e) {
 				/* empty */
 			} // NON BLOCKING ERROR
