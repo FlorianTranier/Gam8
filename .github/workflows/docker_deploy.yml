@@ -9,40 +9,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Read version of package.json
         run: |
           PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
       - name: Show version number
         run: echo "Version is $PACKAGE_VERSION"
+      # Fails when the version was not bumped, which stops the deploy job below
       - name: Create Git Tag
         run: git tag v${{ env.PACKAGE_VERSION }}
       - name: Push Git Tag
-        run: git push origin --tags
+        run: git push origin v${{ env.PACKAGE_VERSION }}
 
   docker-build-and-deploy:
+    # Without a new tag, pushing would overwrite the image of an already released version
+    needs: create-tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Read version of package.json
         run: |
           PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
       - name: Show version number
         run: echo "Version is $PACKAGE_VERSION"
       - name: Build
         run: docker build -t partner-research -f Dockerfile .
+      # Passes the password through stdin and logs out at the end of the job
       - name: Login to registry
-        run: docker login -u ${{ secrets.DOCKER_LOGIN }} -p ${{ secrets.DOCKER_PASSWORD }} ${{ secrets.DOCKER_REGISTRY }}
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Tag latest
         run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8:latest
       - name: Tag current version
-        run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8:$PACKAGE_VERSION
+        run: docker tag partner-research ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8:"$PACKAGE_VERSION"
       - name: Push
         run: docker push --all-tags ${{ secrets.DOCKER_REGISTRY }}/floriantranier/gam8
