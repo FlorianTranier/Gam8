@@ -4,6 +4,8 @@ export const loadi18n = async (): Promise<void> => {
 	await i18next.init({
 		debug: true,
 		fallbackLng: 'en',
+		// Discord renders markdown, not HTML: escaping would turn "Assassin's Creed" into "Assassin&#39;s Creed"
+		interpolation: { escapeValue: false },
 		resources: {
 			en: {
 				translation: {

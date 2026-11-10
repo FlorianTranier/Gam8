@@ -112,7 +112,6 @@ const createExpired = (p: {
 			? i18next.t('embed.expired_players', {
 					lng: p.locale,
 					members: p.members.map((m) => `<@${m.id}>`).join(', '),
-					interpolation: { escapeValue: false },
 			  })
 			: i18next.t('embed.expired_no_players', { lng: p.locale })
 
