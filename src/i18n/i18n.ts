@@ -63,6 +63,19 @@ export const loadi18n = async (): Promise<void> => {
 						wants_to_play: `<@{{userId}}> wants to play with you now at {{game}}`,
 						maybe_later: `<@{{userId}}> wants to play with you maybe later at {{game}}`,
 					},
+					help: {
+						description: 'How Gam8 works',
+						title: '## 🎮 Gam8\nFind people to play with, whatever the game.',
+						search_title: '### Start a search',
+						search:
+							'{{search}} with up to 4 games and an optional note. The search mentions the server role if one is set, shows your voice channel if you are in one, and expires after 3 hours.',
+						message_title: '### On a search message',
+						message:
+							'- **Menu**: answer with the games you want to play, "maybe later" or "no"\n- **{{notify}}**: get a DM whenever someone answers this search\n- **{{follow}}**: get a DM for every new search for this game on this server, each with a button to unsubscribe\n- **?**: the game\'s page on IGDB',
+						commands_title: '### Other commands',
+						commands:
+							'- {{cancel}}: close all your ongoing searches on this server\n- {{event}}: create a scheduled Discord event\n- {{tag}}: choose the role mentioned on every new search (moderators)',
+					},
 					subscription: {
 						choose_games: 'Which games do you want to follow?',
 						already_followed: 'Already followed',
@@ -134,6 +147,19 @@ export const loadi18n = async (): Promise<void> => {
 					dm: {
 						wants_to_play: `<@{{userId}}> veut jouer avec toi à {{game}}`,
 						maybe_later: `<@{{userId}}> te rejoindra peut-être plus tard pour jouer à {{game}}`,
+					},
+					help: {
+						description: 'Comment fonctionne Gam8',
+						title: '## 🎮 Gam8\nTrouve des coéquipiers, quel que soit le jeu.',
+						search_title: '### Lancer une recherche',
+						search:
+							"{{search}} avec jusqu'à 4 jeux et une note facultative. La recherche mentionne le rôle du serveur s'il y en a un, affiche ton salon vocal si tu es connecté, et expire au bout de 3 heures.",
+						message_title: '### Sur un message de recherche',
+						message:
+							"- **Menu** : réponds avec les jeux auxquels tu veux jouer, « plus tard » ou « non »\n- **{{notify}}** : reçois un MP quand quelqu'un répond à cette recherche\n- **{{follow}}** : reçois un MP à chaque nouvelle recherche pour ce jeu sur ce serveur, avec un bouton pour te désabonner dans chacun\n- **?** : la fiche du jeu sur IGDB",
+						commands_title: '### Autres commandes',
+						commands:
+							'- {{cancel}} : ferme toutes tes recherches en cours sur ce serveur\n- {{event}} : crée un événement Discord planifié\n- {{tag}} : choisis le rôle mentionné à chaque nouvelle recherche (modérateurs)',
 					},
 					subscription: {
 						choose_games: 'Quels jeux veux-tu suivre ?',
