@@ -199,8 +199,8 @@ export default class SearchCommand implements CommandInterface {
 	public static async getGameInfos(game: string, videoGameProvider: VideoGameProvider) {
 		return (
 			(await videoGameProvider.searchGames({ searchInput: game }))[0] ?? {
-				background_image:
-					'https://unsplash.com/photos/sxiSod0tyYQ/download?ixid=MnwxMjA3fDB8MXxzZWFyY2h8MXx8bm90JTIwZm91bmR8ZnJ8MHx8fHwxNjc1NDI0OTMz&force=true&w=1920',
+				// Direct CDN URL: the unsplash.com/photos/.../download endpoint answers 401 to flyimg
+				background_image: 'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?fm=jpg&w=1920',
 			}
 		)
 	}
