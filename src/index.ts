@@ -17,6 +17,8 @@ import { MongoClient } from 'mongodb'
 import { pino } from 'pino'
 import CancelCommand from './domain/services/commands/CancelCommand'
 import EventCommand from './domain/services/commands/EventCommand'
+import DBSubscriptionProvider from './providers/database/subscriptions/DBSubscriptionProvider'
+import GameSubscriptionService from './domain/services/subscriptions/GameSubscriptionService'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
@@ -39,10 +41,14 @@ const client = new Discord.Client({ intents: 3276799, allowedMentions: { parse: 
 const messageProvider = new DBMessageProvider({ db })
 const channelProvider = new DBChannelProvider({ db })
 const videoGameProvider = new VideoGameProvider()
+const subscriptionProvider = new DBSubscriptionProvider({ db })
+
+// Services
+const subscriptionService = new GameSubscriptionService({ subscriptionProvider, messageProvider, videoGameProvider })
 
 // Commands
 const commands = [
-	new SearchCommand({ messageProvider, channelProvider, videoGameProvider }),
+	new SearchCommand({ messageProvider, channelProvider, videoGameProvider, subscriptionService }),
 	new ClearCommand({ messageProvider }),
 	new HelpCommand(),
 	new TagCommand({ channelProvider }),
@@ -55,7 +61,7 @@ const selectReactionService = new SelectReactionService({ messageProvider, chann
 
 // Routers
 new CommandRouter({ client, messageProvider, videoGameProvider, commands })
-new ReactionRouter({ client, selectReactionService })
+new ReactionRouter({ client, selectReactionService, subscriptionService })
 
 // Global Listeners
 new VoiceStateListener({ client, messageProvider, channelProvider, videoGameProvider })

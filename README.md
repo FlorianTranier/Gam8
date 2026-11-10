@@ -31,6 +31,7 @@ When you use `/search`, the bot creates an interactive message:
 
 - **Select Menu**: Members can choose which games they want to play, or indicate they'll join later.
 - **Notify Me**: Members can opt-in to receive a private message notification when others interact with the search.
+- **Follow the game**: Members can subscribe to the game (or pick among the games of a multi-game search) to get a private message whenever someone starts a search for it on this server. A first DM explains how it works, and every DM has an unsubscribe button.
 - **Link**: A direct link to the game's page on IGDB.com for more information.
 
 ## Build and deploy from source

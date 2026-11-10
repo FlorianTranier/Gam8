@@ -26,6 +26,8 @@ import pino from 'pino'
 import { getDiscordUsername } from '../../utils/GuildMemberUtils'
 import { Game } from '../../models/games/Game'
 import ComponentSearchPartnerMessageUtils from '../../utils/ComponentSearchPartnerMessageUtils'
+import GameSubscriptionService from '../subscriptions/GameSubscriptionService'
+import { toSubscribableGames } from '../../models/subscriptions/GameSubscription'
 
 export default class SearchCommand implements CommandInterface {
 	COMMAND = 'search'
@@ -33,16 +35,19 @@ export default class SearchCommand implements CommandInterface {
 	private readonly messageProvider: DBMessageProvider
 	private readonly channelProvider: DBChannelProvider
 	private readonly videoGameProvider: VideoGameProvider
+	private readonly subscriptionService: GameSubscriptionService
 	private readonly logger = pino({ level: 'info', name: 'SearchCommand' })
 
 	constructor(p: {
 		messageProvider: DBMessageProvider
 		channelProvider: DBChannelProvider
 		videoGameProvider: VideoGameProvider
+		subscriptionService: GameSubscriptionService
 	}) {
 		this.messageProvider = p.messageProvider
 		this.channelProvider = p.channelProvider
 		this.videoGameProvider = p.videoGameProvider
+		this.subscriptionService = p.subscriptionService
 	}
 
 	getSlashCommand(): RESTPostAPIChatInputApplicationCommandsJSONBody {
@@ -183,6 +188,18 @@ export default class SearchCommand implements CommandInterface {
 		})
 
 		this.logger.info(newMessage, 'New Game8 message !')
+
+		if (p.context.guild && message) {
+			await this.subscriptionService
+				.notifySubscribers({
+					guild: p.context.guild,
+					authorId: p.context.user.id,
+					authorName: getDiscordUsername(p.context.member as GuildMember),
+					games: toSubscribableGames(games, gameInfos),
+					messageUrl: message.url,
+				})
+				.catch((err) => this.logger.error({ err }, 'Could not notify game subscribers'))
+		}
 	}
 
 	private getGame(p: { context: ChatInputCommandInteraction; fieldKey: string }) {
@@ -242,6 +259,10 @@ export default class SearchCommand implements CommandInterface {
 				.setCustomId('dont_notify')
 				.setLabel(i18next.t('actions.disable_notification', { lng: guildLocale ?? 'en' }))
 				.setStyle(ButtonStyle.Primary),
+			new ButtonBuilder()
+				.setCustomId(GameSubscriptionService.SUBSCRIBE_ID)
+				.setLabel(i18next.t('actions.follow_game', { lng: guildLocale ?? 'en' }))
+				.setStyle(ButtonStyle.Secondary),
 			new ButtonBuilder().setLabel('?').setStyle(ButtonStyle.Link).setURL(`https://www.igdb.com/games/${gameInfos.slug}`)
 		)
 	}

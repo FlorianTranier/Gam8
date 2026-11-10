@@ -20,6 +20,7 @@ export default class HelpCommand implements CommandInterface {
 		await p.context.reply({
 			content: `
 \`/search <game>\` : Say that you want to play at <game>, and wait for other players answers
+🔔 \`Follow the game\` button on a search : get a DM whenever someone looks for players for this game on this server (unsubscribe from any of these DMs)
 \`/clear\` : Remove all messages from this bot (only if you have the permission to edit messages)
 \`/help\` : display this message
 \`/tag @role|reset\` : choose a role to tag when a new search message is created (only if you have the permission to edit messages)
